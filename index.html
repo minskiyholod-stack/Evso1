@@ -464,6 +464,41 @@ function restoreBackup(input) {
   reader.readAsText(file);
 }
 
+/* ============ CLEAR SALES ============ */
+async function clearSalesHistory() {
+  const count = Object.keys(state.sales || {}).length;
+  if (!count) { showToast('История продаж уже пуста', 'error'); return; }
+
+  const first = confirm(
+    `Удалить ВСЮ историю продаж?\n\n` +
+    `Записей: ${count}\n\n` +
+    `Это действие необратимо.\nТовары и остатки НЕ затрагиваются.`
+  );
+  if (!first) return;
+
+  const answer = prompt('Для подтверждения введите слово УДАЛИТЬ (заглавными буквами):');
+  if (answer !== 'УДАЛИТЬ') {
+    showToast('Отменено — ничего не удалено', 'error');
+    return;
+  }
+
+  state.sales = {};
+  saveLocal();
+
+  if (useFirebase) {
+    try {
+      await db.ref('evso/sales').remove();
+    } catch (e) {
+      console.error(e);
+      showToast('⚠️ Локально очищено, но не синхронизировано', 'error');
+      render();
+      return;
+    }
+  }
+  render();
+  showToast('История продаж очищена');
+}
+
 /* ============ AUTH ============ */
 function initAuth() {
   currentUser = localStorage.getItem(USER_KEY) || '';
@@ -765,7 +800,6 @@ function openProductModal(id) {
     e.preventDefault(); const f = new FormData(e.target); let brand = f.get('brand'); 
     if (brand === '__custom__') brand = (f.get('brandCustom') || '').trim();
     
-    // Сохраняем кастомный бренд в общий список
     if (brand && !getAllBrands().includes(brand)) {
       state.customBrands.push(brand);
       saveBrandsRemote();
@@ -908,6 +942,7 @@ function doExport(rows, sheetName, filename) {
 /* ============ SETTINGS ============ */
 function renderSettingsTab() {
   const url = getFbUrl(); const themePref = localStorage.getItem('evso_theme') || 'light';
+  const salesCount = Object.keys(state.sales || {}).length;
 
   $('tab-settings').innerHTML = `
     <div class="settings-section">
@@ -948,6 +983,16 @@ function renderSettingsTab() {
         <button class="btn" onclick="$('restoreFile').click()">⬆ Восстановить</button>
         <input type="file" id="restoreFile" accept=".json" hidden onchange="restoreBackup(this)">
       </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>🗑 История продаж</h3>
+      <p class="muted" style="font-size:12.5px;margin:0 0 10px">
+        Всего записей: <b style="color:var(--text)">${salesCount}</b>.
+        Очистка удалит всю историю продаж <b>безвозвратно</b>.
+        Товары и остатки на складах <b>не затрагиваются</b>.
+      </p>
+      <button class="btn danger full" onclick="clearSalesHistory()">Очистить историю продаж</button>
     </div>
 
     <div class="settings-section">
