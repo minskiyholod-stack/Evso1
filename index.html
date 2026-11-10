@@ -38,6 +38,7 @@ body.dark .status-line.warn { background: #2a2412; color: #f0d98a; border-color:
 body.dark .status-line.err { background: #2a1212; color: #f08a8a; border-color: #441616; }
 body.dark .view-size-row, body.dark .view-photo, body.dark .esr-qty button, body.dark .edit-size-row { background: #222; }
 body.dark .toast { background: #fff; color: #000; }
+body.dark .user-row { background: #222; }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{overflow-x:hidden;height:100%}
@@ -47,7 +48,7 @@ body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
   -webkit-text-size-adjust:100%;overscroll-behavior-x:none}
 input,select,textarea,button{font-family:inherit;font-size:16px}
 
-#app, #shopScreen, #chooseScreen, #welcomeScreen { animation: fadeIn 0.3s ease-in-out; }
+#app, #shopScreen, #welcomeScreen { animation: fadeIn 0.3s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
 .sync-bar{position:fixed;top:0;left:0;right:0;z-index:500;
@@ -68,7 +69,7 @@ body.has-sync-bar main{padding-top:calc(16px + 34px)}
 
 .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .login-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
-  padding:32px 24px;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,.05)}
+  padding:32px 24px;width:100%;max-width:420px;box-shadow:0 4px 24px rgba(0,0,0,.05)}
 .login-logo{font-size:36px;font-weight:900;letter-spacing:-1.5px;text-align:center;margin-bottom:2px}
 .login-logo span{color:var(--muted)}
 .login-sub{text-align:center;color:var(--muted);margin-bottom:24px;font-size:13px}
@@ -78,20 +79,29 @@ body.has-sync-bar main{padding-top:calc(16px + 34px)}
 .login-card input:focus{outline:none;border-color:var(--black)}
 .btn.full{width:100%;margin-top:8px}
 .login-error{color:var(--danger);text-align:center;margin-top:12px;font-size:13px;min-height:18px}
-.login-shop-link{text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
-.login-shop-link a{color:var(--muted);font-size:13px;text-decoration:none;font-weight:500}
-.login-shop-link a:hover{color:var(--text);text-decoration:underline}
+.login-hint{text-align:center;margin-top:12px;font-size:11.5px;color:var(--muted);line-height:1.4}
 
-.role-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
-  padding:22px 14px;cursor:pointer;text-align:center;color:var(--text);
+.btn{background:var(--card);border:1px solid var(--border);color:var(--text);
+  font-weight:500;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;font-size:14px;
+  min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:4px;text-decoration:none}
+.btn:active{background:var(--hover)}
+.btn.primary{background:var(--black);border-color:var(--black);color:var(--white)}
+.btn.primary:active{background:#222}
+.btn.danger{color:var(--danger);border-color:var(--danger)}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.small{padding:6px 10px;font-size:13px;min-height:34px}
+
+.role-card{background:var(--card);border:2px solid var(--border);border-radius:16px;
+  padding:28px 16px;cursor:pointer;text-align:center;color:var(--text);
   transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px;
   font-family:inherit;width:100%}
 .role-card:hover{border-color:var(--black);background:var(--hover)}
 .role-card:active{transform:scale(.98)}
-.role-icon{font-size:40px;line-height:1;margin-bottom:6px}
-.role-title{font-weight:800;font-size:15px}
-.role-desc{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.35}
-.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.role-icon{font-size:56px;line-height:1;margin-bottom:10px}
+.role-title{font-weight:800;font-size:17px}
+.role-desc{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+@media(max-width:400px){.role-grid{grid-template-columns:1fr}}
 
 .app-header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--border);padding-top:var(--safe-top);transition:padding-top .2s}
 .header-top{display:flex;align-items:center;gap:10px;padding:10px 16px 8px}
@@ -104,6 +114,10 @@ body.has-sync-bar main{padding-top:calc(16px + 34px)}
 .dot-online.off{background:#9ca3af}.dot-online.err{background:var(--danger)}
 .user-chip button{background:none;border:none;color:var(--muted);cursor:pointer;padding:0 0 0 4px;font-size:12.5px}
 .user-chip button:hover{color:var(--text)}
+.role-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;
+  padding:2px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:.4px}
+.role-badge.admin{background:rgba(239,68,68,.15);color:var(--wh1)}
+.role-badge.worker{background:rgba(59,130,246,.15);color:var(--wh2)}
 .theme-toggle{background:none;border:none;color:var(--text);cursor:pointer;font-size:20px;
   width:36px;height:36px;display:flex;align-items:center;justify-content:center;
   border-radius:8px;flex-shrink:0}
@@ -119,16 +133,6 @@ body.has-sync-bar main{padding-top:calc(16px + 34px)}
 
 main{max-width:1280px;margin:0 auto;padding:16px;padding-bottom:calc(16px + var(--safe-bottom));overflow-x:hidden;width:100%}
 @media(max-width:600px){main{padding:12px}}
-
-.btn{background:var(--card);border:1px solid var(--border);color:var(--text);
-  font-weight:500;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;font-size:14px;
-  min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:4px;text-decoration:none}
-.btn:active{background:var(--hover)}
-.btn.primary{background:var(--black);border-color:var(--black);color:var(--white)}
-.btn.primary:active{background:#222}
-.btn.danger{color:var(--danger);border-color:var(--danger)}
-.btn.ghost{background:transparent;border-color:transparent}
-.btn.small{padding:6px 10px;font-size:13px;min-height:34px}
 
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
@@ -264,8 +268,8 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .settings-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
 .settings-section h3{margin:0 0 12px;font-size:15px}
 .settings-section label{display:block;margin-bottom:10px;font-size:13px;color:var(--muted);font-weight:500}
-.settings-section input{display:block;width:100%;margin-top:4px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 12px;color:var(--text);font-size:16px}
-.settings-section input:focus{outline:none;border-color:var(--black)}
+.settings-section input,.settings-section select{display:block;width:100%;margin-top:4px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 12px;color:var(--text);font-size:16px}
+.settings-section input:focus,.settings-section select:focus{outline:none;border-color:var(--black)}
 .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .status-line{padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:13px}
 .status-line.ok{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
@@ -273,6 +277,11 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .status-line.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
 .muted{color:var(--muted)}
 code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;font-family:ui-monospace,monospace}
+
+.user-row{display:flex;align-items:center;gap:10px;padding:10px 12px;
+  background:var(--hover);border-radius:8px;margin-bottom:6px;font-size:13px}
+.user-row .u-login{flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.user-row .u-you{font-size:10.5px;color:var(--muted);font-weight:400}
 
 .menu-header{margin-bottom:20px}
 .menu-header h1{font-size:26px;font-weight:900;margin:0 0 4px;letter-spacing:-.6px}
@@ -308,76 +317,85 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
   ⚠️ Проблемы с синхронизацией — данные могут не сохраняться на сервер
 </div>
 
-<!-- WELCOME / TENANT -->
+<!-- ========== WELCOME ========== -->
 <div id="welcomeScreen" class="login-screen" hidden>
-  <div class="login-card" style="max-width:420px">
+  <div class="login-card" style="max-width:520px">
     <div class="login-logo">evso<span>.</span></div>
-    <div class="login-sub">Управление магазином</div>
-
-    <div id="welcomeChoice">
-      <button class="btn primary full" onclick="showWelcomeCreate()">Создать новый магазин</button>
-      <button class="btn full" style="margin-top:8px" onclick="showWelcomeEnter()">Войти в существующий</button>
-      <p class="muted" style="font-size:11.5px;text-align:center;margin-top:16px">
-        Вы покупатель? Используйте ссылку, которую дал продавец.
-      </p>
-    </div>
-
-    <div id="welcomeEnter" hidden>
-      <label>Название магазина (slug)<input id="wEnterSlug" placeholder="например, ivanov" autocapitalize="none" autocomplete="off"></label>
-      <button class="btn primary full" onclick="doEnterTenant()">Продолжить</button>
-      <button class="btn full ghost" style="margin-top:8px" onclick="showWelcomeChoice()">← Назад</button>
-    </div>
-
-    <div id="welcomeCreate" hidden>
-      <label>Название магазина (slug)<input id="wCreateSlug" placeholder="например, ivanov" autocapitalize="none" autocomplete="off"></label>
-      <label>Логин администратора<input id="wCreateLogin" placeholder="admin" autocapitalize="none" autocomplete="off"></label>
-      <label>Пароль<input id="wCreatePass" type="password" autocomplete="new-password"></label>
-      <button class="btn primary full" onclick="doCreateTenant()">Создать магазин</button>
-      <button class="btn full ghost" style="margin-top:8px" onclick="showWelcomeChoice()">← Назад</button>
-    </div>
-
-    <div id="welcomeErr" class="login-error"></div>
-  </div>
-</div>
-
-<!-- CHOOSE ROLE -->
-<div id="chooseScreen" class="login-screen" hidden>
-  <div class="login-card" style="max-width:460px">
-    <div class="login-logo">evso<span>.</span></div>
-    <div class="login-sub" id="chooseSub">Кто вы?</div>
+    <div class="login-sub">Добро пожаловать</div>
     <div class="role-grid">
-      <button class="role-card" onclick="chooseRole('buyer')">
+      <button class="role-card" onclick="goBuyer()">
         <div class="role-icon">🛍</div>
-        <div class="role-title">Я покупатель</div>
-        <div class="role-desc">Смотреть каталог и связаться с продавцом</div>
+        <div class="role-title">Покупателям</div>
+        <div class="role-desc">Открыть каталог магазина</div>
       </button>
-      <button class="role-card" onclick="chooseRole('seller')">
+      <button class="role-card" onclick="goSeller()">
         <div class="role-icon">💼</div>
-        <div class="role-title">Я продавец</div>
-        <div class="role-desc">Управление товарами и продажами</div>
+        <div class="role-title">Продавцам</div>
+        <div class="role-desc">Управление магазином и складом</div>
       </button>
     </div>
   </div>
 </div>
 
-<!-- LOGIN -->
+<!-- ========== BUYER ENTRY ========== -->
+<div id="buyerEntryScreen" class="login-screen" hidden>
+  <div class="login-card">
+    <div class="login-logo">evso<span>.</span></div>
+    <div class="login-sub">Каталог магазина</div>
+    <label>Название магазина
+      <input id="buyerSlug" placeholder="например, ivanov" autocapitalize="none" autocomplete="off" autofocus>
+    </label>
+    <button class="btn primary full" onclick="buyerEnter()">Открыть каталог →</button>
+    <div id="buyerErr" class="login-error"></div>
+    <button class="btn full ghost" style="margin-top:8px" onclick="goWelcome()">← Назад</button>
+    <div class="login-hint">Попросите у продавца ссылку на его магазин</div>
+  </div>
+</div>
+
+<!-- ========== SELLER CHOICE ========== -->
+<div id="sellerChoiceScreen" class="login-screen" hidden>
+  <div class="login-card">
+    <div class="login-logo">evso<span>.</span></div>
+    <div class="login-sub">Продавцам</div>
+    <button class="btn primary full" onclick="goLogin()">Войти в существующий</button>
+    <button class="btn full" style="margin-top:10px" onclick="goRegister()">Создать магазин</button>
+    <button class="btn full ghost" style="margin-top:14px" onclick="goWelcome()">← Назад</button>
+  </div>
+</div>
+
+<!-- ========== LOGIN ========== -->
 <div id="loginScreen" class="login-screen" hidden>
   <div class="login-card">
     <div class="login-logo">evso<span>.</span></div>
-    <div class="login-sub" id="loginSub">Вход для продавца</div>
-    <form id="loginForm">
-      <label>Логин<input name="user" required autocomplete="username" autocapitalize="none"></label>
-      <label>Пароль<input name="pass" type="password" required autocomplete="current-password"></label>
-      <button type="submit" class="btn primary full">Войти</button>
-    </form>
-    <div id="loginError" class="login-error"></div>
-    <div class="login-shop-link">
-      <a href="#" onclick="backToChoose();return false;">← Назад</a>
-    </div>
+    <div class="login-sub" id="loginSub">Вход</div>
+    <label>Логин<input id="loginUser" autocapitalize="none" autocomplete="username"></label>
+    <label>Пароль<input id="loginPass" type="password" autocomplete="current-password"></label>
+    <button class="btn primary full" onclick="doLogin()">Войти</button>
+    <div id="loginErr" class="login-error"></div>
+    <button class="btn full ghost" style="margin-top:8px" onclick="goSeller()">← Назад</button>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ========== REGISTER ========== -->
+<div id="registerScreen" class="login-screen" hidden>
+  <div class="login-card">
+    <div class="login-logo">evso<span>.</span></div>
+    <div class="login-sub">Регистрация администратора</div>
+    <label>Название магазина (латиница)
+      <input id="regSlug" placeholder="например, ivanov" autocapitalize="none" autocomplete="off">
+    </label>
+    <label>Логин администратора<input id="regLogin" autocapitalize="none" autocomplete="off"></label>
+    <label>Пароль<input id="regPass1" type="password" autocomplete="new-password"></label>
+    <label>Пароль ещё раз<input id="regPass2" type="password" autocomplete="new-password"></label>
+    <label>Ключ доступа<input id="regKey" placeholder="••••••••" autocomplete="off" inputmode="numeric"></label>
+    <button class="btn primary full" onclick="doRegister()">Создать магазин</button>
+    <div id="regErr" class="login-error"></div>
+    <button class="btn full ghost" style="margin-top:8px" onclick="goSeller()">← Назад</button>
+    <div class="login-hint">Ключ доступа выдаёт владелец сервиса</div>
+  </div>
+</div>
+
+<!-- ========== ADMIN APP ========== -->
 <div id="app" hidden>
   <div class="app-header">
     <div class="header-top">
@@ -387,6 +405,7 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
       <div class="user-chip">
         <span id="syncDot" class="dot-online off" title="Синхронизация"></span>
         <span id="userName">—</span>
+        <span id="roleBadge" class="role-badge admin">ADMIN</span>
         <button onclick="logout()" title="Выйти">Выйти</button>
       </div>
     </div>
@@ -410,21 +429,20 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
   </main>
 </div>
 
-<!-- SHOP -->
+<!-- ========== SHOP ========== -->
 <div id="shopScreen" hidden>
   <div class="app-header">
     <div class="header-top">
-      <button class="btn small icon-btn" onclick="backToChoose()" title="Назад">←</button>
+      <button class="btn small icon-btn" onclick="goWelcome()" title="На главную">←</button>
       <div class="logo" style="cursor:default">evso<span>.</span></div>
       <div class="spacer"></div>
-      <button class="theme-toggle" id="shopThemeToggle" onclick="toggleTheme()" title="Тема">🌓</button>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Тема">🌓</button>
       <button class="btn small icon-btn" onclick="shareShop()" title="Поделиться">🔗</button>
-      <button class="btn small icon-btn" id="shopAdminBtn" onclick="switchToAdmin()" title="В админку" hidden>→</button>
     </div>
   </div>
   <main>
     <div class="shop-hero">
-      <h1>Каталог</h1>
+      <h1 id="shopTitle">Каталог</h1>
       <p id="shopSubtitle">Загрузка...</p>
     </div>
     <div class="toolbar">
@@ -461,10 +479,10 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
 <div id="installBanner" class="install-banner" hidden></div>
 
 <script>
-/* ============ НАСТРОЙКА ============ */
+/* ============ КОНСТАНТЫ ============ */
 const DEFAULT_FB_URL = 'https://evso-cd735-default-rtdb.europe-west1.firebasedatabase.app';
+const ADMIN_KEY = '20112001';   // ⚠️ ключ для регистрации магазина
 
-/* ============ ОПТИМИЗАЦИЯ ============ */
 const SAVE_DELAY = 500;
 const RENDER_DELAY = 150;
 const SEARCH_DELAY = 200;
@@ -472,7 +490,16 @@ const LOG_LIMIT_LOCAL = 200;
 const PHOTO_MAX_SIZE = 350;
 const PHOTO_QUALITY = 0.7;
 
-/* ============ PWA / INSTALL ============ */
+const STATE_KEY = 'evso_state';
+const PHOTOS_KEY = 'evso_photos';
+const USER_KEY = 'evso_user';
+const TENANT_KEY = 'evso_tenant';
+
+const DEFAULT_BRANDS = ['Adidas','Nike','Reebok','Asics','Columbia','Hoka','Bona','Salomon','The North Face','New Balance','ACG','Saucony','Armani','Vans','DC','Merrell'];
+const GENDERS = ['Мужские','Женские','Унисекс'];
+const SEASONS = ['Зима','Лето','Всесезон'];
+
+/* ============ PWA ============ */
 (function setupPWA(){
   const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#000"/><text x="256" y="345" font-family="Arial,sans-serif" font-weight="900" font-size="360" fill="#fff" text-anchor="middle">e.</text></svg>`;
   const iconData = 'data:image/svg+xml;base64,' + btoa(iconSvg);
@@ -496,18 +523,14 @@ const PHOTO_QUALITY = 0.7;
   } catch (e) {}
   const fav = document.createElement('link'); fav.rel = 'icon'; fav.type = 'image/svg+xml'; fav.href = iconData; document.head.appendChild(fav);
 })();
-
 let deferredInstallPrompt = null;
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstallPrompt = e; });
 window.addEventListener('appinstalled', () => { hideInstallBanner(); });
-
 function showInstallBanner(platform) {
   if (isStandalone) return;
-  const banner = document.getElementById('installBanner');
-  if (!banner) return;
+  const banner = document.getElementById('installBanner'); if (!banner) return;
   if (platform === 'ios') {
     banner.innerHTML = `<div class="install-banner-inner"><div class="install-banner-icon">📱</div><div class="install-banner-text"><b>Установить evso</b>Открыть в Safari → Поделиться → На экран «Домой»</div><div class="install-banner-actions"><button class="btn ghost" onclick="dismissInstallBanner()">✕</button></div></div>`;
   } else {
@@ -522,16 +545,7 @@ async function triggerInstall() {
   deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; hideInstallBanner();
 }
 
-/* ============ APP CORE ============ */
-const DEFAULT_BRANDS = ['Adidas','Nike','Reebok','Asics','Columbia','Hoka','Bona','Salomon','The North Face','New Balance','ACG','Saucony','Armani','Vans','DC', 'Merrell'];
-const GENDERS = ['Мужские','Женские','Унисекс'];
-const SEASONS = ['Зима','Лето','Всесезон'];
-
-const STATE_KEY = 'evso_state';
-const PHOTOS_KEY = 'evso_photos';
-const USER_KEY = 'evso_user';
-const TENANT_KEY = 'evso_tenant';
-
+/* ============ ГЛОБАЛЬНОЕ СОСТОЯНИЕ ============ */
 let state = {
   warehouses: { wh1:{name:'Точка 1'}, wh2:{name:'Точка 2'} },
   products: {}, sales: {}, log: {}, users: {}, customBrands: [],
@@ -561,17 +575,9 @@ function getTenantFromUrl() {
   return p.get('shop') || p.get('t') || '';
 }
 function getTenant() {
-  const fromUrl = getTenantFromUrl();
-  if (fromUrl && fromUrl !== TENANT) {
-    // URL переопределяет тенант — очищаем кеш предыдущего
-    try { localStorage.removeItem(STATE_KEY); localStorage.removeItem(PHOTOS_KEY); } catch (e) {}
-    state = { warehouses: { wh1:{name:'Точка 1'}, wh2:{name:'Точка 2'} }, products: {}, sales: {}, log: {}, users: {}, customBrands: [], settings: { sellerTelegram: '', showOutOfStock: true } };
-    TENANT = fromUrl;
-    try { localStorage.setItem(TENANT_KEY, fromUrl); } catch (e) {}
-    return fromUrl;
-  }
-  if (fromUrl) return fromUrl;
   if (TENANT) return TENANT;
+  const fromUrl = getTenantFromUrl();
+  if (fromUrl) { TENANT = fromUrl; return fromUrl; }
   const saved = localStorage.getItem(TENANT_KEY) || '';
   TENANT = saved;
   return saved;
@@ -585,6 +591,7 @@ function setTenant(t) {
   try { localStorage.setItem(TENANT_KEY, t); } catch (e) {}
   const u = new URL(window.location.href);
   u.searchParams.set('shop', t);
+  u.searchParams.delete('admin');
   window.history.replaceState({}, '', u.toString());
 }
 function clearTenant() {
@@ -592,7 +599,7 @@ function clearTenant() {
   try { localStorage.removeItem(TENANT_KEY); localStorage.removeItem(STATE_KEY); localStorage.removeItem(PHOTOS_KEY); } catch (e) {}
   state = { warehouses: { wh1:{name:'Точка 1'}, wh2:{name:'Точка 2'} }, products: {}, sales: {}, log: {}, users: {}, customBrands: [], settings: { sellerTelegram: '', showOutOfStock: true } };
   const u = new URL(window.location.href);
-  u.searchParams.delete('shop'); u.searchParams.delete('product');
+  u.searchParams.delete('shop'); u.searchParams.delete('product'); u.searchParams.delete('admin');
   window.history.replaceState({}, '', u.toString());
 }
 function ref(path) {
@@ -602,111 +609,11 @@ function ref(path) {
   return db.ref('evso/' + t + (path ? '/' + path : ''));
 }
 
-/* ============ WELCOME SCREEN ============ */
-function showWelcome() {
-  $('welcomeScreen').hidden = false;
-  $('chooseScreen').hidden = true;
-  $('loginScreen').hidden = true;
-  $('app').hidden = true;
-  $('shopScreen').hidden = true;
-  showWelcomeChoice();
-}
-function showWelcomeChoice() {
-  $('welcomeChoice').hidden = false;
-  $('welcomeEnter').hidden = true;
-  $('welcomeCreate').hidden = true;
-  $('welcomeErr').textContent = '';
-}
-function showWelcomeEnter() {
-  $('welcomeChoice').hidden = true;
-  $('welcomeEnter').hidden = false;
-  $('welcomeCreate').hidden = true;
-  $('welcomeErr').textContent = '';
-  setTimeout(() => $('wEnterSlug').focus(), 50);
-}
-function showWelcomeCreate() {
-  $('welcomeChoice').hidden = true;
-  $('welcomeEnter').hidden = true;
-  $('welcomeCreate').hidden = false;
-  $('welcomeErr').textContent = '';
-  setTimeout(() => $('wCreateSlug').focus(), 50);
-}
-async function doEnterTenant() {
-  const slug = ($('wEnterSlug').value || '').trim().toLowerCase();
-  if (!slug) { $('welcomeErr').textContent = 'Введите название'; return; }
-  if (!/^[a-z0-9_-]{2,30}$/.test(slug)) { $('welcomeErr').textContent = 'Только латиница, цифры, _ и -'; return; }
-  $('welcomeErr').textContent = 'Проверяем...';
-  initFirebase();
-  if (!db) { $('welcomeErr').textContent = 'Нет соединения с сервером'; return; }
-  try {
-    const snap = await db.ref('evso/' + slug + '/users').once('value');
-    if (!snap.exists()) { $('welcomeErr').textContent = 'Магазин не найден'; return; }
-    setTenant(slug);
-    $('welcomeScreen').hidden = true;
-    showLogin();
-  } catch (e) { console.error(e); $('welcomeErr').textContent = 'Ошибка соединения'; }
-}
-async function doCreateTenant() {
-  const slug = ($('wCreateSlug').value || '').trim().toLowerCase();
-  const login = ($('wCreateLogin').value || '').trim();
-  const pass = $('wCreatePass').value;
-  if (!slug || !login || !pass) { $('welcomeErr').textContent = 'Заполните все поля'; return; }
-  if (!/^[a-z0-9_-]{2,30}$/.test(slug)) { $('welcomeErr').textContent = 'Slug: только латиница, цифры, _ и -'; return; }
-  if (pass.length < 4) { $('welcomeErr').textContent = 'Пароль минимум 4 символа'; return; }
-  $('welcomeErr').textContent = 'Создаём магазин...';
-  initFirebase();
-  if (!db) { $('welcomeErr').textContent = 'Нет соединения с сервером'; return; }
-  try {
-    const check = await db.ref('evso/' + slug + '/users').once('value');
-    if (check.exists()) { $('welcomeErr').textContent = 'Магазин с таким названием уже существует'; return; }
-    const initial = {
-      warehouses: { wh1:{name:'Точка 1'}, wh2:{name:'Точка 2'} },
-      products: {}, sales: {}, log: {},
-      users: { [login]: pass },
-      customBrands: [],
-      settings: { sellerTelegram: '', showOutOfStock: true }
-    };
-    await db.ref('evso/' + slug).set(initial);
-    setTenant(slug);
-    state = JSON.parse(JSON.stringify(initial));
-    migrateState(); saveLocal();
-    localStorage.setItem(USER_KEY, login);
-    currentUser = login;
-    $('welcomeScreen').hidden = true;
-    showApp();
-    showToast('Магазин «' + slug + '» создан!');
-    logAction('settings_change', 'Создан магазин «' + slug + '»');
-  } catch (e) { console.error(e); $('welcomeErr').textContent = 'Ошибка: ' + (e.message || 'неизвестная'); }
-}
-
-/* Миграция старых данных: evso/* → evso/evso/* */
-async function tryMigrateLegacy() {
-  if (!db) return false;
-  try {
-    const oldData = await db.ref('evso').once('value');
-    const data = oldData.val();
-    if (!data) return false;
-    const keys = ['warehouses','products','sales','log','users','customBrands','settings'];
-    const hasLegacy = keys.some(k => data[k] !== undefined);
-    if (!hasLegacy) return false;
-    if (data.evso && data.evso.users) return false;
-    const tenantData = {};
-    keys.forEach(k => { if (data[k] !== undefined) tenantData[k] = data[k]; });
-    await db.ref('evso/evso').set(tenantData);
-    return true;
-  } catch (e) { console.error('Legacy migration failed:', e); return false; }
-}
-
-/* ============ DEBOUNCE ============ */
+/* ============ UTIL: DEBOUNCE / HAPTIC / TOAST ============ */
 function debounce(fn, ms) {
   let timer;
-  return function(...args) {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn.apply(this, args), ms);
-  };
+  return function(...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), ms); };
 }
-
-/* ============ HAPTIC ============ */
 function haptic(type) {
   if (!navigator.vibrate) return;
   try {
@@ -716,8 +623,6 @@ function haptic(type) {
     else navigator.vibrate(10);
   } catch (e) {}
 }
-
-/* ============ TOAST ============ */
 let _toastEl = null;
 function showToast(message, type = 'success') {
   if (!_toastEl) { _toastEl = document.createElement('div'); _toastEl.className = 'toast'; document.body.appendChild(_toastEl); }
@@ -726,12 +631,33 @@ function showToast(message, type = 'success') {
   clearTimeout(_toastEl._timer); _toastEl._timer = setTimeout(() => _toastEl.classList.remove('show'), 3500);
 }
 
+/* ============ РОЛИ ============ */
+function normalizeUsers(users) {
+  if (!users || typeof users !== 'object') return {};
+  const result = {};
+  Object.entries(users).forEach(([login, data]) => {
+    if (typeof data === 'string') {
+      // старый формат: логин → пароль
+      result[login] = { password: data, role: 'admin' };
+    } else if (data && typeof data === 'object') {
+      result[login] = { password: data.password || '', role: data.role === 'worker' ? 'worker' : 'admin' };
+    }
+  });
+  return result;
+}
+function currentUserRole() {
+  const u = state.users[currentUser];
+  if (!u) return null;
+  return u.role || 'admin';
+}
+function isAdmin() { return currentUserRole() === 'admin'; }
+
 /* ============ MIGRATION ============ */
 function migrateState() {
   if (!state.products || typeof state.products !== 'object') state.products = {};
   if (!state.sales || typeof state.sales !== 'object' || Array.isArray(state.sales)) state.sales = {};
   if (!state.log || typeof state.log !== 'object' || Array.isArray(state.log)) state.log = {};
-  if (!state.users || typeof state.users !== 'object') state.users = {};
+  state.users = normalizeUsers(state.users);
   if (!state.customBrands || !Array.isArray(state.customBrands)) state.customBrands = [];
   if (!state.settings || typeof state.settings !== 'object') state.settings = { sellerTelegram: '', showOutOfStock: true };
   if (state.settings.showOutOfStock === undefined) state.settings.showOutOfStock = true;
@@ -746,7 +672,7 @@ function migrateState() {
   });
 }
 
-/* ============ THEME ============ */
+/* ============ ТЕМА ============ */
 function applyTheme() {
   const t = localStorage.getItem('evso_theme') || 'light';
   const isDark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -762,7 +688,7 @@ function toggleTheme() {
 function setTheme(t) { localStorage.setItem('evso_theme', t); applyTheme(); renderSettingsTab(); haptic(); }
 applyTheme();
 
-/* ============ BRANDS / SIZES ============ */
+/* ============ БРЕНДЫ / РАЗМЕРЫ ============ */
 function getAllBrands() {
   const customs = state.customBrands || [];
   return [...new Set([...DEFAULT_BRANDS, ...customs])].sort();
@@ -777,11 +703,12 @@ function getAllAvailableSizes() {
   return [...sizes].sort((a, b) => parseFloat(a) - parseFloat(b));
 }
 
-/* ============ ACTION LOG ============ */
+/* ============ ЛОГ ДЕЙСТВИЙ ============ */
 const LOG_ICONS = {
   'sale': '💰', 'product_add': '➕', 'product_edit': '✏️', 'product_delete': '🗑',
-  'sales_clear': '🧹', 'user_add': '👤', 'pass_change': '🔑', 'wh_rename': '🏪',
-  'backup_restore': '♻️', 'settings_change': '⚙️', 'log_clear': '📜'
+  'sales_clear': '🧹', 'user_add': '👤', 'user_delete': '🚫', 'pass_change': '🔑',
+  'wh_rename': '🏪', 'backup_restore': '♻️', 'settings_change': '⚙️', 'log_clear': '📜',
+  'slug_change': '🏷'
 };
 function logAction(action, details) {
   if (!currentUser) return;
@@ -801,181 +728,219 @@ function pruneLocalLog() {
   keys.slice(0, keys.length - LOG_LIMIT_LOCAL).forEach(k => { delete state.log[k]; });
 }
 
-/* ============ BACKUP ============ */
-function checkAutoBackup() {
-  const today = new Date().toISOString().slice(0, 10);
-  const key = 'evso_last_backup_' + (getTenant() || 'none');
-  if (localStorage.getItem(key) !== today) {
+/* ============ ЭКРАНЫ ============ */
+function hideAllScreens() {
+  $('welcomeScreen').hidden = true;
+  $('buyerEntryScreen').hidden = true;
+  $('sellerChoiceScreen').hidden = true;
+  $('loginScreen').hidden = true;
+  $('registerScreen').hidden = true;
+  $('app').hidden = true;
+  $('shopScreen').hidden = true;
+}
+function goWelcome() {
+  haptic();
+  hideAllScreens();
+  $('welcomeScreen').hidden = false;
+  $('buyerErr').textContent = '';
+  $('loginErr').textContent = '';
+  $('regErr').textContent = '';
+  $('buyerSlug').value = '';
+  $('loginUser').value = '';
+  $('loginPass').value = '';
+  const u = new URL(window.location.href);
+  u.searchParams.delete('shop'); u.searchParams.delete('product'); u.searchParams.delete('admin');
+  window.history.replaceState({}, '', u.toString());
+}
+function goBuyer() {
+  haptic();
+  hideAllScreens();
+  $('buyerEntryScreen').hidden = false;
+  setTimeout(() => $('buyerSlug').focus(), 50);
+}
+function goSeller() {
+  haptic();
+  hideAllScreens();
+  $('sellerChoiceScreen').hidden = false;
+}
+function goLogin() {
+  haptic();
+  hideAllScreens();
+  $('loginScreen').hidden = false;
+  const sub = $('loginSub');
+  if (sub) sub.textContent = getTenant() ? `Вход · ${getTenant()}` : 'Вход';
+  setTimeout(() => $('loginUser').focus(), 50);
+}
+function goRegister() {
+  haptic();
+  hideAllScreens();
+  $('registerScreen').hidden = false;
+  setTimeout(() => $('regSlug').focus(), 50);
+}
+
+/* ============ BUYER ENTRY ============ */
+async function buyerEnter() {
+  const slug = ($('buyerSlug').value || '').trim().toLowerCase();
+  if (!slug) { $('buyerErr').textContent = 'Введите название магазина'; return; }
+  if (!/^[a-z0-9_-]{2,30}$/.test(slug)) { $('buyerErr').textContent = 'Только латиница, цифры, _ и -'; return; }
+  $('buyerErr').textContent = 'Проверяем...';
+  initFirebase();
+  if (!db) { $('buyerErr').textContent = 'Нет соединения с сервером'; return; }
+  try {
+    const snap = await db.ref('evso/' + slug + '/users').once('value');
+    if (!snap.exists()) { $('buyerErr').textContent = 'Магазин не найден'; return; }
+    setTenant(slug);
+    haptic('success');
+    // принудительно витрина
+    const u = new URL(window.location.href);
+    u.searchParams.set('shop', slug);
+    window.history.replaceState({}, '', u.toString());
+    openShop();
+  } catch (e) { console.error(e); $('buyerErr').textContent = 'Ошибка соединения'; }
+}
+
+/* ============ LOGIN ============ */
+async function doLogin() {
+  const u = ($('loginUser').value || '').trim();
+  const p = $('loginPass').value;
+  if (!u || !p) { $('loginErr').textContent = 'Введите логин и пароль'; return; }
+  $('loginErr').textContent = 'Проверяем...';
+  initFirebase();
+  if (!db) { $('loginErr').textContent = 'Нет соединения с сервером'; return; }
+
+  // Если tenant ещё не выбран — пробуем найти магазин по логину
+  let tenant = getTenant();
+  if (!tenant) {
+    // Поиск магазина по логину (перебираем всех)
     try {
-      const backupState = JSON.parse(JSON.stringify(state));
-      Object.values(backupState.products).forEach(p => delete p.photo);
-      localStorage.setItem('evso_backup_' + (getTenant() || 'none') + '_' + today, JSON.stringify(backupState));
-      localStorage.setItem(key, today);
-      const prefix = 'evso_backup_' + (getTenant() || 'none') + '_';
-      const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix)).sort();
-      if (keys.length > 3) keys.slice(0, keys.length - 3).forEach(k => localStorage.removeItem(k));
-    } catch(e) { console.warn('Backup error', e); }
+      const allSnap = await db.ref('evso').once('value');
+      const all = allSnap.val() || {};
+      for (const t of Object.keys(all)) {
+        const users = all[t] && all[t].users;
+        if (users && users[u]) {
+          tenant = t;
+          break;
+        }
+      }
+      if (!tenant) { $('loginErr').textContent = 'Магазин с таким логином не найден'; return; }
+      setTenant(tenant);
+    } catch (e) { console.error(e); $('loginErr').textContent = 'Ошибка соединения'; return; }
   }
-}
-function downloadBackup() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = `evso-${getTenant() || 'backup'}-${new Date().toISOString().slice(0,10)}.json`; a.click();
-  showToast('Копия скачана');
-}
-function restoreBackup(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!data.products || !data.users) throw new Error('Неверный формат');
-      if (!confirm('Восстановить данные? Текущие данные будут заменены!')) return;
-      state = data; migrateState(); saveLocal();
-      if (useFirebase) { try { ref('').set(state); } catch (e2) {} }
-      logAction('backup_restore', `Восстановлен из файла (${file.name})`);
-      haptic('add');
-      render(); showToast('Данные восстановлены');
-    } catch (err) { alert('Ошибка: ' + err.message); }
-  };
-  reader.readAsText(file);
+
+  try {
+    const snap = await ref('users').once('value');
+    const usersRaw = snap.val() || {};
+    const users = normalizeUsers(usersRaw);
+    if (!users[u] || users[u].password !== p) { $('loginErr').textContent = 'Неверный логин или пароль'; haptic('delete'); return; }
+    state.users = users;
+    saveLocal();
+    currentUser = u;
+    localStorage.setItem(USER_KEY, u);
+    haptic('success');
+    $('loginErr').textContent = '';
+    $('loginPass').value = '';
+    showApp();
+  } catch (e) { console.error(e); $('loginErr').textContent = 'Ошибка проверки'; }
 }
 
-/* ============ CLEAR SALES / LOG ============ */
-async function clearSalesHistory() {
-  const count = Object.keys(state.sales || {}).length;
-  if (!count) { showToast('История продаж уже пуста', 'error'); return; }
-  if (!confirm(`Удалить ВСЮ историю продаж?\n\nЗаписей: ${count}\n\nЭто действие необратимо.\nТовары и остатки НЕ затрагиваются.`)) return;
-  const answer = prompt('Для подтверждения введите слово УДАЛИТЬ (заглавными буквами):');
-  if (answer !== 'УДАЛИТЬ') { showToast('Отменено — ничего не удалено', 'error'); return; }
-  state.sales = {}; saveLocal();
-  logAction('sales_clear', `Удалено ${count} записей о продажах`);
-  haptic('delete');
-  if (useFirebase) {
-    try { await ref('sales').remove(); }
-    catch (e) { console.error(e); showToast('⚠️ Локально очищено, но не синхронизировано', 'error'); render(); return; }
-  }
-  render(); showToast('История продаж очищена');
-}
-async function clearActionLog() {
-  const count = Object.keys(state.log || {}).length;
-  if (!count) { showToast('Лог пуст', 'error'); return; }
-  if (!confirm(`Очистить лог действий?\n\nЗаписей: ${count}\n\nЭто действие необратимо.`)) return;
-  const answer = prompt('Для подтверждения введите слово ОЧИСТИТЬ:');
-  if (answer !== 'ОЧИСТИТЬ') { showToast('Отменено', 'error'); return; }
-  state.log = {}; saveLocal();
-  if (useFirebase) { try { await ref('log').remove(); } catch (e) { console.error(e); } }
-  haptic('delete'); renderLogTab(); showToast('Лог очищен');
+/* ============ REGISTER ============ */
+async function doRegister() {
+  const slug = ($('regSlug').value || '').trim().toLowerCase();
+  const login = ($('regLogin').value || '').trim();
+  const pass1 = $('regPass1').value;
+  const pass2 = $('regPass2').value;
+  const key = ($('regKey').value || '').trim();
+
+  if (!slug || !login || !pass1 || !pass2 || !key) { $('regErr').textContent = 'Заполните все поля'; return; }
+  if (!/^[a-z0-9_-]{2,30}$/.test(slug)) { $('regErr').textContent = 'Slug: только латиница, цифры, _ и -'; return; }
+  if (!/^[a-zA-Zа-яА-Я0-9_\- ]{2,30}$/.test(login)) { $('regErr').textContent = 'Логин: 2-30 символов'; return; }
+  if (pass1.length < 4) { $('regErr').textContent = 'Пароль минимум 4 символа'; return; }
+  if (pass1 !== pass2) { $('regErr').textContent = 'Пароли не совпадают'; return; }
+  if (key !== ADMIN_KEY) { $('regErr').textContent = 'Неверный ключ доступа'; haptic('delete'); return; }
+
+  $('regErr').textContent = 'Создаём магазин...';
+  initFirebase();
+  if (!db) { $('regErr').textContent = 'Нет соединения с сервером'; return; }
+
+  try {
+    const check = await db.ref('evso/' + slug + '/users').once('value');
+    if (check.exists()) { $('regErr').textContent = 'Магазин с таким названием уже существует'; return; }
+    const initial = {
+      warehouses: { wh1:{name:'Точка 1'}, wh2:{name:'Точка 2'} },
+      products: {}, sales: {}, log: {},
+      users: { [login]: { password: pass1, role: 'admin' } },
+      customBrands: [],
+      settings: { sellerTelegram: '', showOutOfStock: true }
+    };
+    await db.ref('evso/' + slug).set(initial);
+    setTenant(slug);
+    state = JSON.parse(JSON.stringify(initial));
+    migrateState(); saveLocal();
+    localStorage.setItem(USER_KEY, login);
+    currentUser = login;
+    haptic('add');
+    $('regErr').textContent = '';
+    $('regSlug').value = ''; $('regLogin').value = ''; $('regPass1').value = ''; $('regPass2').value = ''; $('regKey').value = '';
+    showApp();
+    showToast('Магазин «' + slug + '» создан!');
+    logAction('settings_change', 'Создан магазин «' + slug + '»');
+  } catch (e) { console.error(e); $('regErr').textContent = 'Ошибка: ' + (e.message || 'неизвестная'); }
 }
 
-/* ============ AUTH ============ */
-function isShopMode() { return !!new URLSearchParams(window.location.search).get('shop'); }
-
-async function initAuth() {
+/* ============ INIT ============ */
+function initAuth() {
   currentUser = localStorage.getItem(USER_KEY) || '';
   loadLocal();
 
   initFirebase();
-  if (!db) { showWelcome(); return; }
 
-  // Миграция старых данных (однократно)
-  if (!localStorage.getItem('evso_migrated_v2')) {
-    try {
-      const migrated = await tryMigrateLegacy();
-      if (migrated) { setTenant('evso'); }
-    } catch (e) { console.error(e); }
-    localStorage.setItem('evso_migrated_v2', '1');
+  const urlShop = getTenantFromUrl();
+  const adminParam = new URLSearchParams(window.location.search).get('admin');
+
+  // 1) Прямая ссылка на витрину (для покупателя)
+  if (urlShop && !adminParam) {
+    setTenant(urlShop);
+    openShop();
+    return;
   }
 
-  const tenant = getTenant();
-  if (!tenant) { showWelcome(); return; }
-
-  try {
-    const snap = await ref('users').once('value');
-    const users = snap.val();
-    if (!users || !Object.keys(users).length) {
-      clearTenant();
-      showWelcome();
-      $('welcomeErr').textContent = 'Магазин не найден. Возможно, ссылка устарела.';
-      return;
-    }
-    state.users = users;
-    saveLocal();
-
-    if (isShopMode()) { showShop(); return; }
-    if (currentUser && users[currentUser]) { showApp(); return; }
-    showChoose();
-  } catch (e) {
-    console.error(e);
-    showWelcome();
-    $('welcomeErr').textContent = 'Ошибка подключения к серверу.';
+  // 2) Прямая ссылка на вход продавца
+  if (urlShop && adminParam) {
+    setTenant(urlShop);
+    if (!db) { goSeller(); return; }
+    ref('users').once('value').then(snap => {
+      if (!snap.exists()) { showToast('Магазин не найден', 'error'); goWelcome(); return; }
+      state.users = normalizeUsers(snap.val());
+      saveLocal();
+      if (currentUser && state.users[currentUser]) { showApp(); return; }
+      goLogin();
+    }).catch(() => goWelcome());
+    return;
   }
-}
 
-function showChoose() {
-  $('welcomeScreen').hidden = true;
-  $('chooseScreen').hidden = false;
-  $('loginScreen').hidden = true;
-  $('app').hidden = true;
-  $('shopScreen').hidden = true;
-  const sub = $('chooseSub');
-  if (sub) sub.textContent = 'Магазин: ' + (getTenant() || '—');
-}
-
-function chooseRole(role) {
-  haptic();
-  if (role === 'buyer') {
-    const u = new URL(window.location.href);
-    u.searchParams.set('shop', getTenant());
-    window.history.replaceState({}, '', u.toString());
-    showShop();
-  } else {
-    $('chooseScreen').hidden = true;
-    showLogin();
+  // 3) Есть сохранённый тенант и логин — пробуем сразу открыть админку
+  const savedTenant = localStorage.getItem(TENANT_KEY) || '';
+  if (savedTenant && currentUser && db) {
+    TENANT = savedTenant;
+    db.ref('evso/' + savedTenant + '/users').once('value').then(snap => {
+      if (!snap.exists()) { clearTenant(); goWelcome(); return; }
+      state.users = normalizeUsers(snap.val());
+      saveLocal();
+      if (state.users[currentUser]) {
+        // Восстанавливаем URL
+        const u = new URL(window.location.href);
+        u.searchParams.set('shop', savedTenant);
+        window.history.replaceState({}, '', u.toString());
+        showApp();
+        return;
+      }
+      goWelcome();
+    }).catch(() => goWelcome());
+    return;
   }
-}
 
-function backToChoose() {
-  haptic();
-  if (currentUser && state.users && state.users[currentUser]) showApp();
-  else if (getTenant()) showChoose();
-  else showWelcome();
-}
-
-function showLogin() {
-  $('welcomeScreen').hidden = true;
-  $('chooseScreen').hidden = true;
-  $('loginScreen').hidden = false;
-  $('app').hidden = true;
-  $('shopScreen').hidden = true;
-  const sub = $('loginSub');
-  if (sub) sub.textContent = 'Магазин: ' + (getTenant() || '—');
-  $('loginForm').onsubmit = e => {
-    e.preventDefault();
-    const f = new FormData(e.target); const user = f.get('user').trim(), pass = f.get('pass');
-    if (state.users && state.users[user] && state.users[user] === pass) {
-      localStorage.setItem(USER_KEY, user); currentUser = user;
-      $('loginError').textContent = '';
-      haptic('success'); showApp();
-    } else { $('loginError').textContent = 'Неверный логин или пароль'; haptic('delete'); }
-  };
-}
-
-function showApp() {
-  $('welcomeScreen').hidden = true;
-  $('chooseScreen').hidden = true;
-  $('loginScreen').hidden = true;
-  $('shopScreen').hidden = true;
-  $('app').hidden = false;
-  $('userName').textContent = currentUser;
-  activeTab = 'menu';
-  document.querySelectorAll('.main-nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === 'menu'));
-  ['menu','products','sales','stats','log','settings'].forEach(t => { const sec = $('tab-' + t); if (sec) sec.hidden = t !== 'menu'; });
-  window.scrollTo(0, 0); render(); setupRealtime(); checkAutoBackup();
-  setTimeout(() => {
-    if (isStandalone || localStorage.getItem('evso_banner_dismissed') || localStorage.getItem('evso_installed')) return;
-    if (isIOS) showInstallBanner('ios'); else if (deferredInstallPrompt) showInstallBanner('android');
-  }, 1500);
+  // 4) Дефолт — welcome
+  goWelcome();
 }
 
 function logout() {
@@ -985,29 +950,15 @@ function logout() {
   currentUser = '';
   syncOnline = false; syncError = false; useFirebase = false;
   updateSyncBar();
-  if (getTenant()) showChoose(); else showWelcome();
+  goWelcome();
 }
 
-function switchTenant() {
-  if (!confirm('Переключиться на другой магазин?\n\nВы выйдете из текущего аккаунта.')) return;
-  flushSave();
-  localStorage.removeItem(USER_KEY);
-  currentUser = '';
-  clearTenant();
-  location.reload();
-}
+/* ============ SHOP ============ */
+let _shopBound = false, _shopRealtime = false, _shopRenderTimer = null;
 
-/* ============ SHOP MODE ============ */
-let _shopBound = false, _shopRealtime = false;
-function showShop() {
-  $('welcomeScreen').hidden = true;
-  $('chooseScreen').hidden = true;
-  $('loginScreen').hidden = true;
-  $('app').hidden = true;
+function openShop() {
+  hideAllScreens();
   $('shopScreen').hidden = false;
-
-  const adminBtn = $('shopAdminBtn');
-  if (adminBtn) adminBtn.hidden = !(currentUser && state.users && state.users[currentUser]);
 
   if (!_shopBound) { bindShopFilters(); _shopBound = true; }
   if (!_shopRealtime) { setupShopRealtime(); _shopRealtime = true; }
@@ -1015,6 +966,7 @@ function showShop() {
   const productId = new URLSearchParams(window.location.search).get('product');
   if (productId) setTimeout(() => { if (state.products[productId]) openShopProductView(productId); }, 600);
 }
+
 function bindShopFilters() {
   const onSearch = debounce(e => { shopFilters.search = e.target.value; renderShopGrid(); }, SEARCH_DELAY);
   $('shopSearch')?.addEventListener('input', onSearch);
@@ -1024,6 +976,7 @@ function bindShopFilters() {
   $('shopSeason')?.addEventListener('change', e => { shopFilters.season = e.target.value; renderShopGrid(); });
   $('shopSort')?.addEventListener('change', e => { shopFilters.sort = e.target.value; renderShopGrid(); });
 }
+
 function setupShopRealtime() {
   if (!initFirebase()) { renderShop(); return; }
   const err = e => { console.error('Shop sync:', e); syncError = true; updateSyncBar(); };
@@ -1038,16 +991,20 @@ function setupShopRealtime() {
   } catch (e) { console.error(e); }
   renderShop();
 }
-let _shopRenderTimer = null;
+
 function scheduleShopRender() {
   if (_shopRenderTimer) return;
   _shopRenderTimer = setTimeout(() => { _shopRenderTimer = null; renderShop(); }, RENDER_DELAY);
 }
+
 function renderShop() {
   const entries = Object.entries(state.products);
   const totalQty = entries.reduce((a, [, p]) => a + getTotalQty(p), 0);
+  const title = $('shopTitle');
+  if (title) title.textContent = getTenant() || 'Каталог';
   const sub = $('shopSubtitle');
   if (sub) sub.textContent = entries.length ? `${entries.length} ${plural(entries.length,'модель','модели','моделей')} · ${totalQty} ${plural(totalQty,'пара','пары','пар')} в наличии` : 'Пока пусто';
+
   const brands = [...new Set(entries.map(([, p]) => p.brand).filter(Boolean))].sort();
   const brandSel = $('shopBrand');
   if (brandSel) {
@@ -1062,6 +1019,7 @@ function renderShop() {
   }
   renderShopGrid();
 }
+
 function renderShopGrid() {
   const grid = $('shopGrid'); if (!grid) return;
   const showOut = state.settings?.showOutOfStock !== false;
@@ -1084,6 +1042,7 @@ function renderShopGrid() {
   if (!entries.length) { grid.innerHTML = '<div class="empty" style="grid-column:1/-1">Товаров не найдено</div>'; return; }
   grid.innerHTML = entries.map(([id, p]) => renderShopProductCard(id, p)).join('');
 }
+
 function renderShopProductCard(id, p) {
   const total = getTotalQty(p);
   const attrs = [p.gender, p.season].filter(Boolean).join(' · ');
@@ -1100,6 +1059,7 @@ function renderShopProductCard(id, p) {
     </div>
   </div>`;
 }
+
 function openShopProductView(productId) {
   const p = state.products[productId]; if (!p) { showToast('Товар не найден', 'error'); return; }
   const sizes = Object.keys(p.sizes || {}).sort((a, b) => parseFloat(a) - parseFloat(b));
@@ -1138,16 +1098,11 @@ function openShopProductView(productId) {
     <div style="margin-top:10px"><button class="btn" style="width:100%" onclick="closeModal()">Закрыть</button></div>
   `);
 }
-function switchToAdmin() {
-  const u = new URL(window.location.href);
-  u.searchParams.delete('product');
-  window.location.href = u.toString();
-}
 
-/* ============ SHOP SHARE ============ */
+/* ============ SHARE ============ */
 function buildShopUrl(productId) {
   const params = new URLSearchParams();
-  params.set('shop', getTenant() || 'evso');
+  params.set('shop', getTenant() || '');
   if (productId) params.set('product', productId);
   return window.location.origin + window.location.pathname + '?' + params.toString();
 }
@@ -1155,9 +1110,7 @@ async function shareShop() {
   const url = buildShopUrl();
   const title = 'evso — каталог обуви';
   haptic();
-  if (navigator.share) {
-    try { await navigator.share({ title, text: title, url }); return; } catch (e) { if (e.name === 'AbortError') return; }
-  }
+  if (navigator.share) { try { await navigator.share({ title, text: title, url }); return; } catch (e) { if (e.name === 'AbortError') return; } }
   try { await navigator.clipboard.writeText(url); showToast('Ссылка скопирована'); }
   catch (e) { prompt('Скопируйте ссылку:', url); }
 }
@@ -1167,9 +1120,7 @@ async function shareProduct(productId) {
   const title = `${p.brand ? p.brand + ' ' : ''}${p.name}`;
   const text = p.price ? `${title} — ${fmt(p.price)} ₽` : title;
   haptic();
-  if (navigator.share) {
-    try { await navigator.share({ title, text, url }); return; } catch (e) { if (e.name === 'AbortError') return; }
-  }
+  if (navigator.share) { try { await navigator.share({ title, text, url }); return; } catch (e) { if (e.name === 'AbortError') return; } }
   try { await navigator.clipboard.writeText(url); showToast('Ссылка скопирована'); }
   catch (e) { prompt('Скопируйте ссылку:', url); }
 }
@@ -1185,6 +1136,27 @@ function initFirebase() {
   } catch (e) { console.error('Firebase init error:', e); return false; }
 }
 
+function showApp() {
+  hideAllScreens();
+  $('app').hidden = false;
+  $('userName').textContent = currentUser;
+  const badge = $('roleBadge');
+  if (badge) {
+    const role = currentUserRole();
+    badge.className = 'role-badge ' + role;
+    badge.textContent = role === 'admin' ? 'ADMIN' : 'WORKER';
+  }
+  activeTab = 'menu';
+  document.querySelectorAll('.main-nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === 'menu'));
+  ['menu','products','sales','stats','log','settings'].forEach(t => { const sec = $('tab-' + t); if (sec) sec.hidden = t !== 'menu'; });
+  window.scrollTo(0, 0); render(); setupRealtime(); checkAutoBackup();
+  setTimeout(() => {
+    if (isStandalone || localStorage.getItem('evso_banner_dismissed') || localStorage.getItem('evso_installed')) return;
+    if (isIOS) showInstallBanner('ios'); else if (deferredInstallPrompt) showInstallBanner('android');
+  }, 1500);
+}
+
+/* ============ REALTIME ============ */
 async function setupRealtime() {
   useFirebase = initFirebase();
   if (!useFirebase) { updateSync(false); return; }
@@ -1210,7 +1182,20 @@ async function setupRealtime() {
   const err = e => { console.error(e); updateSync(false, true); };
 
   ref('warehouses').on('value', snap => { const v = snap.val(); if (v) { state.warehouses = v; saveLocal(); scheduleRender(); } }, err);
-  ref('users').on('value', snap => { const v = snap.val(); if (v) { state.users = v; saveLocal(); scheduleRender(); } }, err);
+  ref('users').on('value', snap => {
+    const v = snap.val();
+    if (v) {
+      state.users = normalizeUsers(v);
+      saveLocal();
+      // Если наш пользователь удалён — выходим
+      if (currentUser && !state.users[currentUser]) {
+        showToast('Ваш аккаунт удалён', 'error');
+        logout();
+        return;
+      }
+      scheduleRender();
+    }
+  }, err);
   ref('customBrands').on('value', snap => { const v = snap.val(); if (v) { state.customBrands = v; saveLocal(); scheduleRender(); } }, err);
   ref('settings').on('value', snap => { const v = snap.val(); if (v) { state.settings = v; saveLocal(); scheduleRender(); } }, err);
 
@@ -1321,7 +1306,76 @@ function flushSave() {
 window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
 window.addEventListener('beforeunload', flushSave);
 
-/* ============ RENDER (debounced) ============ */
+/* ============ BACKUP ============ */
+function checkAutoBackup() {
+  const today = new Date().toISOString().slice(0, 10);
+  const key = 'evso_last_backup_' + (getTenant() || 'none');
+  if (localStorage.getItem(key) !== today) {
+    try {
+      const backupState = JSON.parse(JSON.stringify(state));
+      Object.values(backupState.products).forEach(p => delete p.photo);
+      localStorage.setItem('evso_backup_' + (getTenant() || 'none') + '_' + today, JSON.stringify(backupState));
+      localStorage.setItem(key, today);
+      const prefix = 'evso_backup_' + (getTenant() || 'none') + '_';
+      const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix)).sort();
+      if (keys.length > 3) keys.slice(0, keys.length - 3).forEach(k => localStorage.removeItem(k));
+    } catch(e) { console.warn('Backup error', e); }
+  }
+}
+function downloadBackup() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `evso-${getTenant() || 'backup'}-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  showToast('Копия скачана');
+}
+function restoreBackup(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.products || !data.users) throw new Error('Неверный формат');
+      if (!confirm('Восстановить данные? Текущие данные будут заменены!')) return;
+      state = data; migrateState(); saveLocal();
+      if (useFirebase) { try { ref('').set(state); } catch (e2) {} }
+      logAction('backup_restore', `Восстановлен из файла (${file.name})`);
+      haptic('add');
+      render(); showToast('Данные восстановлены');
+    } catch (err) { alert('Ошибка: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+/* ============ ОЧИСТКА ============ */
+async function clearSalesHistory() {
+  if (!isAdmin()) { showToast('Только администратор может очищать', 'error'); return; }
+  const count = Object.keys(state.sales || {}).length;
+  if (!count) { showToast('История продаж уже пуста', 'error'); return; }
+  if (!confirm(`Удалить ВСЮ историю продаж?\n\nЗаписей: ${count}\n\nЭто действие необратимо.\nТовары и остатки НЕ затрагиваются.`)) return;
+  const answer = prompt('Для подтверждения введите слово УДАЛИТЬ (заглавными буквами):');
+  if (answer !== 'УДАЛИТЬ') { showToast('Отменено — ничего не удалено', 'error'); return; }
+  state.sales = {}; saveLocal();
+  logAction('sales_clear', `Удалено ${count} записей о продажах`);
+  haptic('delete');
+  if (useFirebase) {
+    try { await ref('sales').remove(); }
+    catch (e) { console.error(e); showToast('⚠️ Локально очищено, но не синхронизировано', 'error'); render(); return; }
+  }
+  render(); showToast('История продаж очищена');
+}
+async function clearActionLog() {
+  if (!isAdmin()) { showToast('Только администратор может очищать', 'error'); return; }
+  const count = Object.keys(state.log || {}).length;
+  if (!count) { showToast('Лог пуст', 'error'); return; }
+  if (!confirm(`Очистить лог действий?\n\nЗаписей: ${count}\n\nЭто действие необратимо.`)) return;
+  const answer = prompt('Для подтверждения введите слово ОЧИСТИТЬ:');
+  if (answer !== 'ОЧИСТИТЬ') { showToast('Отменено', 'error'); return; }
+  state.log = {}; saveLocal();
+  if (useFirebase) { try { await ref('log').remove(); } catch (e) { console.error(e); } }
+  haptic('delete'); renderLogTab(); showToast('Лог очищен');
+}
+
+/* ============ RENDER ============ */
 let _renderTimer = null;
 function scheduleRender() {
   if (_renderTimer) return;
@@ -1354,8 +1408,12 @@ function renderMenuTab() {
   const todaySales = Object.values(state.sales || {}).filter(s => s.date && new Date(s.date).toDateString() === today);
   const todaySum = todaySales.reduce((a, s) => a + (+s.price || 0), 0);
   const totalSales = Object.keys(state.sales || {}).length;
+  const role = currentUserRole();
   $('tab-menu').innerHTML = `
-    <div class="menu-header"><h1>Главное меню</h1><p>Привет, ${esc(currentUser)} · магазин <b>${esc(getTenant())}</b></p></div>
+    <div class="menu-header">
+      <h1>Главное меню</h1>
+      <p>Привет, <b>${esc(currentUser)}</b> · магазин <b>${esc(getTenant())}</b> ${role === 'admin' ? '· 👑 администратор' : '· 💼 сотрудник'}</p>
+    </div>
     <div class="menu-grid">
       <button class="menu-card" onclick="switchTab('products')"><div class="menu-icon">👟</div><div class="menu-title">Товары</div><div class="menu-sub">${products.length} моделей · ${available} пар</div></button>
       <button class="menu-card" onclick="switchTab('sales')"><div class="menu-icon">💰</div><div class="menu-title">Продажи</div><div class="menu-sub">${totalSales} записей · сегодня ${todaySales.length}</div></button>
@@ -1443,7 +1501,9 @@ function renderProductCard(id, p) {
       </div>
     </div>
   </div>`;
-} /* ============ PRODUCT EDIT modal ============ */
+}
+
+/* ============ PRODUCT EDIT MODAL ============ */
 function openProductModal(id) {
   const ex = id ? state.products[id] : null;
   editingProduct = ex ? JSON.parse(JSON.stringify(ex)) : { name:'', brand:'', gender:'', season:'', price:0, minPrice:null, photo:'', sizes:{} };
@@ -1600,7 +1660,7 @@ function openProductView(productId) {
   `);
 }
 
-/* ============ PRODUCT DELETE ============ */
+/* ============ DELETE PRODUCT ============ */
 function deleteProduct(id) {
   const p = state.products[id]; if (!p) return;
   if (!confirm(`Удалить товар «${p.name}»?\n\n✓ История продаж сохранится\n✗ Отменить будет нельзя`)) return;
@@ -1790,7 +1850,56 @@ function doExport(rows, sheetName, filename) {
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, sheetName); XLSX.writeFile(wb, filename + '-' + today + '.xlsx');
 }
 
-/* ============ SETTINGS ============ */
+/* ============ СМЕНА SLUG (только админ) ============ */
+async function renameStore() {
+  if (!isAdmin()) { showToast('Только администратор', 'error'); return; }
+  const oldSlug = getTenant();
+  const input = prompt(
+    `Текущее название: ${oldSlug}\n\nВведите новое название (латиница, цифры, _ и -):\n\n⚠️ После смены все старые ссылки на витрину перестанут работать.`,
+    oldSlug
+  );
+  if (input === null) return;
+  const newSlug = input.trim().toLowerCase();
+  if (!newSlug) { showToast('Пустое имя', 'error'); return; }
+  if (newSlug === oldSlug) { showToast('Имя не изменилось', 'info'); return; }
+  if (!/^[a-z0-9_-]{2,30}$/.test(newSlug)) { showToast('Только латиница, цифры, _ и -', 'error'); return; }
+
+  if (!confirm(`Переименовать «${oldSlug}» → «${newSlug}»?\n\nВсе данные (товары, продажи, пользователи) будут перенесены.`)) return;
+
+  try {
+    // проверяем, что новый slug свободен
+    const check = await db.ref('evso/' + newSlug).once('value');
+    if (check.exists()) { showToast('Это имя уже занято', 'error'); return; }
+
+    // читаем все данные
+    const dataSnap = await db.ref('evso/' + oldSlug).once('value');
+    const data = dataSnap.val();
+    if (!data) { showToast('Магазин не найден', 'error'); return; }
+
+    // пишем в новый узел
+    await db.ref('evso/' + newSlug).set(data);
+    // удаляем старый
+    await db.ref('evso/' + oldSlug).remove();
+
+    // обновляем локальное состояние
+    logAction('slug_change', `Магазин переименован: «${oldSlug}» → «${newSlug}»`);
+
+    // записываем лог в новый узел
+    const logId = uid('l');
+    const entry = { id: logId, date: new Date().toISOString(), user: currentUser, action: 'slug_change', details: `Магазин переименован: «${oldSlug}» → «${newSlug}»` };
+    await db.ref('evso/' + newSlug + '/log/' + logId).set(entry);
+
+    setTenant(newSlug);
+    haptic('add');
+    showToast(`Магазин переименован в «${newSlug}»`);
+    renderSettingsTab();
+  } catch (e) {
+    console.error(e);
+    showToast('Ошибка: ' + (e.message || 'неизвестная'), 'error');
+  }
+}
+
+/* ============ НАСТРОЙКИ ============ */
 function renderSettingsTab() {
   const themePref = localStorage.getItem('evso_theme') || 'light';
   const salesCount = Object.keys(state.sales || {}).length;
@@ -1798,13 +1907,32 @@ function renderSettingsTab() {
   const shopUrl = buildShopUrl();
   const showOut = state.settings?.showOutOfStock !== false;
   const tgUser = state.settings?.sellerTelegram || '';
+  const admin = isAdmin();
+  const role = currentUserRole();
+
+  // список сотрудников
+  const usersEntries = Object.entries(state.users || {}).sort((a, b) => {
+    if (a[1].role === 'admin' && b[1].role !== 'admin') return -1;
+    if (a[1].role !== 'admin' && b[1].role === 'admin') return 1;
+    return a[0].localeCompare(b[0]);
+  });
+  const usersHtml = usersEntries.map(([login, data]) => {
+    const r = data.role || 'admin';
+    const isMe = login === currentUser;
+    const canDelete = admin && !isMe && r === 'worker';
+    return `<div class="user-row">
+      <span class="u-login">${esc(login)} ${isMe ? '<span class="u-you">(вы)</span>' : ''}</span>
+      <span class="role-badge ${r}">${r === 'admin' ? 'ADMIN' : 'WORKER'}</span>
+      ${canDelete ? `<button class="btn small danger" onclick="removeWorker('${esc(login)}')">Удалить</button>` : ''}
+    </div>`;
+  }).join('');
 
   $('tab-settings').innerHTML = `
     <div class="settings-section">
       <h3>🏪 Магазин</h3>
-      <p style="margin:0 0 8px">Ваш магазин: <b>${esc(getTenant())}</b></p>
-      <p class="muted" style="font-size:12px;margin:0 0 10px">Это имя используется в ссылке для покупателей и в базе данных.</p>
-      <button class="btn full" onclick="switchTenant()">🔄 Сменить магазин</button>
+      <p style="margin:0 0 8px">Название: <b>${esc(getTenant())}</b></p>
+      <p class="muted" style="font-size:12px;margin:0 0 10px">Используется в ссылке для покупателей.</p>
+      ${admin ? `<button class="btn full" onclick="renameStore()">🏷 Изменить название магазина</button>` : `<div class="muted" style="font-size:12px;text-align:center">Только администратор может изменить название</div>`}
     </div>
 
     <div class="settings-section">
@@ -1818,7 +1946,7 @@ function renderSettingsTab() {
 
     <div class="settings-section">
       <h3>🛍 Витрина для покупателей</h3>
-      <p class="muted" style="font-size:12.5px;margin:0 0 10px">Ссылка, по которой покупатели видят каталог без входа.</p>
+      <p class="muted" style="font-size:12.5px;margin:0 0 10px">Ссылка, по которой покупатели видят ваш каталог.</p>
       <label>Ссылка на витрину
         <input value="${esc(shopUrl)}" readonly onclick="this.select()" style="font-size:13px">
       </label>
@@ -1840,28 +1968,33 @@ function renderSettingsTab() {
 
     <div class="settings-section">
       <h3>👤 Мой аккаунт</h3>
-      <p style="margin:0 0 12px">Вы вошли как: <b>${esc(currentUser)}</b></p>
+      <p style="margin:0 0 8px">Вы вошли как: <b>${esc(currentUser)}</b> · <span class="role-badge ${role}">${role === 'admin' ? 'ADMIN' : 'WORKER'}</span></p>
       <div style="border-top:1px dashed var(--border);padding-top:12px;margin-top:12px">
         <div style="font-size:13px;font-weight:600;margin-bottom:8px">Сменить свой пароль</div>
         <div class="modal-row" style="margin-bottom:8px">
-          <input id="myNewPass" placeholder="Новый пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
+          <input id="myNewPass" type="password" placeholder="Новый пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
           <button class="btn" onclick="changeMyPass()">Сменить</button>
         </div>
       </div>
     </div>
 
     <div class="settings-section">
-      <h3>➕ Добавить сотрудника</h3>
-      <div class="modal-row" style="margin-bottom:8px">
-        <input id="newUserLogin" placeholder="Логин" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
-        <input id="newUserPass" placeholder="Пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
+      <h3>👥 Сотрудники</h3>
+      <p class="muted" style="font-size:12px;margin:0 0 10px">Сотрудники имеют те же права, что и админ, но не могут удалять других сотрудников и менять название магазина.</p>
+      <div style="margin-bottom:12px">${usersHtml || '<div class="muted">Нет пользователей</div>'}</div>
+      <div style="border-top:1px dashed var(--border);padding-top:12px;margin-top:12px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px">Добавить сотрудника</div>
+        <div class="modal-row" style="margin-bottom:8px">
+          <input id="newWorkerLogin" placeholder="Логин" autocapitalize="none" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
+          <input id="newWorkerPass" type="password" placeholder="Пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
+        </div>
+        <button class="btn full" onclick="addWorker()">+ Добавить сотрудника</button>
       </div>
-      <button class="btn full" onclick="addUser()">+ Добавить пользователя</button>
     </div>
 
     <div class="settings-section">
       <h3>💾 Резервная копия</h3>
-      <p class="muted" style="font-size:12.5px;margin:0 0 10px">Автобэкап создаётся раз в день (хранятся последние 3 дня локально). Скачайте файл, чтобы сохранить всё навсегда (включая фото).</p>
+      <p class="muted" style="font-size:12.5px;margin:0 0 10px">Автобэкап создаётся раз в день (хранятся последние 3 дня локально).</p>
       <div class="row-actions">
         <button class="btn primary" onclick="downloadBackup()">⬇ Скачать копию</button>
         <button class="btn" onclick="$('restoreFile').click()">⬆ Восстановить</button>
@@ -1869,12 +2002,12 @@ function renderSettingsTab() {
       </div>
     </div>
 
+    ${admin ? `
     <div class="settings-section">
       <h3>🗑 История продаж</h3>
       <p class="muted" style="font-size:12.5px;margin:0 0 10px">
         Всего записей: <b style="color:var(--text)">${salesCount}</b>.
-        Очистка удалит всю историю продаж <b>безвозвратно</b>.
-        Товары и остатки на складах <b>не затрагиваются</b>.
+        Очистка удалит всю историю продаж <b>безвозвратно</b>. Товары и остатки не затрагиваются.
       </p>
       <button class="btn danger full" onclick="clearSalesHistory()">Очистить историю продаж</button>
     </div>
@@ -1883,10 +2016,10 @@ function renderSettingsTab() {
       <h3>📜 Лог действий</h3>
       <p class="muted" style="font-size:12.5px;margin:0 0 10px">
         Всего записей: <b style="color:var(--text)">${logCount}</b>.
-        Все продавцы видят лог во вкладке «📜 Лог».
       </p>
       <button class="btn danger full" onclick="clearActionLog()">Очистить лог</button>
     </div>
+    ` : ''}
 
     <div class="settings-section">
       <h3>🔄 Синхронизация</h3>
@@ -1911,6 +2044,7 @@ function renderSettingsTab() {
   `;
 }
 
+/* ============ НАСТРОЙКИ: ФУНКЦИИ ============ */
 function copyShopUrl() {
   const url = buildShopUrl();
   haptic();
@@ -1932,20 +2066,49 @@ function setShowOutOfStock(val) {
   logAction('settings_change', val ? 'Витрина: показывать товары без остатка' : 'Витрина: скрывать товары без остатка');
 }
 
-function addUser() {
-  const u = $('newUserLogin').value.trim(); const p = $('newUserPass').value.trim();
-  if (!u || !p) return showToast('Введите логин и пароль', 'error');
-  if (state.users[u]) return showToast('Такой логин уже есть', 'error');
-  state.users[u] = p; saveLocal(); saveUsersRemote();
-  logAction('user_add', `Добавлен сотрудник «${u}»`);
-  haptic('add'); renderSettingsTab(); showToast('Пользователь добавлен');
-}
+/* ============ СМЕНА СВОЕГО ПАРОЛЯ ============ */
 function changeMyPass() {
   const p = $('myNewPass').value.trim(); if (!p) return;
-  state.users[currentUser] = p; saveLocal(); saveUsersRemote();
+  if (p.length < 4) { showToast('Пароль минимум 4 символа', 'error'); return; }
+  state.users[currentUser] = { ...(state.users[currentUser] || {}), password: p };
+  saveLocal(); saveUsersRemote();
   logAction('pass_change', 'Смена своего пароля');
   haptic(); showToast('Пароль изменён'); $('myNewPass').value = '';
 }
+
+/* ============ СОТРУДНИКИ ============ */
+function addWorker() {
+  const u = $('newWorkerLogin').value.trim();
+  const p = $('newWorkerPass').value.trim();
+  if (!u || !p) { showToast('Введите логин и пароль', 'error'); return; }
+  if (!/^[a-zA-Zа-яА-Я0-9_\- ]{2,30}$/.test(u)) { showToast('Логин: 2-30 символов, без спецсимволов', 'error'); return; }
+  if (p.length < 4) { showToast('Пароль минимум 4 символа', 'error'); return; }
+  if (state.users[u]) { showToast('Такой логин уже есть', 'error'); return; }
+
+  state.users[u] = { password: p, role: 'worker' };
+  saveLocal(); saveUsersRemote();
+  logAction('user_add', `Добавлен сотрудник «${u}»`);
+  haptic('add');
+  $('newWorkerLogin').value = ''; $('newWorkerPass').value = '';
+  renderSettingsTab(); showToast('Сотрудник добавлен');
+}
+
+async function removeWorker(login) {
+  if (!isAdmin()) { showToast('Только администратор может удалять', 'error'); return; }
+  if (login === currentUser) { showToast('Нельзя удалить самого себя', 'error'); return; }
+  const u = state.users[login];
+  if (!u) return;
+  if (u.role === 'admin') { showToast('Нельзя удалить администратора', 'error'); return; }
+  if (!confirm(`Удалить сотрудника «${login}»?\n\nОн больше не сможет войти в магазин.`)) return;
+
+  delete state.users[login];
+  saveLocal(); saveUsersRemote();
+  logAction('user_delete', `Удалён сотрудник «${login}»`);
+  haptic('delete');
+  renderSettingsTab(); showToast('Сотрудник удалён');
+}
+
+/* ============ НАЗВАНИЯ ТОЧЕК ============ */
 function updateWhName(wh, name) {
   const old = state.warehouses[wh].name;
   const nw = name.trim() || (wh === 'wh1' ? 'Точка 1' : 'Точка 2');
@@ -1956,8 +2119,5 @@ function updateWhName(wh, name) {
   haptic(); render();
 }
 
-/* ============ BOOT ============ */
+/* ============ ЗАПУСК ============ */
 initAuth();
-</script>
-</body>
-</html>
