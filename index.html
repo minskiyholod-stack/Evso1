@@ -9,7 +9,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="evso">
-<meta name="format-detection" content="telephone=no">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -28,13 +27,19 @@ body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
   background:var(--bg);color:var(--text);font-size:14px;line-height:1.4;
   overflow-x:hidden;width:100%;min-height:100%;
   -webkit-text-size-adjust:100%;overscroll-behavior-x:none}
-
 input,select,textarea,button{font-family:inherit;font-size:16px}
 
 #app { animation: fadeIn 0.3s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ===== Login ===== */
+.toast{position:fixed;left:50%;bottom:calc(20px + var(--safe-bottom));transform:translateX(-50%) translateY(20px);
+  background:var(--black);color:var(--white);padding:12px 18px;border-radius:10px;
+  font-size:14px;font-weight:500;z-index:300;opacity:0;transition:all .25s;
+  pointer-events:none;max-width:calc(100% - 32px);text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:var(--danger)}
+.toast.success{background:var(--success)}
+
 .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .login-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
   padding:32px 24px;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,.05)}
@@ -48,7 +53,6 @@ input,select,textarea,button{font-family:inherit;font-size:16px}
 .btn.full{width:100%;margin-top:8px}
 .login-error{color:var(--danger);text-align:center;margin-top:12px;font-size:13px;min-height:18px}
 
-/* ===== App header ===== */
 .app-header{position:sticky;top:0;z-index:20;background:var(--white);border-bottom:1px solid var(--border);
   padding-top:var(--safe-top)}
 .header-top{display:flex;align-items:center;gap:10px;padding:10px 16px 8px}
@@ -74,7 +78,6 @@ main{max-width:1280px;margin:0 auto;padding:16px;padding-bottom:calc(16px + var(
   overflow-x:hidden;width:100%}
 @media(max-width:600px){main{padding:12px}}
 
-/* ===== Buttons ===== */
 .btn{background:var(--card);border:1px solid var(--border);color:var(--text);
   font-weight:500;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;font-size:14px;
   min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:4px}
@@ -82,26 +85,21 @@ main{max-width:1280px;margin:0 auto;padding:16px;padding-bottom:calc(16px + var(
 .btn.primary{background:var(--black);border-color:var(--black);color:var(--white)}
 .btn.primary:active{background:#222}
 .btn.danger{color:var(--danger);border-color:var(--danger)}
-.btn.danger:active{background:rgba(220,38,38,.05)}
 .btn.ghost{background:transparent;border-color:transparent}
-.btn.ghost:active{background:var(--hover)}
 .btn.small{padding:6px 10px;font-size:13px;min-height:34px}
 
-/* ===== Stats ===== */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
 .stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
 .stat .v{font-size:20px;font-weight:800;margin-top:3px}
 @media(max-width:600px){.stats{grid-template-columns:1fr 1fr;gap:8px}}
 
-/* ===== Toolbar ===== */
 .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
 .search{flex:1;min-width:130px;background:var(--card);border:1px solid var(--border);
   border-radius:8px;padding:10px 12px;color:var(--text);font-size:16px}
 .search:focus{outline:none;border-color:var(--black)}
 select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 
-/* ===== Products grid ===== */
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
 @media(max-width:600px){.product-grid{grid-template-columns:repeat(2,1fr);gap:8px}}
 .product-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
@@ -121,12 +119,10 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
   font-size:11.5px;color:var(--muted);margin-top:2px;gap:4px;flex-wrap:wrap}
 .product-card .price{color:var(--text);font-size:13px;font-weight:700}
 .min-price-tag{font-size:10px;color:var(--muted);font-weight:500}
-
 .total-qty{margin-top:8px;padding-top:6px;border-top:1px dashed var(--border);
   font-size:12px;color:var(--muted)}
 .total-qty b{color:var(--text);font-size:15px;font-weight:800;margin:0 2px}
 .total-qty.empty-qty b{color:var(--danger)}
-
 .card-buttons{margin-top:8px}
 .sell-btn{width:100%;padding:8px;background:var(--black);color:var(--white);
   border:none;border-radius:8px;font-weight:600;font-size:12.5px;cursor:pointer;transition:background .12s;
@@ -139,7 +135,6 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .empty{padding:50px 20px;text-align:center;color:var(--muted);
   background:var(--card);border:1px dashed var(--border);border-radius:var(--radius)}
 
-/* ===== Modals ===== */
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;
   align-items:flex-end;justify-content:center;z-index:100;overflow-y:auto;
   padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
@@ -163,7 +158,6 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .modal-actions > button{flex:1;justify-content:center}
 .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-/* View modal */
 .view-photo{aspect-ratio:1;max-height:200px;background:var(--hover);display:flex;
   align-items:center;justify-content:center;border-radius:10px;margin-bottom:14px;overflow:hidden}
 .view-photo img{width:100%;height:100%;object-fit:cover}
@@ -178,7 +172,6 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .vsr-wh.wh1{background:rgba(239,68,68,.15);color:var(--wh1)}
 .vsr-wh.wh2{background:rgba(59,130,246,.15);color:var(--wh2)}
 
-/* Photo in edit modal */
 .photo-section{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
 .photo-preview{width:90px;height:90px;border-radius:10px;overflow:hidden;
   background:var(--hover);display:flex;align-items:center;justify-content:center;
@@ -206,13 +199,10 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
   font-size:20px;cursor:pointer;padding:0 6px;min-height:32px}
 .size-preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:5px}
 .size-preset-btn{padding:9px 4px;background:var(--hover);border:1px solid var(--border);
-  border-radius:6px;color:var(--text);font-weight:600;font-size:13px;cursor:pointer;transition:all .12s}
-.size-preset-btn:active{border-color:var(--black)}
+  border-radius:6px;color:var(--text);font-weight:600;font-size:13px;cursor:pointer}
 .size-preset-btn.active{background:var(--black);border-color:var(--black);color:var(--white)}
-
 .delete-section{margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 
-/* Tables */
 .sales-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--card)}
 .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .sales-table{width:100%;border-collapse:collapse}
@@ -226,7 +216,10 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .sales-table td.wrap{white-space:normal;min-width:110px}
 .sales-table tr.empty-day td{opacity:.45}
 
-/* Stats */
+.filter-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;
+  background:var(--black);color:var(--white);border-radius:20px;font-size:12px;font-weight:600}
+.filter-badge button{background:none;border:none;color:inherit;cursor:pointer;font-size:16px;padding:0 0 0 2px;line-height:1}
+
 .period-tabs{display:inline-flex;gap:2px;background:var(--hover);border-radius:8px;padding:3px;margin-bottom:14px}
 .period-tabs button{background:none;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;
   font-weight:500;color:var(--muted);font-size:13px}
@@ -236,9 +229,8 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .chart-bars{display:flex;gap:3px;align-items:flex-end;height:180px;min-width:100%}
 .chart-bar-wrap{flex:1;min-width:14px;display:flex;flex-direction:column;height:100%;cursor:pointer}
 .chart-bar-inner{flex:1;display:flex;align-items:flex-end}
-.chart-bar{width:100%;background:var(--black);border-radius:2px 2px 0 0;min-height:2px;transition:background .12s}
+.chart-bar{width:100%;background:var(--black);border-radius:2px 2px 0 0;min-height:2px}
 .chart-bar.zero{background:var(--border)}
-.chart-bar-wrap:active .chart-bar:not(.zero){background:#333}
 .chart-bar-wrap.today .chart-bar:not(.zero){background:var(--success)}
 .chart-label{font-size:9px;color:var(--muted);margin-top:5px;text-align:center;font-weight:600}
 .chart-bar-wrap.today .chart-label{color:var(--text);font-weight:800}
@@ -256,7 +248,6 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .hint-box{padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;
   border-radius:8px;margin-bottom:12px;font-size:12.5px;color:#78350f}
 
-/* Settings */
 .settings-section{background:var(--card);border:1px solid var(--border);
   border-radius:var(--radius);padding:16px;margin-bottom:14px}
 .settings-section h3{margin:0 0 12px;font-size:15px}
@@ -268,10 +259,10 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .status-line{padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:13px}
 .status-line.ok{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
 .status-line.warn{background:#fffbeb;color:#78350f;border:1px solid #fde68a}
+.status-line.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
 .muted{color:var(--muted)}
 code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;font-family:ui-monospace,monospace}
 
-/* Menu */
 .menu-header{margin-bottom:20px}
 .menu-header h1{font-size:26px;font-weight:900;margin:0 0 4px;letter-spacing:-.6px}
 .menu-header p{margin:0;color:var(--muted);font-size:13.5px}
@@ -286,7 +277,6 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
 .menu-title{font-size:17px;font-weight:800;letter-spacing:-.3px}
 .menu-sub{font-size:12px;color:var(--muted);line-height:1.35}
 
-/* Install banner */
 .install-banner{position:fixed;bottom:0;left:0;right:0;z-index:200;
   background:var(--card);border-top:1px solid var(--border);padding:14px 16px;
   padding-bottom:calc(14px + var(--safe-bottom));
@@ -297,9 +287,6 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
 .install-banner-text b{display:block;font-size:14px;margin-bottom:2px}
 .install-banner-actions{display:flex;gap:6px;flex-shrink:0}
 .install-banner-actions .btn{padding:7px 12px;font-size:13px;min-height:36px}
-.install-steps{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.5}
-.install-steps kbd{background:var(--hover);padding:1px 6px;border-radius:4px;font-family:inherit;
-  font-weight:600;color:var(--text);border:1px solid var(--border)}
 </style>
 </head>
 <body>
@@ -353,21 +340,16 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
 <div id="installBanner" class="install-banner" hidden></div>
 
 <script>
-/* ============ INSTALL / PWA ============ */
+/* ============ PWA / INSTALL ============ */
 (function setupPWA(){
-  // Manifest (встроен как data URI — работает без отдельного файла)
-  const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#000"/><text x="256" y="345" font-family="-apple-system,Arial,Helvetica,sans-serif" font-weight="900" font-size="360" fill="#fff" text-anchor="middle">e.</text></svg>`;
+  const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#000"/><text x="256" y="345" font-family="Arial,sans-serif" font-weight="900" font-size="360" fill="#fff" text-anchor="middle">e.</text></svg>`;
   const iconData = 'data:image/svg+xml;base64,' + btoa(iconSvg);
   const manifest = {
-    name: 'evso',
-    short_name: 'evso',
-    description: 'Учёт склада обуви',
+    name: 'evso', short_name: 'evso', description: 'Учёт склада обуви',
     start_url: window.location.pathname || '/',
     scope: window.location.pathname.replace(/[^/]*$/, '') || '/',
-    display: 'standalone',
-    orientation: 'portrait',
-    background_color: '#f5f5f5',
-    theme_color: '#000000',
+    display: 'standalone', orientation: 'portrait',
+    background_color: '#f5f5f5', theme_color: '#000000',
     icons: [
       { src: iconData, sizes: '192x192', type: 'image/svg+xml', purpose: 'any' },
       { src: iconData, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
@@ -377,24 +359,19 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
   let link = document.querySelector('link[rel="manifest"]');
   if (!link) { link = document.createElement('link'); link.rel = 'manifest'; document.head.appendChild(link); }
   link.href = manifestHref;
-
-  // Apple touch icon (рисуем через canvas — iOS не любит SVG)
   try {
     const c = document.createElement('canvas'); c.width = 512; c.height = 512;
     const ctx = c.getContext('2d');
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 512, 512);
     ctx.fillStyle = '#fff';
-    ctx.font = '900 380px -apple-system,Arial,sans-serif';
+    ctx.font = '900 380px Arial,sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('e.', 256, 280);
     const png = c.toDataURL('image/png');
-    document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(l => l.remove());
     const ati = document.createElement('link');
     ati.rel = 'apple-touch-icon'; ati.sizes = '512x512'; ati.href = png;
     document.head.appendChild(ati);
   } catch (e) {}
-
-  // Favicon
   const fav = document.createElement('link');
   fav.rel = 'icon'; fav.type = 'image/svg+xml'; fav.href = iconData;
   document.head.appendChild(fav);
@@ -407,64 +384,42 @@ const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredInstallPrompt = e;
-  if (!localStorage.getItem('evso_banner_dismissed')) showInstallBanner('android');
 });
-
-window.addEventListener('appinstalled', () => {
-  localStorage.setItem('evso_installed', '1');
-  hideInstallBanner();
-});
+window.addEventListener('appinstalled', () => { hideInstallBanner(); });
 
 function showInstallBanner(platform) {
   if (isStandalone) return;
   const banner = document.getElementById('installBanner');
   if (!banner) return;
-
   if (platform === 'ios') {
-    banner.innerHTML = `
-      <div class="install-banner-inner">
-        <div class="install-banner-icon">📱</div>
-        <div class="install-banner-text">
-          <b>Установить evso</b>
-          Открыть в Safari → <kbd>Поделиться</kbd> → <kbd>На экран «Домой»</kbd>
-        </div>
-        <div class="install-banner-actions">
-          <button class="btn ghost" onclick="dismissInstallBanner()">✕</button>
-        </div>
-      </div>`;
+    banner.innerHTML = `<div class="install-banner-inner">
+      <div class="install-banner-icon">📱</div>
+      <div class="install-banner-text"><b>Установить evso</b>Открыть в Safari → Поделиться → На экран «Домой»</div>
+      <div class="install-banner-actions"><button class="btn ghost" onclick="dismissInstallBanner()">✕</button></div>
+    </div>`;
   } else {
-    banner.innerHTML = `
-      <div class="install-banner-inner">
-        <div class="install-banner-icon">📱</div>
-        <div class="install-banner-text">
-          <b>Установить evso</b>
-          Открывать как обычное приложение с главного экрана
-        </div>
-        <div class="install-banner-actions">
-          <button class="btn ghost" onclick="dismissInstallBanner()">Позже</button>
-          <button class="btn primary" onclick="triggerInstall()">Установить</button>
-        </div>
-      </div>`;
+    banner.innerHTML = `<div class="install-banner-inner">
+      <div class="install-banner-icon">📱</div>
+      <div class="install-banner-text"><b>Установить evso</b>Открывать как приложение</div>
+      <div class="install-banner-actions">
+        <button class="btn ghost" onclick="dismissInstallBanner()">Позже</button>
+        <button class="btn primary" onclick="triggerInstall()">Установить</button>
+      </div>
+    </div>`;
   }
   banner.hidden = false;
 }
-function hideInstallBanner() {
-  const b = document.getElementById('installBanner');
-  if (b) b.hidden = true;
-}
-function dismissInstallBanner() {
-  hideInstallBanner();
-  localStorage.setItem('evso_banner_dismissed', '1');
-}
+function hideInstallBanner() { const b = document.getElementById('installBanner'); if (b) b.hidden = true; }
+function dismissInstallBanner() { hideInstallBanner(); localStorage.setItem('evso_banner_dismissed', '1'); }
 async function triggerInstall() {
   if (!deferredInstallPrompt) { alert('Установка недоступна. Откройте приложение по ссылке https:// в Chrome.'); return; }
   deferredInstallPrompt.prompt();
-  const { outcome } = await deferredInstallPrompt.userChoice;
+  await deferredInstallPrompt.userChoice;
   deferredInstallPrompt = null;
-  if (outcome === 'accepted') hideInstallBanner();
+  hideInstallBanner();
 }
 
-/* ============ APP CODE ============ */
+/* ============ APP ============ */
 const USERS = { 'командир': '12345', 'Димон': '123455' };
 const BRANDS = ['Adidas','Nike','Reebok','Asics','Columbia','Hoka','Bona','Salomon',
   'The North Face','New Balance','ACG','Saucony','Armani','Vans','DC'];
@@ -480,6 +435,7 @@ let db = null, useFirebase = false, currentUser = '', activeTab = 'menu';
 let filters = { search:'', brand:'', gender:'', season:'' };
 let editingProduct = null, editingPhoto = '';
 let statsPeriod = 30;
+let firebaseReady = false;
 
 const $ = id => document.getElementById(id);
 let uidCounter = 0;
@@ -497,8 +453,29 @@ const plural = (n, one, few, many) => {
   return many;
 };
 
+/* ============ TOAST ============ */
+function showToast(message, type = 'success') {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.className = 'toast ' + type;
+  requestAnimationFrame(() => toast.classList.add('show'));
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+/* ============ MIGRATION ============ */
 function migrateState() {
-  Object.values(state.products || {}).forEach(p => {
+  if (!state.products || typeof state.products !== 'object') state.products = {};
+  if (!state.sales || typeof state.sales !== 'object' || Array.isArray(state.sales)) {
+    state.sales = state.sales || {};
+  }
+  Object.values(state.products).forEach(p => {
     if (!p.sizes) { p.sizes = {}; return; }
     Object.keys(p.sizes).forEach(size => {
       const s = p.sizes[size];
@@ -511,6 +488,7 @@ function migrateState() {
   });
 }
 
+/* ============ AUTH ============ */
 function initAuth() {
   currentUser = localStorage.getItem(USER_KEY) || '';
   if (currentUser && USERS[currentUser]) showApp(); else showLogin();
@@ -541,60 +519,145 @@ function showApp() {
   window.scrollTo(0, 0);
   loadLocal(); render(); setupRealtime();
 
-  // Показ баннера после первого рендера
   setTimeout(() => {
     if (isStandalone) return;
     if (localStorage.getItem('evso_banner_dismissed')) return;
     if (localStorage.getItem('evso_installed')) return;
     if (isIOS) showInstallBanner('ios');
-    else if (!deferredInstallPrompt && !window.location.protocol.startsWith('https')) return;
-    else if (!deferredInstallPrompt) showInstallBanner('android-manual');
+    else if (deferredInstallPrompt) showInstallBanner('android');
   }, 1500);
 }
 function logout() { if (!confirm('Выйти из аккаунта?')) return; localStorage.removeItem(USER_KEY); location.reload(); }
 
+/* ============ FIREBASE ============ */
 const getFbUrl = () => localStorage.getItem(FB_KEY) || '';
+
 function initFirebase() {
   const url = getFbUrl();
   if (!url || typeof firebase === 'undefined') return false;
   try {
     if (!firebase.apps.length) firebase.initializeApp({ databaseURL: url });
-    db = firebase.database(); return true;
-  } catch (e) { console.error(e); return false; }
+    db = firebase.database();
+    return true;
+  } catch (e) { console.error('Firebase init error:', e); return false; }
 }
-function setupRealtime() {
+
+async function setupRealtime() {
   useFirebase = initFirebase();
   if (!useFirebase) { updateSync(false); return; }
+
   db.ref('.info/connected').on('value', s => updateSync(s.val() === true));
-  db.ref('evso').on('value', snapshot => {
-    const data = snapshot.val();
-    if (!data) { db.ref('evso').set({ warehouses: state.warehouses, products: {}, sales: {} }); return; }
-    state.warehouses = data.warehouses || state.warehouses;
-    state.products = data.products || {};
-    state.sales = data.sales || {};
-    migrateState();
+
+  // ===== КЛЮЧЕВОЙ ФИКС: при первом подключении не затираем локальные данные =====
+  try {
+    const snap = await db.ref('evso').once('value');
+    const data = snap.val();
+    if (!data) {
+      // Firebase пустой — отправляем ВСЁ ЛОКАЛЬНОЕ, а не пустоту
+      await db.ref('evso').set({
+        warehouses: state.warehouses,
+        products: state.products,
+        sales: state.sales
+      });
+    } else {
+      // На сервере что-то есть — подстрахуемся только для warehouses (редко меняются)
+      if (!data.warehouses) {
+        await db.ref('evso/warehouses').set(state.warehouses);
+      }
+      // Products и Sales берём с сервера через child-события ниже
+    }
+  } catch (e) {
+    console.error('First check error:', e);
+    updateSync(false, true);
+    return;
+  }
+
+  firebaseReady = true;
+
+  const errorHandler = err => {
+    console.error('Listen error:', err);
+    updateSync(false, true);
+  };
+
+  // Warehouses — целиком
+  db.ref('evso/warehouses').on('value', snap => {
+    const val = snap.val();
+    if (val) {
+      state.warehouses = val;
+      saveLocal(); render();
+    }
+  }, errorHandler);
+
+  // Products — по child-событиям (надёжнее чем value, не затирает локальные)
+  db.ref('evso/products').on('child_added', snap => {
+    state.products[snap.key] = snap.val();
     saveLocal(); render();
-  }, err => { console.error(err); updateSync(false, true); });
+  }, errorHandler);
+  db.ref('evso/products').on('child_changed', snap => {
+    state.products[snap.key] = snap.val();
+    saveLocal(); render();
+  }, errorHandler);
+  db.ref('evso/products').on('child_removed', snap => {
+    delete state.products[snap.key];
+    saveLocal(); render();
+  }, errorHandler);
+
+  // Sales — по child-событиям (ключевой фикс для пропадающих продаж)
+  db.ref('evso/sales').on('child_added', snap => {
+    const val = snap.val();
+    if (val) {
+      state.sales[snap.key] = val;
+      saveLocal(); render();
+    }
+  }, errorHandler);
+  db.ref('evso/sales').on('child_changed', snap => {
+    state.sales[snap.key] = snap.val();
+    saveLocal(); render();
+  }, errorHandler);
+  db.ref('evso/sales').on('child_removed', snap => {
+    delete state.sales[snap.key];
+    saveLocal(); render();
+  }, errorHandler);
+
+  // Подтверждаем связь
+  updateSync(true);
 }
+
 function updateSync(online, error) {
   const el = $('syncDot'); if (!el) return;
   el.className = 'dot-online' + (error ? ' err' : (!online || !useFirebase ? ' off' : ''));
-  el.title = online && useFirebase ? 'Синхронизировано' : 'Нет связи с сервером';
+  el.title = error ? 'Ошибка синхронизации' : (online && useFirebase ? 'Синхронизировано' : 'Локальный режим');
 }
-const saveProductRemote = id => useFirebase && db.ref('evso/products/' + id).set(state.products[id]).catch(console.error);
-const deleteProductRemote = id => useFirebase && db.ref('evso/products/' + id).remove().catch(console.error);
-const saveSaleRemote = id => useFirebase && db.ref('evso/sales/' + id).set(state.sales[id]).catch(console.error);
-const saveWarehousesRemote = () => useFirebase && db.ref('evso/warehouses').set(state.warehouses).catch(console.error);
 
+// Fire-and-forget сохранения (для операций, где не критично дождаться)
+const saveProductRemote = id => useFirebase && state.products[id]
+  ? db.ref('evso/products/' + id).set(state.products[id]).catch(e => console.error('Product save:', e))
+  : Promise.resolve();
+const deleteProductRemote = id => useFirebase
+  ? db.ref('evso/products/' + id).remove().catch(e => console.error('Product delete:', e))
+  : Promise.resolve();
+const saveWarehousesRemote = () => useFirebase
+  ? db.ref('evso/warehouses').set(state.warehouses).catch(e => console.error('Warehouses save:', e))
+  : Promise.resolve();
+
+/* ============ STORAGE ============ */
 function loadLocal() {
   try {
     const raw = localStorage.getItem(STATE_KEY); if (!raw) return;
     const d = JSON.parse(raw);
-    if (d && d.products && d.warehouses) { state = d; if (!state.sales) state.sales = {}; migrateState(); }
+    if (d && d.products && d.warehouses) {
+      state = d;
+      if (!state.sales || typeof state.sales !== 'object') state.sales = {};
+      migrateState();
+    }
   } catch (e) { console.error(e); }
 }
-const saveLocal = () => { try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) { console.error(e); } };
+const saveLocal = () => {
+  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+  catch (e) { console.error(e); }
+};
 
+/* ============ ACTIONS ============ */
 function deleteProduct(id) {
   const p = state.products[id];
   if (!p) return;
@@ -604,9 +667,10 @@ function deleteProduct(id) {
   deleteProductRemote(id);
   closeModal();
   render();
+  showToast('Товар удалён, продажи сохранены');
 }
 
-/* ===== VIEW modal ===== */
+/* ============ VIEW modal ============ */
 function openProductView(productId) {
   const p = state.products[productId];
   if (!p) return;
@@ -650,12 +714,14 @@ function openProductView(productId) {
     ${sizes.length ? `<div class="view-sizes-grid">${sizesHtml}</div>` : `<div class="muted" style="font-size:13px">Нет размеров</div>`}
     <div class="modal-actions" style="margin-top:20px">
       <button class="btn" onclick="closeModal()">Закрыть</button>
-      ${totalQty > 0 ? `<button class="btn primary" onclick="closeModal();openSaleModal('${productId}')">Продать</button>` : `<button class="btn" onclick="closeModal();openProductModal('${productId}')">✎ Изменить</button>`}
+      ${totalQty > 0
+        ? `<button class="btn primary" onclick="closeModal();openSaleModal('${productId}')">Продать</button>`
+        : `<button class="btn" onclick="closeModal();openProductModal('${productId}')">✎ Изменить</button>`}
     </div>
   `);
 }
 
-/* ===== SALE ===== */
+/* ============ SALE (с надёжным сохранением) ============ */
 function openSaleModal(productId) {
   const p = state.products[productId]; if (!p) return;
   const items = [];
@@ -664,7 +730,7 @@ function openSaleModal(productId) {
     if (q1 > 0) items.push({ size, wh: 'wh1', whName: state.warehouses.wh1.name, qty: q1 });
     if (q2 > 0) items.push({ size, wh: 'wh2', whName: state.warehouses.wh2.name, qty: q2 });
   });
-  if (!items.length) { alert('Нет доступных размеров для продажи'); return; }
+  if (!items.length) { showToast('Нет доступных размеров', 'error'); return; }
   const opts = items.map((it, i) => `<option value="${i}">Размер ${esc(it.size)} — ${esc(it.whName)} (${it.qty} шт)</option>`).join('');
   const minHint = p.minPrice != null
     ? `<div class="hint-box">Мин. цена: <b>${fmt(p.minPrice)} ₽</b>${p.price > p.minPrice ? ` · макс. скидка ${fmt(p.price - p.minPrice)} ₽` : ''}</div>` : '';
@@ -681,31 +747,54 @@ function openSaleModal(productId) {
       </div>
     </form>`);
 
-  $('saleForm').onsubmit = e => {
+  $('saleForm').onsubmit = async e => {
     e.preventDefault();
     const f = new FormData(e.target);
     const it = items[+f.get('item')];
+    if (!it) { showToast('Выберите размер', 'error'); return; }
     const price = parseFloat(f.get('price')) || 0;
     const prod = state.products[productId];
+
     if (!prod || !prod.sizes[it.size] || qty(prod.sizes[it.size][it.wh]) < 1) {
-      alert('Товар уже продан или изменён'); closeModal(); render(); return;
+      showToast('Товар уже продан или изменён', 'error');
+      closeModal(); render(); return;
     }
     if (prod.minPrice != null && price < prod.minPrice) {
       if (!confirm(`Цена ${fmt(price)} ₽ ниже минимальной (${fmt(prod.minPrice)} ₽).\nВсё равно продать?`)) return;
     }
+
+    // Оптимистично обновляем локально (мгновенный отклик)
     prod.sizes[it.size][it.wh] = Math.max(0, qty(prod.sizes[it.size][it.wh]) - 1);
     const saleId = uid('s');
-    state.sales[saleId] = {
+    const sale = {
       id: saleId, productId, productName: prod.name, brand: prod.brand || '',
       size: it.size, wh: it.wh, whName: state.warehouses[it.wh].name,
       price, date: new Date().toISOString(), user: currentUser
     };
-    saveLocal(); saveProductRemote(productId); saveSaleRemote(saleId);
-    closeModal(); render();
+    state.sales[saleId] = sale;
+    saveLocal();
+    closeModal();
+    render();
+    showToast(`✓ Продано: ${prod.brand || ''} ${prod.name}, ${it.size} р., ${fmt(price)} ₽`);
+
+    // Сохраняем на сервер (с проверкой успеха)
+    if (useFirebase && firebaseReady) {
+      try {
+        await Promise.all([
+          db.ref('evso/products/' + productId).set(prod),
+          db.ref('evso/sales/' + saleId).set(sale)
+        ]);
+      } catch (err) {
+        console.error('Firebase save error:', err);
+        showToast('⚠️ Не удалось отправить на сервер. Проверьте интернет или правила Firebase.', 'error');
+      }
+    } else if (useFirebase && !firebaseReady) {
+      showToast('⚠️ Синхронизация ещё не готова. Подождите.', 'error');
+    }
   };
 }
 
-/* ===== RENDER ===== */
+/* ============ RENDER ============ */
 function render() {
   const showStats = activeTab === 'products' || activeTab === 'sales' || activeTab === 'stats';
   $('stats').hidden = !showStats;
@@ -734,35 +823,28 @@ function renderMenuTab() {
   let available = 0;
   products.forEach(p => { available += getTotalQty(p); });
   const today = new Date().toDateString();
-  const todaySales = Object.values(state.sales || {}).filter(s => new Date(s.date).toDateString() === today);
+  const todaySales = Object.values(state.sales || {}).filter(s => s.date && new Date(s.date).toDateString() === today);
   const todaySum = todaySales.reduce((a, s) => a + (+s.price || 0), 0);
   const totalSales = Object.keys(state.sales || {}).length;
 
   $('tab-menu').innerHTML = `
-    <div class="menu-header">
-      <h1>Главное меню</h1>
-      <p>Привет, ${esc(currentUser)}</p>
-    </div>
+    <div class="menu-header"><h1>Главное меню</h1><p>Привет, ${esc(currentUser)}</p></div>
     <div class="menu-grid">
       <button class="menu-card" onclick="switchTab('products')">
-        <div class="menu-icon">👟</div>
-        <div class="menu-title">Товары</div>
+        <div class="menu-icon">👟</div><div class="menu-title">Товары</div>
         <div class="menu-sub">${products.length} моделей · ${available} пар</div>
       </button>
       <button class="menu-card" onclick="switchTab('sales')">
-        <div class="menu-icon">💰</div>
-        <div class="menu-title">Продажи</div>
+        <div class="menu-icon">💰</div><div class="menu-title">Продажи</div>
         <div class="menu-sub">${totalSales} записей · сегодня ${todaySales.length}</div>
       </button>
       <button class="menu-card" onclick="switchTab('stats')">
-        <div class="menu-icon">📊</div>
-        <div class="menu-title">Итоги</div>
+        <div class="menu-icon">📊</div><div class="menu-title">Итоги</div>
         <div class="menu-sub">Сегодня: <b>${fmt(todaySum)} ₽</b></div>
       </button>
       <button class="menu-card" onclick="switchTab('settings')">
-        <div class="menu-icon">⚙️</div>
-        <div class="menu-title">Настройки</div>
-        <div class="menu-sub">${useFirebase ? '🟢 Онлайн' : '⚪ Локально'}</div>
+        <div class="menu-icon">⚙️</div><div class="menu-title">Настройки</div>
+        <div class="menu-sub">${useFirebase ? (firebaseReady ? '🟢 Онлайн' : '⏳ Подключение...') : '⚪ Локально'}</div>
       </button>
     </div>`;
 }
@@ -772,7 +854,7 @@ function renderStats() {
   let available = 0;
   products.forEach(p => { available += getTotalQty(p); });
   const today = new Date().toDateString();
-  const todaySales = Object.values(state.sales || {}).filter(s => new Date(s.date).toDateString() === today);
+  const todaySales = Object.values(state.sales || {}).filter(s => s.date && new Date(s.date).toDateString() === today);
   const todaySum = todaySales.reduce((a, s) => a + (+s.price || 0), 0);
   $('stats').innerHTML = `
     <div class="stat"><div class="k">Товаров</div><div class="v">${products.length}</div></div>
@@ -781,6 +863,7 @@ function renderStats() {
     <div class="stat"><div class="k">Выручка сегодня</div><div class="v">${fmt(todaySum)} ₽</div></div>`;
 }
 
+/* ============ PRODUCTS ============ */
 function renderProductsTab() {
   $('tab-products').innerHTML = `
     <div class="toolbar">
@@ -854,6 +937,7 @@ function renderProductCard(id, p) {
   </div>`;
 }
 
+/* ============ PRODUCT EDIT MODAL ============ */
 function openProductModal(id) {
   const ex = id ? state.products[id] : null;
   editingProduct = ex ? JSON.parse(JSON.stringify(ex))
@@ -889,7 +973,7 @@ function openProductModal(id) {
       </div>
       <div class="modal-row">
         <label>Цена, ₽<input name="price" type="number" inputmode="decimal" min="0" step="any" value="${editingProduct.price || ''}" placeholder="0"></label>
-        <label>Мин. цена, ₽<input name="minPrice" type="number" inputmode="decimal" min="0" step="any" value="${editingProduct.minPrice ?? ''}" placeholder="Без огранич."></label>
+        <label>Мин. цена, ₽<input name="minPrice" type="number" inputmode="decimal" min="0" step="any" value="${editingProduct.minPrice ?? ''}" placeholder="Без огр."></label>
       </div>
       <div class="sizes-section">
         <label>Размеры:
@@ -924,7 +1008,7 @@ function openProductModal(id) {
   $('photoInput').onchange = async e => {
     const file = e.target.files[0]; if (!file) return;
     try { editingPhoto = await resizeImage(file); $('photoPreview').innerHTML = `<img src="${editingPhoto}">`; }
-    catch (err) { alert('Не удалось загрузить фото'); console.error(err); }
+    catch (err) { showToast('Не удалось загрузить фото', 'error'); }
   };
 
   $('productForm').onsubmit = e => {
@@ -949,6 +1033,7 @@ function openProductModal(id) {
     if (id && state.products[id]) { state.products[id] = data; saveProductRemote(id); }
     else { const nid = uid('p'); state.products[nid] = data; saveProductRemote(nid); }
     saveLocal(); closeModal(); render();
+    showToast(id ? 'Товар обновлён' : 'Товар добавлен');
   };
   $('modalBackdrop').classList.add('show');
 }
@@ -1005,7 +1090,7 @@ function togglePresetSize(size) {
 }
 function addCustomSize() {
   const v = $('customSizeInput').value.trim(); if (!v) return;
-  if (editingProduct.sizes[v]) { alert('Такой размер уже есть'); return; }
+  if (editingProduct.sizes[v]) { showToast('Такой размер уже есть', 'error'); return; }
   editingProduct.sizes[v] = { wh1: 0, wh2: 0 };
   $('customSizeInput').value = ''; renderEditSizes(); renderPresetGrid();
 }
@@ -1037,12 +1122,16 @@ function resizeImage(file) {
   });
 }
 
+/* ============ SALES TAB (исправлено) ============ */
 function renderSalesTab() {
-  const all = Object.values(state.sales || {}).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const all = Object.values(state.sales || {})
+    .filter(s => s && s.date)
+    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
   const users = [...new Set(all.map(s => s.user).filter(Boolean))].sort();
   const filterUser = window._salesFilterUser || '';
   const filtered = filterUser ? all.filter(s => s.user === filterUser) : all;
   const total = filtered.reduce((a, s) => a + (+s.price || 0), 0);
+
   const rows = filtered.map(s => `
     <tr>
       <td>${new Date(s.date).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })}</td>
@@ -1052,6 +1141,11 @@ function renderSalesTab() {
       <td>${esc(s.whName || '')}</td>
       <td class="num">${fmt(s.price)} ₽</td>
     </tr>`).join('');
+
+  const filterBadge = filterUser
+    ? `<div class="filter-badge">${esc(filterUser)} <button onclick="setSalesUser('')">×</button></div>`
+    : '';
+
   $('tab-sales').innerHTML = `
     <div class="toolbar">
       <input class="search" id="fSalesSearch" placeholder="Поиск..." oninput="filterSalesTable()">
@@ -1059,8 +1153,10 @@ function renderSalesTab() {
         <option value="">Все</option>
         ${users.map(u => `<option value="${esc(u)}" ${filterUser === u ? 'selected' : ''}>${esc(u)}</option>`).join('')}
       </select>
+      <button class="btn" onclick="location.reload()" title="Обновить с сервера">↻</button>
       <button class="btn" onclick="exportSales()">Excel</button>
     </div>
+    ${filterBadge ? `<div style="margin-bottom:10px">${filterBadge}</div>` : ''}
     <div class="sales-wrap">
       ${filtered.length ? `
         <div class="table-scroll">
@@ -1070,18 +1166,22 @@ function renderSalesTab() {
           </table>
         </div>
         <div style="padding:12px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-weight:700">
-          <span>${filtered.length} продаж</span><span>${fmt(total)} ₽</span>
-        </div>` : `<div class="empty">Продаж пока нет</div>`}
+          <span>${filtered.length} ${plural(filtered.length, 'продажа', 'продажи', 'продаж')}</span>
+          <span>${fmt(total)} ₽</span>
+        </div>` : `<div class="empty">${filterUser ? 'У этого продавца нет продаж' : 'Продаж пока нет'}</div>`}
     </div>`;
 }
 function setSalesUser(u) { window._salesFilterUser = u; renderSalesTab(); }
 function filterSalesTable() {
   const q = ($('fSalesSearch')?.value || '').toLowerCase();
-  document.querySelectorAll('#salesTable tbody tr').forEach(tr => tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none');
+  document.querySelectorAll('#salesTable tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
 }
 
+/* ============ STATS TAB ============ */
 function renderStatsTab() {
-  const sales = Object.values(state.sales || {});
+  const sales = Object.values(state.sales || {}).filter(s => s && s.date);
   const allUsers = [...new Set(sales.map(s => s.user).filter(Boolean))].sort();
   const cutoff = new Date(); cutoff.setHours(0,0,0,0); cutoff.setDate(cutoff.getDate() - (statsPeriod - 1));
   const salesInPeriod = sales.filter(s => new Date(s.date) >= cutoff);
@@ -1139,9 +1239,7 @@ function renderStatsTab() {
       <div class="stat"><div class="k">Продано пар</div><div class="v">${periodCount}</div></div>
       ${userStatsHtml}
     </div>
-    <div class="chart-wrap">
-      <div class="chart-bars">${barsHtml}</div>
-    </div>
+    <div class="chart-wrap"><div class="chart-bars">${barsHtml}</div></div>
     <div class="sales-wrap">
       <div class="table-scroll">
         <table class="sales-table">
@@ -1156,10 +1254,11 @@ function renderStatsTab() {
 function setStatsPeriod(p) { statsPeriod = p; renderStatsTab(); }
 function openDayDetails(key) {
   const sales = Object.values(state.sales || {}).filter(s => {
+    if (!s || !s.date) return false;
     const d = new Date(s.date); d.setHours(0,0,0,0);
     return dayKey(d) === key;
   });
-  if (!sales.length) { alert('В этот день продаж не было'); return; }
+  if (!sales.length) { showToast('В этот день продаж не было', 'error'); return; }
   sales.sort((a, b) => new Date(a.date) - new Date(b.date));
   const total = sales.reduce((a, s) => a + (+s.price || 0), 0);
   const dateStr = new Date(sales[0].date).toLocaleDateString('ru-RU', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
@@ -1198,12 +1297,13 @@ function openDayDetails(key) {
     </div>`, true);
 }
 
+/* ============ EXPORT ============ */
 function exportProducts() {
   const products = Object.values(state.products).sort((a, b) => {
     if ((a.brand||'') !== (b.brand||'')) return (a.brand||'').localeCompare(b.brand||'');
     return (a.name||'').localeCompare(b.name||'');
   });
-  if (!products.length) { alert('Нет товаров'); return; }
+  if (!products.length) { showToast('Нет товаров', 'error'); return; }
   const wh1 = state.warehouses.wh1.name, wh2 = state.warehouses.wh2.name;
   const rows = [['Бренд','Модель','Пол','Сезон','Цена, ₽','Мин. цена, ₽', `${wh1} (разм:кол)`, `${wh2} (разм:кол)`, 'Всего пар']];
   products.forEach(p => {
@@ -1216,8 +1316,8 @@ function exportProducts() {
   doExport(rows, 'Товары', 'evso-tovary');
 }
 function exportSales() {
-  const sales = Object.values(state.sales || {}).sort((a, b) => new Date(b.date) - new Date(a.date));
-  if (!sales.length) { alert('Нет продаж'); return; }
+  const sales = Object.values(state.sales || {}).filter(s => s && s.date).sort((a, b) => new Date(b.date) - new Date(a.date));
+  if (!sales.length) { showToast('Нет продаж', 'error'); return; }
   const rows = [['Дата','Продавец','Бренд','Модель','Размер','Точка','Цена, ₽']];
   sales.forEach(s => rows.push([
     new Date(s.date).toLocaleString('ru-RU'), s.user || '', s.brand || '',
@@ -1245,33 +1345,33 @@ function doExport(rows, sheetName, filename) {
   XLSX.writeFile(wb, filename + '-' + today + '.xlsx');
 }
 
+/* ============ SETTINGS ============ */
 function renderSettingsTab() {
   const url = getFbUrl();
   const installHidden = isStandalone;
+  const fbStatus = useFirebase
+    ? (firebaseReady ? { cls: 'ok', text: '🟢 Подключено и работает' } : { cls: 'warn', text: '⏳ Подключение...' })
+    : { cls: 'warn', text: '⚪ Не настроено (только это устройство)' };
+
   $('tab-settings').innerHTML = `
     ${!installHidden ? `
     <div class="settings-section">
       <h3>📱 Установить приложение</h3>
       ${isIOS ? `
         <p style="margin:0 0 8px;font-size:13px;line-height:1.5">
-          В Safari нажмите <b>«Поделиться»</b> (квадрат со стрелкой вверх снизу) → прокрутите → <b>«На экран "Домой"»</b> → «Добавить».
-        </p>
-        <p class="muted" style="margin:0;font-size:12px">Иконка появится на главном экране, приложение откроется как обычное.</p>
-      ` : `
-        <p style="margin:0 0 10px;font-size:13px">В Chrome меню (три точки) → <b>«Установить приложение»</b> или <b>«Добавить на главный экран»</b>.</p>
-        <div class="row-actions">
-          <button class="btn primary" onclick="triggerInstall()">Установить сейчас</button>
-        </div>
-      `}
+          В Safari нажмите <b>«Поделиться»</b> (квадрат со стрелкой вверх) → прокрутите → <b>«На экран "Домой"»</b>.
+        </p>` : `
+        <p style="margin:0 0 10px;font-size:13px">Через меню Chrome (⋮) → <b>«Установить приложение»</b>.</p>
+        <div class="row-actions"><button class="btn primary" onclick="triggerInstall()">Установить</button></div>`}
     </div>` : `
     <div class="settings-section">
       <h3>📱 Приложение установлено</h3>
-      <p class="muted" style="margin:0">evso запущено как приложение. 🎉</p>
+      <p class="muted" style="margin:0">evso запущено как приложение 🎉</p>
     </div>`}
 
     <div class="settings-section">
       <h3>Синхронизация</h3>
-      <div class="status-line ${useFirebase ? 'ok' : 'warn'}"><strong>${useFirebase ? '🟢 Подключено' : '⚪ Не настроено'}</strong></div>
+      <div class="status-line ${fbStatus.cls}"><strong>${fbStatus.text}</strong></div>
       <label>URL Firebase Realtime Database
         <input id="fbUrlInput" placeholder="https://...firebasedatabase.app" value="${esc(url)}">
       </label>
@@ -1279,6 +1379,9 @@ function renderSettingsTab() {
         <button class="btn primary" onclick="saveFbUrl()">Сохранить</button>
         ${useFirebase ? '<button class="btn ghost" onclick="disconnectFb()">Отключить</button>' : ''}
       </div>
+      ${useFirebase ? `<p class="muted" style="font-size:11.5px;margin:8px 0 0;line-height:1.4">
+        <b>Проверить:</b> Firebase → Realtime Database → Rules → должно быть <code>{".read": true, ".write": true}</code>
+      </p>` : ''}
     </div>
     <div class="settings-section">
       <h3>Названия точек</h3>
@@ -1321,7 +1424,7 @@ function saveFbUrl() {
 }
 function disconnectFb() { if (!confirm('Отключить синхронизацию?')) return; localStorage.removeItem(FB_KEY); location.reload(); }
 function clearProducts() {
-  if (!confirm('Удалить ВСЕ товары?\n\n✓ История продаж сохранится\n✗ Отменить будет нельзя')) return;
+  if (!confirm('Удалить ВСЕ товары?\n\n✓ История продаж сохранится')) return;
   state.products = {}; saveLocal();
   if (useFirebase) db.ref('evso/products').set({});
   render();
