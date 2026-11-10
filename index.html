@@ -21,7 +21,6 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
-/* ===== ТЁМНАЯ ТЕМА ===== */
 body.dark {
   --bg: #0a0a0a; --card: #171717; --border: #2a2a2a; --text: #ededed;
   --muted: #8b8b8b; --black: #ffffff; --white: #000000; --hover: #222222;
@@ -360,7 +359,7 @@ async function triggerInstall() {
 }
 
 /* ============ APP CORE ============ */
-const BRANDS = ['Adidas','Nike','Reebok','Asics','Columbia','Hoka','Bona','Salomon','The North Face','New Balance','ACG','Saucony','Armani','Vans','DC'];
+const DEFAULT_BRANDS = ['Adidas','Nike','Reebok','Asics','Columbia','Hoka','Bona','Salomon','The North Face','New Balance','ACG','Saucony','Armani','Vans','DC', 'Merrell'];
 const GENDERS = ['Мужские','Женские','Унисекс'];
 const SEASONS = ['Зима','Лето','Всесезон'];
 
@@ -372,7 +371,8 @@ let state = {
   warehouses: { wh1:{name:'Точка 1'}, wh2:{name:'Точка 2'} }, 
   products: {}, 
   sales: {},
-  users: { 'командир': '12345', 'Димон': '123455' }
+  users: { 'командир': '12345', 'Димон': '123455' },
+  customBrands: []
 };
 let db = null, useFirebase = false, currentUser = '', activeTab = 'menu';
 let filters = { search:'', brand:'', gender:'', season:'' };
@@ -402,6 +402,7 @@ function migrateState() {
   if (!state.products || typeof state.products !== 'object') state.products = {};
   if (!state.sales || typeof state.sales !== 'object' || Array.isArray(state.sales)) state.sales = {};
   if (!state.users || typeof state.users !== 'object') state.users = { 'командир': '12345', 'Димон': '123455' };
+  if (!state.customBrands || !Array.isArray(state.customBrands)) state.customBrands = [];
   Object.values(state.products).forEach(p => {
     if (!p.sizes) { p.sizes = {}; return; }
     Object.keys(p.sizes).forEach(size => {
@@ -420,6 +421,12 @@ function applyTheme() {
 }
 function setTheme(t) { localStorage.setItem('evso_theme', t); applyTheme(); renderSettingsTab(); }
 applyTheme();
+
+/* ============ BRANDS ============ */
+function getAllBrands() {
+  const customs = state.customBrands || [];
+  return [...new Set([...DEFAULT_BRANDS, ...customs])].sort();
+}
 
 /* ============ BACKUP ============ */
 function checkAutoBackup() {
@@ -501,8 +508,12 @@ async function setupRealtime() {
   db.ref('.info/connected').on('value', s => updateSync(s.val() === true));
   try {
     const snap = await db.ref('evso').once('value'); const data = snap.val();
-    if (!data) await db.ref('evso').set({ warehouses: state.warehouses, products: state.products, sales: state.sales, users: state.users });
-    else { if (!data.warehouses) db.ref('evso/warehouses').set(state.warehouses); if (!data.users) db.ref('evso/users').set(state.users); }
+    if (!data) await db.ref('evso').set({ warehouses: state.warehouses, products: state.products, sales: state.sales, users: state.users, customBrands: state.customBrands });
+    else { 
+      if (!data.warehouses) db.ref('evso/warehouses').set(state.warehouses); 
+      if (!data.users) db.ref('evso/users').set(state.users);
+      if (!data.customBrands) db.ref('evso/customBrands').set(state.customBrands || []);
+    }
   } catch (e) { console.error(e); updateSync(false, true); return; }
   
   firebaseReady = true;
@@ -510,6 +521,7 @@ async function setupRealtime() {
 
   db.ref('evso/warehouses').on('value', snap => { const val = snap.val(); if (val) { state.warehouses = val; saveLocal(); render(); } }, errorHandler);
   db.ref('evso/users').on('value', snap => { const val = snap.val(); if (val) { state.users = val; saveLocal(); render(); } }, errorHandler);
+  db.ref('evso/customBrands').on('value', snap => { const val = snap.val(); if (val) { state.customBrands = val; saveLocal(); render(); } }, errorHandler);
   
   db.ref('evso/products').on('child_added', snap => { state.products[snap.key] = snap.val(); saveLocal(); render(); }, errorHandler);
   db.ref('evso/products').on('child_changed', snap => { state.products[snap.key] = snap.val(); saveLocal(); render(); }, errorHandler);
@@ -528,6 +540,7 @@ const saveProductRemote = id => useFirebase && state.products[id] ? db.ref('evso
 const deleteProductRemote = id => useFirebase ? db.ref('evso/products/' + id).remove().catch(e => console.error(e)) : Promise.resolve();
 const saveWarehousesRemote = () => useFirebase ? db.ref('evso/warehouses').set(state.warehouses).catch(e => console.error(e)) : Promise.resolve();
 const saveUsersRemote = () => useFirebase ? db.ref('evso/users').set(state.users).catch(e => console.error(e)) : Promise.resolve();
+const saveBrandsRemote = () => useFirebase ? db.ref('evso/customBrands').set(state.customBrands || []).catch(e => console.error(e)) : Promise.resolve();
 
 /* ============ STORAGE ============ */
 function loadLocal() {
@@ -664,8 +677,9 @@ function renderProductsTab() {
       <select class="search" id="fSeason"><option value="">Сезон</option>${SEASONS.map(s => `<option value="${s}">${s}</option>`).join('')}</select>
     </div>
     <div id="productGrid" class="product-grid"></div>`;
-  const brandsInUse = [...new Set(Object.values(state.products).map(p => p.brand).filter(Boolean))].sort();
-  $('fBrand').innerHTML = '<option value="">Все бренды</option>' + brandsInUse.map(b => `<option value="${esc(b)}" ${filters.brand === b ? 'selected' : ''}>${esc(b)}</option>`).join('');
+  
+  const allBrands = getAllBrands();
+  $('fBrand').innerHTML = '<option value="">Все бренды</option>' + allBrands.map(b => `<option value="${esc(b)}" ${filters.brand === b ? 'selected' : ''}>${esc(b)}</option>`).join('');
   $('fGender').value = filters.gender; $('fSeason').value = filters.season;
   $('fSearch').oninput = e => { filters.search = e.target.value; renderProductGrid(); };
   $('fBrand').onchange = e => { filters.brand = e.target.value; renderProductGrid(); };
@@ -708,8 +722,11 @@ function renderProductCard(id, p) {
 function openProductModal(id) {
   const ex = id ? state.products[id] : null; editingProduct = ex ? JSON.parse(JSON.stringify(ex)) : { name:'', brand:'', gender:'', season:'', price:0, minPrice:null, photo:'', sizes:{} };
   migrateState(); editingPhoto = editingProduct.photo || '';
-  const brandOpts = BRANDS.map(b => `<option value="${esc(b)}" ${editingProduct.brand === b ? 'selected' : ''}>${esc(b)}</option>`).join('');
-  const isCustomBrand = editingProduct.brand && !BRANDS.includes(editingProduct.brand);
+  
+  const allBrands = getAllBrands();
+  const brandOpts = allBrands.map(b => `<option value="${esc(b)}" ${editingProduct.brand === b ? 'selected' : ''}>${esc(b)}</option>`).join('');
+  const isCustomBrand = editingProduct.brand && !allBrands.includes(editingProduct.brand);
+
   openModal(`
     <h3>${id ? 'Изменить товар' : 'Новый товар'}</h3>
     <form id="productForm">
@@ -721,7 +738,7 @@ function openProductModal(id) {
       </div>
       <label>Модель<input name="name" value="${esc(editingProduct.name)}" required autofocus autocapitalize="words"></label>
       <label>Бренд<select name="brand" id="brandSelect" onchange="toggleBrandInput()"><option value="">— Выберите —</option>${brandOpts}<option value="__custom__" ${isCustomBrand ? 'selected' : ''}>Другое...</option></select></label>
-      <label id="customBrandWrap" style="${isCustomBrand ? '' : 'display:none'}">Свой бренд<input name="brandCustom" id="brandCustom" value="${isCustomBrand ? esc(editingProduct.brand) : ''}"></label>
+      <label id="customBrandWrap" style="${isCustomBrand ? '' : 'display:none'}">Свой бренд<input name="brandCustom" id="brandCustom" value="${isCustomBrand ? esc(editingProduct.brand) : ''}" placeholder="Введите название"></label>
       <div class="modal-row">
         <label>Пол<select name="gender"><option value="">—</option>${GENDERS.map(g => `<option value="${g}" ${editingProduct.gender === g ? 'selected' : ''}>${g}</option>`).join('')}</select></label>
         <label>Сезон<select name="season"><option value="">—</option>${SEASONS.map(s => `<option value="${s}" ${editingProduct.season === s ? 'selected' : ''}>${s}</option>`).join('')}</select></label>
@@ -743,8 +760,17 @@ function openProductModal(id) {
   `);
   renderEditSizes(); renderPresetGrid();
   $('photoInput').onchange = async e => { const file = e.target.files[0]; if (!file) return; try { editingPhoto = await resizeImage(file); $('photoPreview').innerHTML = `<img src="${editingPhoto}">`; } catch (err) { showToast('Ошибка фото', 'error'); } };
+  
   $('productForm').onsubmit = e => {
-    e.preventDefault(); const f = new FormData(e.target); let brand = f.get('brand'); if (brand === '__custom__') brand = (f.get('brandCustom') || '').trim();
+    e.preventDefault(); const f = new FormData(e.target); let brand = f.get('brand'); 
+    if (brand === '__custom__') brand = (f.get('brandCustom') || '').trim();
+    
+    // Сохраняем кастомный бренд в общий список
+    if (brand && !getAllBrands().includes(brand)) {
+      state.customBrands.push(brand);
+      saveBrandsRemote();
+    }
+
     const minPriceRaw = f.get('minPrice'); const cleanSizes = {};
     Object.keys(editingProduct.sizes).forEach(size => { cleanSizes[size] = { wh1: qty(editingProduct.sizes[size].wh1), wh2: qty(editingProduct.sizes[size].wh2) }; });
     const data = { name: f.get('name').trim(), brand: (brand || '').trim(), gender: f.get('gender'), season: f.get('season'), price: parseFloat(f.get('price')) || 0, minPrice: minPriceRaw === '' ? null : (parseFloat(minPriceRaw) || 0), photo: editingPhoto || '', sizes: cleanSizes };
