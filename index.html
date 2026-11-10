@@ -27,7 +27,8 @@ body.dark {
 }
 body.dark .login-card, body.dark .app-header, body.dark .install-banner,
 body.dark .modal, body.dark .sales-wrap, body.dark .settings-section,
-body.dark .product-card, body.dark .stat, body.dark .menu-card { background-color: var(--card); }
+body.dark .product-card, body.dark .stat, body.dark .menu-card,
+body.dark .role-card { background-color: var(--card); }
 body.dark .btn { border-color: var(--border); }
 body.dark .btn.primary { background: var(--white); color: var(--black); border-color: var(--white); }
 body.dark .dot-online.off { background: #555; }
@@ -46,7 +47,7 @@ body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
   -webkit-text-size-adjust:100%;overscroll-behavior-x:none}
 input,select,textarea,button{font-family:inherit;font-size:16px}
 
-#app, #shopScreen { animation: fadeIn 0.3s ease-in-out; }
+#app, #shopScreen, #chooseScreen { animation: fadeIn 0.3s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
 .toast{position:fixed;left:50%;bottom:calc(20px + var(--safe-bottom));transform:translateX(-50%) translateY(20px);
@@ -72,6 +73,17 @@ input,select,textarea,button{font-family:inherit;font-size:16px}
 .login-shop-link{text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 .login-shop-link a{color:var(--muted);font-size:13px;text-decoration:none;font-weight:500}
 .login-shop-link a:hover{color:var(--text);text-decoration:underline}
+
+.role-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:22px 14px;cursor:pointer;text-align:center;color:var(--text);
+  transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-family:inherit;width:100%}
+.role-card:hover{border-color:var(--black);background:var(--hover)}
+.role-card:active{transform:scale(.98)}
+.role-icon{font-size:40px;line-height:1;margin-bottom:6px}
+.role-title{font-weight:800;font-size:15px}
+.role-desc{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.35}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
 
 .app-header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--border);padding-top:var(--safe-top)}
 .header-top{display:flex;align-items:center;gap:10px;padding:10px 16px 8px}
@@ -265,19 +277,39 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
 .shop-hero{padding:8px 0 16px}
 .shop-hero h1{font-size:26px;font-weight:900;margin:0 0 4px;letter-spacing:-.6px}
 .shop-hero p{margin:0;color:var(--muted);font-size:13.5px}
-.shop-admin-chip{background:var(--success);color:#fff}
-.shop-admin-chip button{color:#fff;font-weight:600}
 .shop-modal-actions{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
 .shop-modal-actions .btn{flex:1;min-width:100px}
 .shop-modal-actions .btn.icon{flex:0 0 52px;min-width:52px;padding:0}
+.icon-btn{padding:0;min-width:34px;width:34px}
 </style>
 </head>
 <body>
 
-<div id="loginScreen" class="login-screen">
+<!-- ВЫБОР РОЛИ -->
+<div id="chooseScreen" class="login-screen" hidden>
+  <div class="login-card" style="max-width:460px">
+    <div class="login-logo">evso<span>.</span></div>
+    <div class="login-sub">Кто вы?</div>
+    <div class="role-grid">
+      <button class="role-card" onclick="chooseRole('buyer')">
+        <div class="role-icon">🛍</div>
+        <div class="role-title">Я покупатель</div>
+        <div class="role-desc">Смотреть каталог и связаться с продавцом</div>
+      </button>
+      <button class="role-card" onclick="chooseRole('seller')">
+        <div class="role-icon">💼</div>
+        <div class="role-title">Я продавец</div>
+        <div class="role-desc">Управление товарами и продажами</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ЛОГИН ПРОДАВЦА -->
+<div id="loginScreen" class="login-screen" hidden>
   <div class="login-card">
     <div class="login-logo">evso<span>.</span></div>
-    <div class="login-sub">Вход в систему</div>
+    <div class="login-sub">Вход для продавца</div>
     <form id="loginForm">
       <label>Логин<input name="user" required autocomplete="username" autocapitalize="none"></label>
       <label>Пароль<input name="pass" type="password" required autocomplete="current-password"></label>
@@ -285,11 +317,12 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
     </form>
     <div id="loginError" class="login-error"></div>
     <div class="login-shop-link">
-      <a href="?shop=1">🛍 Смотреть каталог →</a>
+      <a href="#" onclick="backToChoose();return false;">← Назад к выбору</a>
     </div>
   </div>
 </div>
 
+<!-- АДМИНКА -->
 <div id="app" hidden>
   <div class="app-header">
     <div class="header-top">
@@ -319,14 +352,16 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
   </main>
 </div>
 
+<!-- ВИТРИНА -->
 <div id="shopScreen" hidden>
   <div class="app-header">
     <div class="header-top">
+      <button class="btn small icon-btn" onclick="backToChoose()" title="Назад">←</button>
       <div class="logo" style="cursor:default">evso<span>.</span></div>
       <div class="spacer"></div>
       <div class="user-chip"><span>🛍 Магазин</span></div>
-      <button class="btn small" onclick="shareShop()" title="Поделиться">🔗</button>
-      <button class="btn small" id="shopAdminBtn" onclick="switchToAdmin()" title="В админку" hidden>→</button>
+      <button class="btn small icon-btn" onclick="shareShop()" title="Поделиться">🔗</button>
+      <button class="btn small icon-btn" id="shopAdminBtn" onclick="switchToAdmin()" title="В админку" hidden>→</button>
     </div>
   </div>
   <main>
@@ -362,11 +397,8 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
 
 <script>
 /* ============ НАСТРОЙКА ============ */
-// ⚙️ Укажите URL вашей базы Firebase (Realtime Database) здесь,
-// чтобы витрина работала у покупателей без входа.
-// Пример: 'https://myapp-default-rtdb.firebaseio.com'
-// Можно оставить пустым — тогда URL будет передаваться через ?fb= в ссылке.
-const DEFAULT_FB_URL = '';
+// Firebase URL вшит — работает у всех без настройки
+const DEFAULT_FB_URL = 'https://evso-cd735-default-rtdb.europe-west1.firebasedatabase.app';
 
 /* ============ PWA / INSTALL ============ */
 (function setupPWA(){
@@ -427,9 +459,9 @@ const STATE_KEY = 'evso_state';
 const FB_KEY = 'evso_fb_url';
 const USER_KEY = 'evso_user';
 
-let state = { 
-  warehouses: { wh1:{name:'Точка 1'}, wh2:{name:'Точка 2'} }, 
-  products: {}, 
+let state = {
+  warehouses: { wh1:{name:'Точка 1'}, wh2:{name:'Точка 2'} },
+  products: {},
   sales: {},
   users: { 'командир': '12345', 'Димон': '123455' },
   customBrands: [],
@@ -553,7 +585,7 @@ async function clearSalesHistory() {
   showToast('История продаж очищена');
 }
 
-/* ============ AUTH ============ */
+/* ============ AUTH & ROUTING ============ */
 function isShopMode() {
   return new URLSearchParams(window.location.search).get('shop') === '1';
 }
@@ -562,21 +594,68 @@ function initAuth() {
   currentUser = localStorage.getItem(USER_KEY) || '';
   loadLocal();
   if (isShopMode()) { showShop(); return; }
-  if (currentUser && state.users && state.users[currentUser]) showApp(); else showLogin();
+  if (currentUser && state.users && state.users[currentUser]) { showApp(); return; }
+  showChoose();
 }
+
+function showChoose() {
+  $('chooseScreen').hidden = false;
+  $('loginScreen').hidden = true;
+  $('app').hidden = true;
+  $('shopScreen').hidden = true;
+}
+
+function chooseRole(role) {
+  if (role === 'buyer') {
+    const u = new URL(window.location.href);
+    u.searchParams.set('shop', '1');
+    window.history.replaceState({}, '', u.toString());
+    showShop();
+  } else {
+    $('chooseScreen').hidden = true;
+    showLogin();
+  }
+}
+
+function backToChoose() {
+  const u = new URL(window.location.href);
+  u.searchParams.delete('shop');
+  u.searchParams.delete('product');
+  window.history.replaceState({}, '', u.toString());
+  // Если продавец залогинен — вернёмся в админку, иначе на выбор
+  if (currentUser && state.users && state.users[currentUser]) {
+    showApp();
+  } else {
+    showChoose();
+  }
+}
+
 function showLogin() {
-  $('loginScreen').hidden = false; $('app').hidden = true; $('shopScreen').hidden = true;
+  $('chooseScreen').hidden = true;
+  $('loginScreen').hidden = false;
+  $('app').hidden = true;
+  $('shopScreen').hidden = true;
   $('loginForm').onsubmit = e => {
     e.preventDefault();
     const f = new FormData(e.target); const user = f.get('user').trim(), pass = f.get('pass');
     if (state.users && state.users[user] && state.users[user] === pass) {
       localStorage.setItem(USER_KEY, user); currentUser = user;
-      $('loginError').textContent = ''; showApp();
+      $('loginError').textContent = '';
+      // Если была ?shop=1 — уберём её
+      const u = new URL(window.location.href);
+      u.searchParams.delete('shop');
+      u.searchParams.delete('product');
+      window.history.replaceState({}, '', u.toString());
+      showApp();
     } else $('loginError').textContent = 'Неверный логин или пароль';
   };
 }
+
 function showApp() {
-  $('loginScreen').hidden = true; $('shopScreen').hidden = true; $('app').hidden = false;
+  $('chooseScreen').hidden = true;
+  $('loginScreen').hidden = true;
+  $('shopScreen').hidden = true;
+  $('app').hidden = false;
   $('userName').textContent = currentUser;
   activeTab = 'menu';
   document.querySelectorAll('.main-nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === 'menu'));
@@ -587,16 +666,24 @@ function showApp() {
     if (isIOS) showInstallBanner('ios'); else if (deferredInstallPrompt) showInstallBanner('android');
   }, 1500);
 }
-function logout() { if (!confirm('Выйти из аккаунта?')) return; localStorage.removeItem(USER_KEY); location.reload(); }
+
+function logout() {
+  if (!confirm('Выйти из аккаунта?')) return;
+  localStorage.removeItem(USER_KEY);
+  currentUser = '';
+  showChoose();
+}
 
 /* ============ SHOP MODE ============ */
 function showShop() {
-  $('loginScreen').hidden = true; $('app').hidden = true; $('shopScreen').hidden = false;
+  $('chooseScreen').hidden = true;
+  $('loginScreen').hidden = true;
+  $('app').hidden = true;
+  $('shopScreen').hidden = false;
 
   const adminBtn = $('shopAdminBtn');
   if (adminBtn) adminBtn.hidden = !(currentUser && state.users && state.users[currentUser]);
 
-  // Bind filters (once)
   if (!showShop._bound) {
     bindShopFilters();
     showShop._bound = true;
@@ -604,7 +691,6 @@ function showShop() {
 
   setupShopRealtime();
 
-  // Deep link to specific product
   const productId = new URLSearchParams(window.location.search).get('product');
   if (productId) {
     setTimeout(() => { if (state.products[productId]) openShopProductView(productId); }, 600);
@@ -750,8 +836,6 @@ function switchToAdmin() {
 function buildShopUrl(productId) {
   const params = new URLSearchParams();
   params.set('shop', '1');
-  const fbUrl = new URLSearchParams(window.location.search).get('fb') || getFbUrl();
-  if (fbUrl) params.set('fb', fbUrl);
   if (productId) params.set('product', productId);
   return window.location.origin + window.location.pathname + '?' + params.toString();
 }
@@ -781,9 +865,10 @@ async function shareProduct(productId) {
 
 /* ============ FIREBASE ============ */
 const getFbUrl = () => {
+  if (DEFAULT_FB_URL) return DEFAULT_FB_URL;
   const fromUrl = new URLSearchParams(window.location.search).get('fb');
   if (fromUrl) return fromUrl;
-  return localStorage.getItem(FB_KEY) || DEFAULT_FB_URL || '';
+  return localStorage.getItem(FB_KEY) || '';
 };
 function initFirebase() {
   const url = getFbUrl();
@@ -1094,4 +1179,241 @@ function renderEditSizes() {
   }).join('');
 }
 function editQty(size, wh, delta) { if (!editingProduct.sizes[size]) return; editingProduct.sizes[size][wh] = Math.max(0, qty(editingProduct.sizes[size][wh]) + delta); renderEditSizes(); }
-function removeEditSize(size) { delete editingProduct.sizes[size]; renderEditSizes(); renderPresetGrid();
+function removeEditSize(size) { delete editingProduct.sizes[size]; renderEditSizes(); renderPresetGrid(); }
+function renderPresetGrid() {
+  const g = $('presetGrid'); if (!g) return; const presets = [35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50];
+  g.innerHTML = presets.map(s => `<button type="button" class="size-preset-btn${editingProduct.sizes[String(s)] ? ' active' : ''}" onclick="togglePresetSize('${s}')">${s}</button>`).join('');
+}
+function togglePresetSize(size) { if (editingProduct.sizes[size]) delete editingProduct.sizes[size]; else editingProduct.sizes[size] = { wh1: 0, wh2: 0 }; renderEditSizes(); renderPresetGrid(); }
+function addCustomSize() { const v = $('customSizeInput').value.trim(); if (!v) return; if (editingProduct.sizes[v]) return showToast('Уже есть', 'error'); editingProduct.sizes[v] = { wh1: 0, wh2: 0 }; $('customSizeInput').value = ''; renderEditSizes(); renderPresetGrid(); }
+
+function openModal(html, wide) { $('modalBox').innerHTML = html; $('modalBox').className = wide ? 'modal wide' : 'modal'; $('modalBackdrop').classList.add('show'); $('modalBox').scrollTop = 0; }
+function closeModal() { $('modalBackdrop').classList.remove('show'); }
+function resizeImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image(); img.onload = () => {
+        const maxDim = 400; let w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) { const r = Math.min(maxDim/w, maxDim/h); w = Math.round(w*r); h = Math.round(h*r); }
+        const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(img, 0, 0, w, h); resolve(c.toDataURL('image/jpeg', 0.75));
+      }; img.onerror = reject; img.src = e.target.result;
+    }; reader.onerror = reject; reader.readAsDataURL(file);
+  });
+}
+
+/* ============ SALES TAB ============ */
+function renderSalesTab() {
+  const all = Object.values(state.sales || {}).filter(s => s && s.date).sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+  const users = [...new Set(all.map(s => s.user).filter(Boolean))].sort(); const filterUser = window._salesFilterUser || '';
+  const filtered = filterUser ? all.filter(s => s.user === filterUser) : all; const total = filtered.reduce((a, s) => a + (+s.price || 0), 0);
+  const rows = filtered.map(s => `
+    <tr>
+      <td>${new Date(s.date).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })}</td>
+      <td>${esc(s.user || '—')}</td><td class="wrap"><b>${esc(s.brand || '')}</b> ${esc(s.productName || '')}</td>
+      <td>${esc(s.size)}</td><td>${esc(s.whName || '')}</td><td class="num">${fmt(s.price)} ₽</td>
+    </tr>`).join('');
+  const filterBadge = filterUser ? `<div class="filter-badge">${esc(filterUser)} <button onclick="setSalesUser('')">×</button></div>` : '';
+  $('tab-sales').innerHTML = `
+    <div class="toolbar">
+      <input class="search" id="fSalesSearch" placeholder="Поиск..." oninput="filterSalesTable()">
+      <select class="search" id="fSalesUser" onchange="setSalesUser(this.value)"><option value="">Все</option>${users.map(u => `<option value="${esc(u)}" ${filterUser === u ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select>
+      <button class="btn" onclick="location.reload()" title="Обновить">↻</button><button class="btn" onclick="exportSales()">Excel</button>
+    </div>
+    ${filterBadge ? `<div style="margin-bottom:10px">${filterBadge}</div>` : ''}
+    <div class="sales-wrap">
+      ${filtered.length ? `<div class="table-scroll"><table class="sales-table" id="salesTable"><thead><tr><th>Дата</th><th>Продавец</th><th>Товар</th><th>Размер</th><th>Точка</th><th class="num">Цена</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <div style="padding:12px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-weight:700"><span>${filtered.length} ${plural(filtered.length, 'продажа', 'продажи', 'продаж')}</span><span>${fmt(total)} ₽</span></div>` : `<div class="empty">Продаж пока нет</div>`}
+    </div>`;
+}
+function setSalesUser(u) { window._salesFilterUser = u; renderSalesTab(); }
+function filterSalesTable() { const q = ($('fSalesSearch')?.value || '').toLowerCase(); document.querySelectorAll('#salesTable tbody tr').forEach(tr => tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none'); }
+
+/* ============ STATS TAB ============ */
+function renderStatsTab() {
+  const sales = Object.values(state.sales || {}).filter(s => s && s.date); const allUsers = [...new Set(sales.map(s => s.user).filter(Boolean))].sort();
+  const cutoff = new Date(); cutoff.setHours(0,0,0,0); cutoff.setDate(cutoff.getDate() - (statsPeriod - 1));
+  const salesInPeriod = sales.filter(s => new Date(s.date) >= cutoff); const periodTotal = salesInPeriod.reduce((a, s) => a + (+s.price || 0), 0);
+  const daysMap = {}; const today = new Date(); today.setHours(0,0,0,0);
+  for (let i = statsPeriod - 1; i >= 0; i--) { const d = new Date(today); d.setDate(d.getDate() - i); daysMap[dayKey(d)] = { key: dayKey(d), date: d, total: 0, count: 0, byUser: {}, isToday: i === 0 }; }
+  salesInPeriod.forEach(s => { const d = new Date(s.date); d.setHours(0,0,0,0); const day = daysMap[dayKey(d)]; if (!day) return; day.total += +s.price || 0; day.count++; const u = s.user || '—'; if (!day.byUser[u]) day.byUser[u] = { total: 0, count: 0 }; day.byUser[u].total += +s.price || 0; day.byUser[u].count++; });
+  const days = Object.values(daysMap).sort((a, b) => a.date - b.date); const maxTotal = Math.max(...days.map(d => d.total), 1);
+  const barsHtml = days.map(d => { const h = d.total > 0 ? Math.max(2, (d.total / maxTotal) * 100) : 0; return `<div class="chart-bar-wrap ${d.isToday ? 'today' : ''}" onclick="openDayDetails('${d.key}')" title="${d.date.toLocaleDateString('ru-RU')}: ${fmt(d.total)} ₽ · ${d.count} пар"><div class="chart-bar-inner"><div class="chart-bar ${d.total === 0 ? 'zero' : ''}" style="height:${h}%"></div></div><div class="chart-label">${d.date.getDate()}</div></div>`; }).join('');
+  const userHeaders = allUsers.map(u => `<th class="num">${esc(u)}</th>`).join('');
+  const rowsHtml = days.slice().reverse().map(d => {
+    const userCells = allUsers.map(u => { const info = d.byUser[u] || { total: 0, count: 0 }; if (!info.count) return '<td class="num muted">—</td>'; return `<td class="num">${fmt(info.total)} ₽<br><span class="muted" style="font-size:11px;font-weight:400">${info.count} пар</span></td>`; }).join('');
+    return `<tr onclick="openDayDetails('${d.key}')" style="cursor:pointer" class="${d.count === 0 ? 'empty-day' : ''}"><td>${d.date.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', weekday:'short' })}</td><td class="num">${d.count || '—'}</td><td class="num"><b>${d.total ? fmt(d.total) + ' ₽' : '—'}</b></td>${userCells}</tr>`;
+  }).join('');
+  const userStatsHtml = allUsers.map(u => { const us = salesInPeriod.filter(s => s.user === u); const ut = us.reduce((a, s) => a + (+s.price || 0), 0); return `<div class="stat"><div class="k">${esc(u)}</div><div class="v">${fmt(ut)} ₽</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${us.length} пар</div></div>`; }).join('');
+  $('tab-stats').innerHTML = `
+    <div class="period-tabs">${[7,14,30,90].map(p => `<button class="${statsPeriod === p ? 'active' : ''}" onclick="setStatsPeriod(${p})">${p} дн.</button>`).join('')}</div>
+    <div class="stats"><div class="stat"><div class="k">Выручка за ${statsPeriod} дн.</div><div class="v">${fmt(periodTotal)} ₽</div></div><div class="stat"><div class="k">Продано пар</div><div class="v">${salesInPeriod.length}</div></div>${userStatsHtml}</div>
+    <div class="chart-wrap"><div class="chart-bars">${barsHtml}</div></div>
+    <div class="sales-wrap"><div class="table-scroll"><table class="sales-table"><thead><tr><th>Дата</th><th class="num">Пар</th><th class="num">Выручка</th>${userHeaders}</tr></thead><tbody>${rowsHtml}</tbody></table></div></div>`;
+}
+function setStatsPeriod(p) { statsPeriod = p; renderStatsTab(); }
+function openDayDetails(key) {
+  const sales = Object.values(state.sales || {}).filter(s => { if (!s || !s.date) return false; const d = new Date(s.date); d.setHours(0,0,0,0); return dayKey(d) === key; });
+  if (!sales.length) { showToast('В этот день продаж не было', 'error'); return; }
+  sales.sort((a, b) => new Date(a.date) - new Date(b.date)); const total = sales.reduce((a, s) => a + (+s.price || 0), 0);
+  const dateStr = new Date(sales[0].date).toLocaleDateString('ru-RU', { weekday:'long', day:'2-digit', month:'long', year:'numeric' }); const byUser = {};
+  sales.forEach(s => { const u = s.user || '—'; if (!byUser[u]) byUser[u] = { sales: [], total: 0 }; byUser[u].sales.push(s); byUser[u].total += +s.price || 0; });
+  const userHtml = Object.entries(byUser).map(([u, data]) => `<div class="user-section"><div class="user-header"><span>${esc(u)}</span><span>${data.sales.length} пар · <b>${fmt(data.total)} ₽</b></span></div><div class="user-sales">${data.sales.map(s => `<div class="sale-item"><div><div class="sale-name">${esc(s.brand || '')} ${esc(s.productName || '')}</div><div class="sale-meta">Разм. ${esc(s.size)} · ${esc(s.whName || '')} · ${new Date(s.date).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</div></div><div class="sale-price">${fmt(s.price)} ₽</div></div>`).join('')}</div></div>`).join('');
+  openModal(`<h3 style="text-transform:capitalize">${dateStr}</h3><div class="day-summary"><span>Всего: <b>${sales.length} пар</b></span><span><b>${fmt(total)} ₽</b></span></div>${userHtml}<div class="modal-actions"><button class="btn" onclick="closeModal()">Закрыть</button></div>`, true);
+}
+
+/* ============ EXPORT ============ */
+function exportProducts() {
+  const products = Object.values(state.products).sort((a, b) => { if ((a.brand||'') !== (b.brand||'')) return (a.brand||'').localeCompare(b.brand||''); return (a.name||'').localeCompare(b.name||''); });
+  if (!products.length) { showToast('Нет товаров', 'error'); return; }
+  const wh1 = state.warehouses.wh1.name, wh2 = state.warehouses.wh2.name;
+  const rows = [['Бренд','Модель','Пол','Сезон','Цена, ₽','Мин. цена, ₽', `${wh1} (разм:кол)`, `${wh2} (разм:кол)`, 'Всего пар']];
+  products.forEach(p => { const sizes = Object.keys(p.sizes || {}).sort((a, b) => parseFloat(a) - parseFloat(b)); const t1 = sizes.filter(s => qty(p.sizes[s].wh1) > 0).map(s => `${s}:${qty(p.sizes[s].wh1)}`).join(', '); const t2 = sizes.filter(s => qty(p.sizes[s].wh2) > 0).map(s => `${s}:${qty(p.sizes[s].wh2)}`).join(', '); rows.push([p.brand || '', p.name || '', p.gender || '', p.season || '', p.price || 0, p.minPrice ?? '', t1, t2, getTotalQty(p)]); });
+  doExport(rows, 'Товары', 'evso-tovary');
+}
+function exportSales() {
+  const sales = Object.values(state.sales || {}).filter(s => s && s.date).sort((a, b) => new Date(b.date) - new Date(a.date));
+  if (!sales.length) { showToast('Нет продаж', 'error'); return; }
+  const rows = [['Дата','Продавец','Бренд','Модель','Размер','Точка','Цена, ₽']]; sales.forEach(s => rows.push([new Date(s.date).toLocaleString('ru-RU'), s.user || '', s.brand || '', s.productName || '', s.size, s.whName || '', s.price || 0]));
+  doExport(rows, 'Продажи', 'evso-prodazhi');
+}
+function doExport(rows, sheetName, filename) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (typeof XLSX === 'undefined') {
+    const csv = rows.map(r => r.map(c => { const s = String(c ?? ''); return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\r\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }); const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename + '-' + today + '.csv'; a.click(); URL.revokeObjectURL(url); return;
+  }
+  const ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = rows[0].map((_, i) => ({ wch: i === 1 ? 20 : 16 }));
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, sheetName); XLSX.writeFile(wb, filename + '-' + today + '.xlsx');
+}
+
+/* ============ SETTINGS ============ */
+function renderSettingsTab() {
+  const themePref = localStorage.getItem('evso_theme') || 'light';
+  const salesCount = Object.keys(state.sales || {}).length;
+  const shopUrl = buildShopUrl();
+  const showOut = state.settings?.showOutOfStock !== false;
+  const tgUser = state.settings?.sellerTelegram || '';
+
+  $('tab-settings').innerHTML = `
+    <div class="settings-section">
+      <h3>🎨 Оформление</h3>
+      <div class="row-actions">
+        <button class="btn ${themePref === 'light' ? 'primary' : ''}" onclick="setTheme('light')">Светлая</button>
+        <button class="btn ${themePref === 'dark' ? 'primary' : ''}" onclick="setTheme('dark')">Тёмная</button>
+        <button class="btn ${themePref === 'system' ? 'primary' : ''}" onclick="setTheme('system')">Авто</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>🛍 Витрина для покупателей</h3>
+      <p class="muted" style="font-size:12.5px;margin:0 0 10px">Ссылка, по которой покупатели видят каталог без входа.</p>
+      <label>Ссылка на витрину
+        <input value="${esc(shopUrl)}" readonly onclick="this.select()" style="font-size:13px">
+      </label>
+      <div class="row-actions">
+        <button class="btn" onclick="copyShopUrl()">📋 Копировать</button>
+        <button class="btn primary" onclick="window.open(buildShopUrl(),'_blank')">Открыть →</button>
+      </div>
+
+      <label style="margin-top:14px">Telegram продавца
+        <input id="sellerTg" value="${esc(tgUser)}" placeholder="@username" onchange="updateSellerTg(this.value)">
+      </label>
+      <p class="muted" style="font-size:11.5px;margin:-6px 0 0 0">Например: @myusername или myusername</p>
+
+      <label style="display:flex;align-items:center;gap:8px;margin-top:14px;cursor:pointer">
+        <input type="checkbox" ${showOut ? 'checked' : ''} onchange="setShowOutOfStock(this.checked)" style="width:auto;margin:0">
+        <span style="color:var(--text);font-size:13px;font-weight:500">Показывать товары без остатка</span>
+      </label>
+    </div>
+
+    <div class="settings-section">
+      <h3>👤 Мой аккаунт</h3>
+      <p style="margin:0 0 12px">Вы вошли как: <b>${esc(currentUser)}</b></p>
+      <div style="border-top:1px dashed var(--border);padding-top:12px;margin-top:12px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px">Сменить свой пароль</div>
+        <div class="modal-row" style="margin-bottom:8px">
+          <input id="myNewPass" placeholder="Новый пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
+          <button class="btn" onclick="changeMyPass()">Сменить</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>➕ Добавить сотрудника</h3>
+      <div class="modal-row" style="margin-bottom:8px">
+        <input id="newUserLogin" placeholder="Логин" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
+        <input id="newUserPass" placeholder="Пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
+      </div>
+      <button class="btn full" onclick="addUser()">+ Добавить пользователя</button>
+    </div>
+
+    <div class="settings-section">
+      <h3>💾 Резервная копия</h3>
+      <p class="muted" style="font-size:12.5px;margin:0 0 10px">Автобэкап создаётся раз в день (хранятся последние 3 дня локально). Скачайте файл, чтобы сохранить всё навсегда (включая фото).</p>
+      <div class="row-actions">
+        <button class="btn primary" onclick="downloadBackup()">⬇ Скачать копию</button>
+        <button class="btn" onclick="$('restoreFile').click()">⬆ Восстановить</button>
+        <input type="file" id="restoreFile" accept=".json" hidden onchange="restoreBackup(this)">
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>🗑 История продаж</h3>
+      <p class="muted" style="font-size:12.5px;margin:0 0 10px">
+        Всего записей: <b style="color:var(--text)">${salesCount}</b>.
+        Очистка удалит всю историю продаж <b>безвозвратно</b>.
+        Товары и остатки на складах <b>не затрагиваются</b>.
+      </p>
+      <button class="btn danger full" onclick="clearSalesHistory()">Очистить историю продаж</button>
+    </div>
+
+    <div class="settings-section">
+      <h3>🔄 Синхронизация</h3>
+      <div class="status-line ${useFirebase ? 'ok' : 'warn'}">
+        <strong>${useFirebase ? '🟢 Подключено к облаку' : '⚪ Локальный режим'}</strong>
+      </div>
+      <p class="muted" style="font-size:12px;margin:0">
+        База данных: <code>${esc(DEFAULT_FB_URL)}</code>
+      </p>
+    </div>
+
+    <div class="settings-section">
+      <h3>🏪 Названия точек</h3>
+      <label>Точка 1<input value="${esc(state.warehouses.wh1.name)}" onchange="updateWhName('wh1', this.value)"></label>
+      <label>Точка 2<input value="${esc(state.warehouses.wh2.name)}" onchange="updateWhName('wh2', this.value)"></label>
+    </div>
+
+    <div class="settings-section">
+      <h3>Аккаунт</h3>
+      <button class="btn danger full" onclick="logout()">Выйти</button>
+    </div>
+  `;
+}
+
+function copyShopUrl() {
+  const url = buildShopUrl();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => showToast('Ссылка скопирована')).catch(() => prompt('Скопируйте:', url));
+  } else prompt('Скопируйте:', url);
+}
+function updateSellerTg(val) {
+  state.settings = state.settings || {};
+  state.settings.sellerTelegram = (val || '').trim();
+  saveLocal(); saveSettingsRemote(); showToast('Сохранено');
+}
+function setShowOutOfStock(val) {
+  state.settings = state.settings || {};
+  state.settings.showOutOfStock = !!val;
+  saveLocal(); saveSettingsRemote(); showToast(val ? 'Товары без остатка показываются' : 'Товары без остатка скрыты');
+}
+
+function addUser() { const u = $('newUserLogin').value.trim(); const p = $('newUserPass').value.trim(); if (!u || !p) return showToast('Введите логин и пароль', 'error'); if (state.users[u]) return showToast('Такой логин уже есть', 'error'); state.users[u] = p; saveLocal(); saveUsersRemote(); renderSettingsTab(); showToast('Пользователь добавлен'); }
+function changeMyPass() { const p = $('myNewPass').value.trim(); if (!p) return; state.users[currentUser] = p; saveLocal(); saveUsersRemote(); showToast('Пароль изменён'); $('myNewPass').value = ''; }
+function updateWhName(wh, name) { state.warehouses[wh].name = name.trim() || (wh === 'wh1' ? 'Точка 1' : 'Точка 2'); saveLocal(); saveWarehousesRemote(); render(); }
+
+initAuth();
+</script>
+</body>
+</html>
