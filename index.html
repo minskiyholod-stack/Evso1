@@ -882,11 +882,6 @@ function doExport(rows, sheetName, filename) {
 /* ============ SETTINGS ============ */
 function renderSettingsTab() {
   const url = getFbUrl(); const themePref = localStorage.getItem('evso_theme') || 'light';
-  const usersList = Object.entries(state.users || {}).map(([u, p]) => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--hover);border-radius:8px;margin-bottom:6px">
-      <div><b>${esc(u)}</b> <span class="muted" style="font-size:12px">(пароль: ${esc(p)})</span></div>
-      ${u !== currentUser ? `<button class="btn small danger" onclick="deleteUser('${esc(u)}')">Удалить</button>` : '<span class="muted" style="font-size:12px">это вы</span>'}
-    </div>`).join('');
 
   $('tab-settings').innerHTML = `
     <div class="settings-section">
@@ -899,16 +894,8 @@ function renderSettingsTab() {
     </div>
 
     <div class="settings-section">
-      <h3>👥 Пользователи</h3>
-      <div style="margin-bottom:12px">${usersList}</div>
-      <div style="border-top:1px dashed var(--border);padding-top:12px;margin-top:12px">
-        <div style="font-size:13px;font-weight:600;margin-bottom:8px">Добавить нового</div>
-        <div class="modal-row" style="margin-bottom:8px">
-          <input id="newUserLogin" placeholder="Логин" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
-          <input id="newUserPass" placeholder="Пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
-        </div>
-        <button class="btn full" onclick="addUser()">+ Добавить пользователя</button>
-      </div>
+      <h3>👤 Мой аккаунт</h3>
+      <p style="margin:0 0 12px">Вы вошли как: <b>${esc(currentUser)}</b></p>
       <div style="border-top:1px dashed var(--border);padding-top:12px;margin-top:12px">
         <div style="font-size:13px;font-weight:600;margin-bottom:8px">Сменить свой пароль</div>
         <div class="modal-row" style="margin-bottom:8px">
@@ -916,6 +903,15 @@ function renderSettingsTab() {
           <button class="btn" onclick="changeMyPass()">Сменить</button>
         </div>
       </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>➕ Добавить сотрудника</h3>
+      <div class="modal-row" style="margin-bottom:8px">
+        <input id="newUserLogin" placeholder="Логин" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
+        <input id="newUserPass" placeholder="Пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
+      </div>
+      <button class="btn full" onclick="addUser()">+ Добавить пользователя</button>
     </div>
 
     <div class="settings-section">
@@ -946,13 +942,11 @@ function renderSettingsTab() {
 
     <div class="settings-section">
       <h3>Аккаунт</h3>
-      <p style="margin:0 0 10px">Вы вошли как: <b>${esc(currentUser)}</b></p>
       <button class="btn danger full" onclick="logout()">Выйти</button>
     </div>
   `;
 }
 function addUser() { const u = $('newUserLogin').value.trim(); const p = $('newUserPass').value.trim(); if (!u || !p) return showToast('Введите логин и пароль', 'error'); if (state.users[u]) return showToast('Такой логин уже есть', 'error'); state.users[u] = p; saveLocal(); saveUsersRemote(); renderSettingsTab(); showToast('Пользователь добавлен'); }
-function deleteUser(u) { if (u === currentUser) return; if (!confirm('Удалить пользователя ' + u + '?')) return; delete state.users[u]; saveLocal(); saveUsersRemote(); renderSettingsTab(); showToast('Пользователь удален'); }
 function changeMyPass() { const p = $('myNewPass').value.trim(); if (!p) return; state.users[currentUser] = p; saveLocal(); saveUsersRemote(); showToast('Пароль изменён'); $('myNewPass').value = ''; }
 function updateWhName(wh, name) { state.warehouses[wh].name = name.trim() || (wh === 'wh1' ? 'Точка 1' : 'Точка 2'); saveLocal(); saveWarehousesRemote(); render(); }
 function saveFbUrl() { const url = $('fbUrlInput').value.trim(); if (!url) { localStorage.removeItem(FB_KEY); location.reload(); return; } localStorage.setItem(FB_KEY, url); location.reload(); }
