@@ -50,19 +50,14 @@ input,select,textarea,button{font-family:inherit;font-size:16px}
 #app, #shopScreen, #chooseScreen { animation: fadeIn 0.3s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ==== SYNC BAR ==== */
 .sync-bar{position:fixed;top:0;left:0;right:0;z-index:500;
   background:var(--danger);color:#fff;padding:8px 16px;
   padding-top:calc(8px + var(--safe-top));
   font-size:12.5px;font-weight:600;text-align:center;
   box-shadow:0 2px 12px rgba(0,0,0,.15)}
-.sync-bar.show{display:block}
 body.has-sync-bar .app-header{padding-top:calc(var(--safe-top) + 34px)}
 body.has-sync-bar main{padding-top:calc(16px + 34px)}
-body.has-sync-bar #shopScreen main,
-body.has-sync-bar #app main{padding-top:calc(16px + 34px)}
 
-/* ==== TOAST ==== */
 .toast{position:fixed;left:50%;bottom:calc(20px + var(--safe-bottom));transform:translateX(-50%) translateY(20px);
   background:var(--black);color:var(--white);padding:12px 18px;border-radius:10px;
   font-size:14px;font-weight:500;z-index:300;opacity:0;transition:all .25s;
@@ -71,7 +66,6 @@ body.has-sync-bar #app main{padding-top:calc(16px + 34px)}
 .toast.error{background:var(--danger);color:#fff !important}
 .toast.success{background:var(--success);color:#fff !important}
 
-/* ==== LOGIN / CHOOSE ==== */
 .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .login-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
   padding:32px 24px;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,.05)}
@@ -99,7 +93,6 @@ body.has-sync-bar #app main{padding-top:calc(16px + 34px)}
 .role-desc{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.35}
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
 
-/* ==== HEADER / NAV ==== */
 .app-header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--border);padding-top:var(--safe-top);transition:padding-top .2s}
 .header-top{display:flex;align-items:center;gap:10px;padding:10px 16px 8px}
 .logo{font-size:22px;font-weight:900;letter-spacing:-1.2px;cursor:pointer;user-select:none}
@@ -127,7 +120,6 @@ body.has-sync-bar #app main{padding-top:calc(16px + 34px)}
 main{max-width:1280px;margin:0 auto;padding:16px;padding-bottom:calc(16px + var(--safe-bottom));overflow-x:hidden;width:100%}
 @media(max-width:600px){main{padding:12px}}
 
-/* ==== BUTTONS ==== */
 .btn{background:var(--card);border:1px solid var(--border);color:var(--text);
   font-weight:500;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;font-size:14px;
   min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:4px;text-decoration:none}
@@ -138,21 +130,18 @@ main{max-width:1280px;margin:0 auto;padding:16px;padding-bottom:calc(16px + var(
 .btn.ghost{background:transparent;border-color:transparent}
 .btn.small{padding:6px 10px;font-size:13px;min-height:34px}
 
-/* ==== STATS ==== */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
 .stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
 .stat .v{font-size:20px;font-weight:800;margin-top:3px}
 @media(max-width:600px){.stats{grid-template-columns:1fr 1fr;gap:8px}}
 
-/* ==== TOOLBAR ==== */
 .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
 .search{flex:1;min-width:130px;background:var(--card);border:1px solid var(--border);
   border-radius:8px;padding:10px 12px;color:var(--text);font-size:16px}
 .search:focus{outline:none;border-color:var(--black)}
 select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 
-/* ==== PRODUCTS ==== */
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
 @media(max-width:600px){.product-grid{grid-template-columns:repeat(2,1fr);gap:8px}}
 .product-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
@@ -180,7 +169,6 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 
 .empty{padding:50px 20px;text-align:center;color:var(--muted);background:var(--card);border:1px dashed var(--border);border-radius:var(--radius)}
 
-/* ==== MODAL ==== */
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:100;overflow-y:auto;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
 .modal-backdrop.show{display:flex}
 @media(min-width:700px){.modal-backdrop{align-items:flex-start;padding:20px}}
@@ -229,7 +217,6 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .size-preset-btn.active{background:var(--black);border-color:var(--black);color:var(--white)}
 .delete-section{margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 
-/* ==== SALES ==== */
 .sales-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--card)}
 .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .sales-table{width:100%;border-collapse:collapse}
@@ -244,7 +231,6 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .filter-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--black);color:var(--white);border-radius:20px;font-size:12px;font-weight:600}
 .filter-badge button{background:none;border:none;color:inherit;cursor:pointer;font-size:16px;padding:0 0 0 2px;line-height:1}
 
-/* ==== STATS TAB ==== */
 .period-tabs{display:inline-flex;gap:2px;background:var(--hover);border-radius:8px;padding:3px;margin-bottom:14px}
 .period-tabs button{background:none;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;font-weight:500;color:var(--muted);font-size:13px}
 .period-tabs button.active{background:var(--black);color:var(--white)}
@@ -267,7 +253,6 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .sale-price{font-weight:700;white-space:nowrap}
 .hint-box{padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;margin-bottom:12px;font-size:12.5px;color:#78350f}
 
-/* ==== LOG TAB ==== */
 .log-item{background:var(--card);border:1px solid var(--border);border-radius:10px;
   padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
 .log-icon{font-size:22px;line-height:1;flex-shrink:0;margin-top:2px}
@@ -276,7 +261,6 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .log-meta{font-size:11.5px;color:var(--muted)}
 .log-meta b{color:var(--text)}
 
-/* ==== SETTINGS ==== */
 .settings-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
 .settings-section h3{margin:0 0 12px;font-size:15px}
 .settings-section label{display:block;margin-bottom:10px;font-size:13px;color:var(--muted);font-weight:500}
@@ -290,7 +274,6 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .muted{color:var(--muted)}
 code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;font-family:ui-monospace,monospace}
 
-/* ==== MENU ==== */
 .menu-header{margin-bottom:20px}
 .menu-header h1{font-size:26px;font-weight:900;margin:0 0 4px;letter-spacing:-.6px}
 .menu-header p{margin:0;color:var(--muted);font-size:13.5px}
@@ -302,7 +285,6 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
 .menu-title{font-size:17px;font-weight:800;letter-spacing:-.3px}
 .menu-sub{font-size:12px;color:var(--muted);line-height:1.35}
 
-/* ==== INSTALL BANNER ==== */
 .install-banner{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--card);border-top:1px solid var(--border);padding:14px 16px;padding-bottom:calc(14px + var(--safe-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.08);animation:slideUp .3s ease-out}
 .install-banner-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:12px}
 .install-banner-icon{font-size:32px;flex-shrink:0}
@@ -311,7 +293,6 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
 .install-banner-actions{display:flex;gap:6px;flex-shrink:0}
 .install-banner-actions .btn{padding:7px 12px;font-size:13px;min-height:36px}
 
-/* ==== SHOP ==== */
 .shop-hero{padding:8px 0 16px}
 .shop-hero h1{font-size:26px;font-weight:900;margin:0 0 4px;letter-spacing:-.6px}
 .shop-hero p{margin:0;color:var(--muted);font-size:13.5px}
@@ -323,12 +304,10 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
 </head>
 <body>
 
-<!-- КРАСНАЯ ПОЛОСА СИНХРОНИЗАЦИИ -->
 <div id="syncBar" class="sync-bar" hidden>
   ⚠️ Проблемы с синхронизацией — данные могут не сохраняться на сервер
 </div>
 
-<!-- ВЫБОР РОЛИ -->
 <div id="chooseScreen" class="login-screen" hidden>
   <div class="login-card" style="max-width:460px">
     <div class="login-logo">evso<span>.</span></div>
@@ -348,7 +327,6 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
   </div>
 </div>
 
-<!-- ЛОГИН ПРОДАВЦА -->
 <div id="loginScreen" class="login-screen" hidden>
   <div class="login-card">
     <div class="login-logo">evso<span>.</span></div>
@@ -365,7 +343,6 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
   </div>
 </div>
 
-<!-- АДМИНКА -->
 <div id="app" hidden>
   <div class="app-header">
     <div class="header-top">
@@ -398,7 +375,6 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
   </main>
 </div>
 
-<!-- ВИТРИНА -->
 <div id="shopScreen" hidden>
   <div class="app-header">
     <div class="header-top">
@@ -451,6 +427,14 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
 <script>
 /* ============ НАСТРОЙКА ============ */
 const DEFAULT_FB_URL = 'https://evso-cd735-default-rtdb.europe-west1.firebasedatabase.app';
+
+/* ============ ОПТИМИЗАЦИЯ ============ */
+const SAVE_DELAY = 500;       // мс — отложенное сохранение в localStorage
+const RENDER_DELAY = 150;     // мс — debounce рендера при массовых обновлениях
+const SEARCH_DELAY = 200;     // мс — debounce поиска
+const LOG_LIMIT_LOCAL = 200;  // сколько записей лога хранить локально
+const PHOTO_MAX_SIZE = 350;   // px — размер фото
+const PHOTO_QUALITY = 0.7;    // JPEG-качество
 
 /* ============ PWA / INSTALL ============ */
 (function setupPWA(){
@@ -508,6 +492,7 @@ const GENDERS = ['Мужские','Женские','Унисекс'];
 const SEASONS = ['Зима','Лето','Всесезон'];
 
 const STATE_KEY = 'evso_state';
+const PHOTOS_KEY = 'evso_photos';
 const USER_KEY = 'evso_user';
 
 let state = {
@@ -536,6 +521,15 @@ const dayKey = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0
 const qty = v => { const n = parseInt(v); return isNaN(n) ? 0 : n; };
 const plural = (n, one, few, many) => { const m = n % 100; if (m >= 11 && m <= 19) return many; const m10 = n % 10; if (m10 === 1) return one; if (m10 >= 2 && m10 <= 4) return few; return many; };
 
+/* ============ DEBOUNCE / THROTTLE ============ */
+function debounce(fn, ms) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), ms);
+  };
+}
+
 /* ============ HAPTIC ============ */
 function haptic(type) {
   if (!navigator.vibrate) return;
@@ -548,15 +542,15 @@ function haptic(type) {
 }
 
 /* ============ TOAST ============ */
+let _toastEl = null;
 function showToast(message, type = 'success') {
-  let toast = document.getElementById('toast');
-  if (!toast) { toast = document.createElement('div'); toast.id = 'toast'; toast.className = 'toast'; document.body.appendChild(toast); }
-  toast.textContent = message; toast.className = 'toast ' + type;
-  requestAnimationFrame(() => toast.classList.add('show'));
-  clearTimeout(toast._timer); toast._timer = setTimeout(() => toast.classList.remove('show'), 3500);
+  if (!_toastEl) { _toastEl = document.createElement('div'); _toastEl.className = 'toast'; document.body.appendChild(_toastEl); }
+  _toastEl.textContent = message; _toastEl.className = 'toast ' + type;
+  requestAnimationFrame(() => _toastEl.classList.add('show'));
+  clearTimeout(_toastEl._timer); _toastEl._timer = setTimeout(() => _toastEl.classList.remove('show'), 3500);
 }
 
-/* ============ MIGRATION & THEME ============ */
+/* ============ MIGRATION ============ */
 function migrateState() {
   if (!state.products || typeof state.products !== 'object') state.products = {};
   if (!state.sales || typeof state.sales !== 'object' || Array.isArray(state.sales)) state.sales = {};
@@ -576,34 +570,27 @@ function migrateState() {
   });
 }
 
+/* ============ THEME ============ */
 function applyTheme() {
   const t = localStorage.getItem('evso_theme') || 'light';
   const isDark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.body.classList.toggle('dark', isDark);
-  updateThemeIcons();
-}
-function updateThemeIcons() {
-  const isDark = document.body.classList.contains('dark');
   document.querySelectorAll('.theme-toggle').forEach(b => b.textContent = isDark ? '☀️' : '🌙');
 }
 function toggleTheme() {
   const isDark = document.body.classList.contains('dark');
-  const next = isDark ? 'light' : 'dark';
-  localStorage.setItem('evso_theme', next);
-  applyTheme();
-  haptic();
+  localStorage.setItem('evso_theme', isDark ? 'light' : 'dark');
+  applyTheme(); haptic();
   if (activeTab === 'settings' && !$('app').hidden) renderSettingsTab();
 }
 function setTheme(t) { localStorage.setItem('evso_theme', t); applyTheme(); renderSettingsTab(); haptic(); }
 applyTheme();
 
-/* ============ BRANDS ============ */
+/* ============ BRANDS / SIZES ============ */
 function getAllBrands() {
   const customs = state.customBrands || [];
   return [...new Set([...DEFAULT_BRANDS, ...customs])].sort();
 }
-
-/* ============ AVAILABLE SIZES ============ */
 function getAllAvailableSizes() {
   const sizes = new Set();
   Object.values(state.products).forEach(p => {
@@ -615,49 +602,29 @@ function getAllAvailableSizes() {
 }
 
 /* ============ ACTION LOG ============ */
-const LOG_LIMIT_LOCAL = 300;
-
 const LOG_ICONS = {
-  'sale': '💰',
-  'sale_cancel': '↩️',
-  'product_add': '➕',
-  'product_edit': '✏️',
-  'product_delete': '🗑',
-  'sales_clear': '🧹',
-  'user_add': '👤',
-  'pass_change': '🔑',
-  'wh_rename': '🏪',
-  'backup_restore': '♻️',
-  'settings_change': '⚙️',
-  'log_clear': '📜'
+  'sale': '💰', 'product_add': '➕', 'product_edit': '✏️', 'product_delete': '🗑',
+  'sales_clear': '🧹', 'user_add': '👤', 'pass_change': '🔑', 'wh_rename': '🏪',
+  'backup_restore': '♻️', 'settings_change': '⚙️', 'log_clear': '📜'
 };
 
 function logAction(action, details) {
   if (!currentUser) return;
   const id = uid('l');
-  const entry = {
-    id,
-    date: new Date().toISOString(),
-    user: currentUser,
-    action,
-    details: details || ''
-  };
+  const entry = { id, date: new Date().toISOString(), user: currentUser, action, details: details || '' };
   if (!state.log) state.log = {};
   state.log[id] = entry;
   pruneLocalLog();
   saveLocal();
-  if (useFirebase) {
-    db.ref('evso/log/' + id).set(entry).catch(e => console.error('log error:', e));
-  }
-  if (activeTab === 'log') renderLogTab();
+  if (useFirebase) db.ref('evso/log/' + id).set(entry).catch(e => console.error('log error:', e));
+  if (activeTab === 'log') scheduleRender();
 }
 
 function pruneLocalLog() {
   const keys = Object.keys(state.log);
   if (keys.length <= LOG_LIMIT_LOCAL) return;
   keys.sort((a, b) => new Date(state.log[a].date) - new Date(state.log[b].date));
-  const toDelete = keys.slice(0, keys.length - LOG_LIMIT_LOCAL);
-  toDelete.forEach(k => { delete state.log[k]; });
+  keys.slice(0, keys.length - LOG_LIMIT_LOCAL).forEach(k => { delete state.log[k]; });
 }
 
 /* ============ BACKUP ============ */
@@ -698,52 +665,36 @@ function restoreBackup(input) {
   reader.readAsText(file);
 }
 
-/* ============ CLEAR SALES ============ */
+/* ============ CLEAR SALES / LOG ============ */
 async function clearSalesHistory() {
   const count = Object.keys(state.sales || {}).length;
   if (!count) { showToast('История продаж уже пуста', 'error'); return; }
-
-  const first = confirm(`Удалить ВСЮ историю продаж?\n\nЗаписей: ${count}\n\nЭто действие необратимо.\nТовары и остатки НЕ затрагиваются.`);
-  if (!first) return;
-
+  if (!confirm(`Удалить ВСЮ историю продаж?\n\nЗаписей: ${count}\n\nЭто действие необратимо.\nТовары и остатки НЕ затрагиваются.`)) return;
   const answer = prompt('Для подтверждения введите слово УДАЛИТЬ (заглавными буквами):');
   if (answer !== 'УДАЛИТЬ') { showToast('Отменено — ничего не удалено', 'error'); return; }
-
-  state.sales = {};
-  saveLocal();
+  state.sales = {}; saveLocal();
   logAction('sales_clear', `Удалено ${count} записей о продажах`);
   haptic('delete');
-
   if (useFirebase) {
     try { await db.ref('evso/sales').remove(); }
     catch (e) { console.error(e); showToast('⚠️ Локально очищено, но не синхронизировано', 'error'); render(); return; }
   }
-  render();
-  showToast('История продаж очищена');
+  render(); showToast('История продаж очищена');
 }
 
-/* ============ CLEAR LOG ============ */
 async function clearActionLog() {
   const count = Object.keys(state.log || {}).length;
   if (!count) { showToast('Лог пуст', 'error'); return; }
   if (!confirm(`Очистить лог действий?\n\nЗаписей: ${count}\n\nЭто действие необратимо.`)) return;
   const answer = prompt('Для подтверждения введите слово ОЧИСТИТЬ:');
   if (answer !== 'ОЧИСТИТЬ') { showToast('Отменено', 'error'); return; }
-
-  state.log = {};
-  saveLocal();
-  if (useFirebase) {
-    try { await db.ref('evso/log').remove(); } catch (e) { console.error(e); }
-  }
-  haptic('delete');
-  renderLogTab();
-  showToast('Лог очищен');
+  state.log = {}; saveLocal();
+  if (useFirebase) { try { await db.ref('evso/log').remove(); } catch (e) { console.error(e); } }
+  haptic('delete'); renderLogTab(); showToast('Лог очищен');
 }
 
-/* ============ AUTH & ROUTING ============ */
-function isShopMode() {
-  return new URLSearchParams(window.location.search).get('shop') === '1';
-}
+/* ============ AUTH ============ */
+function isShopMode() { return new URLSearchParams(window.location.search).get('shop') === '1'; }
 
 function initAuth() {
   currentUser = localStorage.getItem(USER_KEY) || '';
@@ -779,11 +730,8 @@ function backToChoose() {
   u.searchParams.delete('shop');
   u.searchParams.delete('product');
   window.history.replaceState({}, '', u.toString());
-  if (currentUser && state.users && state.users[currentUser]) {
-    showApp();
-  } else {
-    showChoose();
-  }
+  if (currentUser && state.users && state.users[currentUser]) showApp();
+  else showChoose();
 }
 
 function showLogin() {
@@ -798,11 +746,9 @@ function showLogin() {
       localStorage.setItem(USER_KEY, user); currentUser = user;
       $('loginError').textContent = '';
       const u = new URL(window.location.href);
-      u.searchParams.delete('shop');
-      u.searchParams.delete('product');
+      u.searchParams.delete('shop'); u.searchParams.delete('product');
       window.history.replaceState({}, '', u.toString());
-      haptic('success');
-      showApp();
+      haptic('success'); showApp();
     } else { $('loginError').textContent = 'Неверный логин или пароль'; haptic('delete'); }
   };
 }
@@ -816,7 +762,7 @@ function showApp() {
   activeTab = 'menu';
   document.querySelectorAll('.main-nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === 'menu'));
   ['menu','products','sales','stats','log','settings'].forEach(t => { const sec = $('tab-' + t); if (sec) sec.hidden = t !== 'menu'; });
-  window.scrollTo(0, 0); loadLocal(); render(); setupRealtime(); checkAutoBackup();
+  window.scrollTo(0, 0); render(); setupRealtime(); checkAutoBackup();
   setTimeout(() => {
     if (isStandalone || localStorage.getItem('evso_banner_dismissed') || localStorage.getItem('evso_installed')) return;
     if (isIOS) showInstallBanner('ios'); else if (deferredInstallPrompt) showInstallBanner('android');
@@ -825,6 +771,7 @@ function showApp() {
 
 function logout() {
   if (!confirm('Выйти из аккаунта?')) return;
+  flushSave();
   localStorage.removeItem(USER_KEY);
   currentUser = '';
   syncOnline = false; syncError = false; useFirebase = false;
@@ -833,6 +780,8 @@ function logout() {
 }
 
 /* ============ SHOP MODE ============ */
+let _shopBound = false, _shopRealtime = false;
+
 function showShop() {
   $('chooseScreen').hidden = true;
   $('loginScreen').hidden = true;
@@ -842,21 +791,16 @@ function showShop() {
   const adminBtn = $('shopAdminBtn');
   if (adminBtn) adminBtn.hidden = !(currentUser && state.users && state.users[currentUser]);
 
-  if (!showShop._bound) {
-    bindShopFilters();
-    showShop._bound = true;
-  }
-
-  setupShopRealtime();
+  if (!_shopBound) { bindShopFilters(); _shopBound = true; }
+  if (!_shopRealtime) { setupShopRealtime(); _shopRealtime = true; }
 
   const productId = new URLSearchParams(window.location.search).get('product');
-  if (productId) {
-    setTimeout(() => { if (state.products[productId]) openShopProductView(productId); }, 600);
-  }
+  if (productId) setTimeout(() => { if (state.products[productId]) openShopProductView(productId); }, 600);
 }
 
 function bindShopFilters() {
-  $('shopSearch')?.addEventListener('input', e => { shopFilters.search = e.target.value; renderShopGrid(); });
+  const onSearch = debounce(e => { shopFilters.search = e.target.value; renderShopGrid(); }, SEARCH_DELAY);
+  $('shopSearch')?.addEventListener('input', onSearch);
   $('shopBrand')?.addEventListener('change', e => { shopFilters.brand = e.target.value; renderShopGrid(); });
   $('shopSize')?.addEventListener('change', e => { shopFilters.size = e.target.value; renderShopGrid(); });
   $('shopGender')?.addEventListener('change', e => { shopFilters.gender = e.target.value; renderShopGrid(); });
@@ -868,12 +812,19 @@ function setupShopRealtime() {
   if (!initFirebase()) { renderShop(); return; }
   const err = e => { console.error('Shop sync:', e); syncError = true; updateSyncBar(); };
   db.ref('.info/connected').on('value', s => { syncOnline = s.val() === true; updateSyncBar(); });
-  db.ref('evso/products').on('child_added', snap => { state.products[snap.key] = snap.val(); renderShop(); }, err);
-  db.ref('evso/products').on('child_changed', snap => { state.products[snap.key] = snap.val(); renderShop(); }, err);
-  db.ref('evso/products').on('child_removed', snap => { delete state.products[snap.key]; renderShop(); }, err);
-  db.ref('evso/warehouses').on('value', snap => { const v = snap.val(); if (v) { state.warehouses = v; renderShop(); } }, err);
-  db.ref('evso/settings').on('value', snap => { const v = snap.val(); if (v) { state.settings = v; renderShop(); } }, err);
+  const onProd = () => scheduleShopRender();
+  db.ref('evso/products').on('child_added', snap => { state.products[snap.key] = snap.val(); onProd(); }, err);
+  db.ref('evso/products').on('child_changed', snap => { state.products[snap.key] = snap.val(); onProd(); }, err);
+  db.ref('evso/products').on('child_removed', snap => { delete state.products[snap.key]; onProd(); }, err);
+  db.ref('evso/warehouses').on('value', snap => { const v = snap.val(); if (v) { state.warehouses = v; onProd(); } }, err);
+  db.ref('evso/settings').on('value', snap => { const v = snap.val(); if (v) { state.settings = v; onProd(); } }, err);
   renderShop();
+}
+
+let _shopRenderTimer = null;
+function scheduleShopRender() {
+  if (_shopRenderTimer) return;
+  _shopRenderTimer = setTimeout(() => { _shopRenderTimer = null; renderShop(); }, RENDER_DELAY);
 }
 
 function renderShop() {
@@ -882,14 +833,12 @@ function renderShop() {
   const sub = $('shopSubtitle');
   if (sub) sub.textContent = entries.length ? `${entries.length} ${plural(entries.length,'модель','модели','моделей')} · ${totalQty} ${plural(totalQty,'пара','пары','пар')} в наличии` : 'Пока пусто';
 
-  // Бренды
   const brands = [...new Set(entries.map(([, p]) => p.brand).filter(Boolean))].sort();
   const brandSel = $('shopBrand');
   if (brandSel) {
     const cv = shopFilters.brand;
     brandSel.innerHTML = '<option value="">Все бренды</option>' + brands.map(b => `<option value="${esc(b)}"${cv === b ? ' selected' : ''}>${esc(b)}</option>`).join('');
   }
-  // Размеры
   const sizes = getAllAvailableSizes();
   const sizeSel = $('shopSize');
   if (sizeSel) {
@@ -918,7 +867,6 @@ function renderShopGrid() {
     return true;
   });
 
-  // Сортировка
   if (shopFilters.sort === 'price_asc') entries.sort((a, b) => (a[1].price||0) - (b[1].price||0));
   else if (shopFilters.sort === 'price_desc') entries.sort((a, b) => (b[1].price||0) - (a[1].price||0));
   else if (shopFilters.sort === 'name') entries.sort((a, b) => (a[1].name||'').localeCompare(b[1].name||''));
@@ -955,7 +903,6 @@ function openShopProductView(productId) {
   const totalQty = getTotalQty(p);
   const attrs = [p.gender, p.season].filter(Boolean).join(' · ');
 
-  // У покупателя — только суммарный остаток по всем точкам
   const sizesHtml = sizes.map(size => {
     const total = qty(p.sizes[size].wh1) + qty(p.sizes[size].wh2);
     return `<div class="view-size-row ${total === 0 ? 'out' : ''}"><span class="vsr-size">${esc(size)}</span><span style="font-weight:800;font-variant-numeric:tabular-nums">${total}</span></div>`;
@@ -970,8 +917,9 @@ function openShopProductView(productId) {
 
   let actionHtml;
   if (totalQty > 0) {
-    if (tgUrl) actionHtml = `<a href="${tgUrl}" target="_blank" rel="noopener" class="btn primary">💬 Написать продавцу</a>`;
-    else actionHtml = `<button class="btn primary" onclick="showToast('Продавец не указал Telegram','error')">💬 Написать продавцу</button>`;
+    actionHtml = tgUrl
+      ? `<a href="${tgUrl}" target="_blank" rel="noopener" class="btn primary">💬 Написать продавцу</a>`
+      : `<button class="btn primary" onclick="showToast('Продавец не указал Telegram','error')">💬 Написать продавцу</button>`;
   } else {
     actionHtml = `<button class="btn" disabled style="opacity:.5;cursor:not-allowed">Нет в наличии</button>`;
   }
@@ -983,27 +931,18 @@ function openShopProductView(productId) {
     ${attrs ? `<div class="muted" style="font-size:13px;margin-bottom:8px">${esc(attrs)}</div>` : ''}
     ${p.price ? `<div style="font-size:24px;font-weight:800;margin-bottom:4px">${fmt(p.price)} ₽</div>` : ''}
     ${totalQty > 0 ? `<div style="font-size:12px;color:var(--success);font-weight:600;margin-bottom:12px">● В наличии (${totalQty} ${plural(totalQty,'пара','пары','пар')})</div>` : `<div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:12px">○ Нет в наличии</div>`}
-
-    ${sizes.length ? `
-      <div style="margin:12px 0">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Размеры</div>
-        <div class="view-sizes-grid">${sizesHtml}</div>
-      </div>` : ''}
-
+    ${sizes.length ? `<div style="margin:12px 0"><div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Размеры</div><div class="view-sizes-grid">${sizesHtml}</div></div>` : ''}
     <div class="shop-modal-actions">
       <button class="btn icon" onclick="shareProduct('${productId}')" title="Поделиться">🔗</button>
       ${actionHtml}
     </div>
-    <div style="margin-top:10px">
-      <button class="btn" style="width:100%" onclick="closeModal()">Закрыть</button>
-    </div>
+    <div style="margin-top:10px"><button class="btn" style="width:100%" onclick="closeModal()">Закрыть</button></div>
   `);
 }
 
 function switchToAdmin() {
   const u = new URL(window.location.href);
-  u.searchParams.delete('shop');
-  u.searchParams.delete('product');
+  u.searchParams.delete('shop'); u.searchParams.delete('product');
   window.location.href = u.toString();
 }
 
@@ -1027,8 +966,7 @@ async function shareShop() {
 }
 
 async function shareProduct(productId) {
-  const p = state.products[productId];
-  if (!p) return;
+  const p = state.products[productId]; if (!p) return;
   const url = buildShopUrl(productId);
   const title = `${p.brand ? p.brand + ' ' : ''}${p.name}`;
   const text = p.price ? `${title} — ${fmt(p.price)} ₽` : title;
@@ -1071,17 +1009,17 @@ async function setupRealtime() {
   firebaseReady = true;
   const err = e => { console.error(e); updateSync(false, true); };
 
-  db.ref('evso/warehouses').on('value', snap => { const v = snap.val(); if (v) { state.warehouses = v; saveLocal(); render(); } }, err);
-  db.ref('evso/users').on('value', snap => { const v = snap.val(); if (v) { state.users = v; saveLocal(); render(); } }, err);
-  db.ref('evso/customBrands').on('value', snap => { const v = snap.val(); if (v) { state.customBrands = v; saveLocal(); render(); } }, err);
-  db.ref('evso/settings').on('value', snap => { const v = snap.val(); if (v) { state.settings = v; saveLocal(); render(); } }, err);
+  db.ref('evso/warehouses').on('value', snap => { const v = snap.val(); if (v) { state.warehouses = v; saveLocal(); scheduleRender(); } }, err);
+  db.ref('evso/users').on('value', snap => { const v = snap.val(); if (v) { state.users = v; saveLocal(); scheduleRender(); } }, err);
+  db.ref('evso/customBrands').on('value', snap => { const v = snap.val(); if (v) { state.customBrands = v; saveLocal(); scheduleRender(); } }, err);
+  db.ref('evso/settings').on('value', snap => { const v = snap.val(); if (v) { state.settings = v; saveLocal(); scheduleRender(); } }, err);
 
-  db.ref('evso/products').on('child_added', snap => { state.products[snap.key] = snap.val(); saveLocal(); render(); }, err);
-  db.ref('evso/products').on('child_changed', snap => { state.products[snap.key] = snap.val(); saveLocal(); render(); }, err);
-  db.ref('evso/products').on('child_removed', snap => { delete state.products[snap.key]; saveLocal(); render(); }, err);
-  db.ref('evso/sales').on('child_added', snap => { const v = snap.val(); if (v) { state.sales[snap.key] = v; saveLocal(); render(); } }, err);
-  db.ref('evso/sales').on('child_changed', snap => { const v = snap.val(); if (v) { state.sales[snap.key] = v; saveLocal(); render(); } }, err);
-  db.ref('evso/sales').on('child_removed', snap => { delete state.sales[snap.key]; saveLocal(); render(); }, err);
+  db.ref('evso/products').on('child_added', snap => { state.products[snap.key] = snap.val(); saveLocal(); scheduleRender(); }, err);
+  db.ref('evso/products').on('child_changed', snap => { state.products[snap.key] = snap.val(); saveLocal(); scheduleRender(); }, err);
+  db.ref('evso/products').on('child_removed', snap => { delete state.products[snap.key]; saveLocal(); scheduleRender(); }, err);
+  db.ref('evso/sales').on('child_added', snap => { const v = snap.val(); if (v) { state.sales[snap.key] = v; saveLocal(); scheduleRender(); } }, err);
+  db.ref('evso/sales').on('child_changed', snap => { const v = snap.val(); if (v) { state.sales[snap.key] = v; saveLocal(); scheduleRender(); } }, err);
+  db.ref('evso/sales').on('child_removed', snap => { delete state.sales[snap.key]; saveLocal(); scheduleRender(); }, err);
   db.ref('evso/log').on('child_added', snap => {
     const v = snap.val(); if (!v) return;
     if (!state.log) state.log = {};
@@ -1089,7 +1027,7 @@ async function setupRealtime() {
     state.log[snap.key] = v;
     pruneLocalLog();
     saveLocal();
-    if (activeTab === 'log') renderLogTab();
+    if (activeTab === 'log') scheduleRender();
   }, err);
 
   updateSync(true);
@@ -1098,7 +1036,8 @@ async function setupRealtime() {
 function updateSync(online, error) {
   if (online !== undefined) syncOnline = online;
   if (error !== undefined) syncError = error;
-  const el = $('syncDot'); if (el) {
+  const el = $('syncDot');
+  if (el) {
     el.className = 'dot-online' + (syncError ? ' err' : (!syncOnline || !useFirebase ? ' off' : ''));
     el.title = syncError ? 'Ошибка синхронизации' : (syncOnline && useFirebase ? 'Синхронизировано' : 'Локальный режим');
   }
@@ -1106,16 +1045,10 @@ function updateSync(online, error) {
 }
 
 function updateSyncBar() {
-  const bar = $('syncBar');
-  if (!bar) return;
+  const bar = $('syncBar'); if (!bar) return;
   const show = useFirebase && (syncError || !syncOnline);
-  if (show) {
-    bar.hidden = false;
-    document.body.classList.add('has-sync-bar');
-  } else {
-    bar.hidden = true;
-    document.body.classList.remove('has-sync-bar');
-  }
+  bar.hidden = !show;
+  document.body.classList.toggle('has-sync-bar', show);
 }
 
 const saveProductRemote = id => useFirebase && state.products[id] ? db.ref('evso/products/' + id).set(state.products[id]).catch(e => console.error(e)) : Promise.resolve();
@@ -1125,7 +1058,7 @@ const saveUsersRemote = () => useFirebase ? db.ref('evso/users').set(state.users
 const saveBrandsRemote = () => useFirebase ? db.ref('evso/customBrands').set(state.customBrands || []).catch(e => console.error(e)) : Promise.resolve();
 const saveSettingsRemote = () => useFirebase ? db.ref('evso/settings').set(state.settings || {}).catch(e => console.error(e)) : Promise.resolve();
 
-/* ============ STORAGE ============ */
+/* ============ STORAGE (оптимизировано) ============ */
 function loadLocal() {
   try {
     const raw = localStorage.getItem(STATE_KEY); if (!raw) return;
@@ -1134,108 +1067,91 @@ function loadLocal() {
       state = d;
       if (!state.sales || typeof state.sales !== 'object') state.sales = {};
       if (!state.log || typeof state.log !== 'object') state.log = {};
+
+      // Восстанавливаем фото из отдельного ключа
+      try {
+        const photosRaw = localStorage.getItem(PHOTOS_KEY);
+        if (photosRaw) {
+          const photos = JSON.parse(photosRaw);
+          Object.entries(photos).forEach(([id, photo]) => {
+            if (state.products[id]) state.products[id].photo = photo;
+          });
+        }
+      } catch (e) { console.warn('Photos load error', e); }
+
       migrateState();
     }
   } catch (e) { console.error(e); }
 }
-const saveLocal = () => { try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) { console.error(e); } };
 
-/* ============ PRODUCT ACTIONS ============ */
-function deleteProduct(id) {
-  const p = state.products[id]; if (!p) return;
-  if (!confirm(`Удалить товар «${p.name}»?\n\n✓ История продаж сохранится\n✗ Отменить будет нельзя`)) return;
-  const nameCopy = `${p.brand || ''} ${p.name}`.trim();
-  delete state.products[id]; saveLocal(); deleteProductRemote(id);
-  logAction('product_delete', `Удалён товар «${nameCopy}»`);
-  haptic('delete');
-  closeModal(); render(); showToast('Товар удалён');
+// Отложенное сохранение — не чаще раза в SAVE_DELAY мс
+let _saveTimer = null, _saveDirty = false;
+
+function saveLocal() {
+  _saveDirty = true;
+  if (_saveTimer) return;
+  _saveTimer = setTimeout(() => {
+    _saveTimer = null;
+    doSave();
+  }, SAVE_DELAY);
 }
 
-/* ============ VIEW modal ============ */
-function openProductView(productId) {
-  const p = state.products[productId]; if (!p) return;
-  const sizes = Object.keys(p.sizes || {}).sort((a, b) => parseFloat(a) - parseFloat(b));
-  const totalQty = getTotalQty(p); const attrs = [p.gender, p.season].filter(Boolean).join(' · ');
-  const sum1 = sizes.reduce((a, s) => a + qty(p.sizes[s].wh1), 0); const sum2 = sizes.reduce((a, s) => a + qty(p.sizes[s].wh2), 0);
-  const sizesHtml = sizes.map(size => {
-    const q1 = qty(p.sizes[size].wh1); const q2 = qty(p.sizes[size].wh2); const total = q1 + q2;
-    return `<div class="view-size-row ${total === 0 ? 'out' : ''}"><span class="vsr-size">${esc(size)}</span><span class="vsr-wh wh1">${q1}</span><span class="vsr-wh wh2">${q2}</span></div>`;
-  }).join('');
-  openModal(`
-    <div class="view-photo">${p.photo ? `<img src="${p.photo}" alt="">` : '<div class="photo-placeholder">👟</div>'}</div>
-    ${p.brand ? `<div style="text-transform:uppercase;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.6px">${esc(p.brand)}</div>` : ''}
-    <h3 style="margin:4px 0 6px">${esc(p.name)}</h3>
-    ${attrs ? `<div class="muted" style="font-size:13px;margin-bottom:8px">${esc(attrs)}</div>` : ''}
-    ${p.price ? `<div style="font-size:20px;font-weight:800">${fmt(p.price)} ₽</div>` : ''}
-    <div style="background:var(--hover);padding:12px 14px;border-radius:10px;margin:16px 0">
-      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:700">Всего в наличии</span><span style="font-size:20px;font-weight:800">${totalQty} ${plural(totalQty,'пара','пары','пар')}</span></div>
-      <div style="display:flex;gap:16px;font-size:12px;color:var(--muted);margin-top:6px;flex-wrap:wrap">
-        <span><span style="color:var(--wh1)">●</span> ${esc(state.warehouses.wh1.name)}: <b style="color:var(--text)">${sum1}</b></span>
-        <span><span style="color:var(--wh2)">●</span> ${esc(state.warehouses.wh2.name)}: <b style="color:var(--text)">${sum2}</b></span>
-      </div>
-    </div>
-    ${sizes.length ? `<div class="view-sizes-grid">${sizesHtml}</div>` : `<div class="muted">Нет размеров</div>`}
-    <div class="modal-actions" style="margin-top:20px">
-      <button class="btn" onclick="closeModal()">Закрыть</button>
-      ${totalQty > 0 ? `<button class="btn primary" onclick="closeModal();openSaleModal('${productId}')">Продать</button>` : `<button class="btn" onclick="closeModal();openProductModal('${productId}')">✎ Изменить</button>`}
-    </div>
-  `);
+function doSave() {
+  if (!_saveDirty) return;
+  _saveDirty = false;
+  try {
+    // Фото — в отдельный ключ, state — без фото (экономия ~10x)
+    const photos = {};
+    const stateCopy = { ...state, products: {} };
+    Object.entries(state.products).forEach(([id, p]) => {
+      if (p.photo) photos[id] = p.photo;
+      const pCopy = { ...p };
+      delete pCopy.photo;
+      stateCopy.products[id] = pCopy;
+    });
+    localStorage.setItem(STATE_KEY, JSON.stringify(stateCopy));
+    const photoCount = Object.keys(photos).length;
+    if (photoCount) localStorage.setItem(PHOTOS_KEY, JSON.stringify(photos));
+    else localStorage.removeItem(PHOTOS_KEY);
+  } catch (e) {
+    console.error('Save error:', e);
+    // Если не влезло в localStorage — пробуем без фото
+    try {
+      const stateNoPhoto = JSON.parse(JSON.stringify(state));
+      Object.values(stateNoPhoto.products).forEach(p => delete p.photo);
+      localStorage.setItem(STATE_KEY, JSON.stringify(stateNoPhoto));
+    } catch (e2) { console.error('Fallback save error:', e2); }
+  }
 }
 
-/* ============ SALE ============ */
-function openSaleModal(productId) {
-  const p = state.products[productId]; if (!p) return;
-  const items = [];
-  Object.keys(p.sizes || {}).forEach(size => {
-    const q1 = qty(p.sizes[size].wh1), q2 = qty(p.sizes[size].wh2);
-    if (q1 > 0) items.push({ size, wh: 'wh1', whName: state.warehouses.wh1.name, qty: q1 });
-    if (q2 > 0) items.push({ size, wh: 'wh2', whName: state.warehouses.wh2.name, qty: q2 });
-  });
-  if (!items.length) { showToast('Нет доступных размеров', 'error'); return; }
-  const opts = items.map((it, i) => `<option value="${i}">Размер ${esc(it.size)} — ${esc(it.whName)} (${it.qty} шт)</option>`).join('');
-  const minHint = p.minPrice != null ? `<div class="hint-box">Мин. цена: <b>${fmt(p.minPrice)} ₽</b>${p.price > p.minPrice ? ` · макс. скидка ${fmt(p.price - p.minPrice)} ₽` : ''}</div>` : '';
-
-  openModal(`
-    <h3>Продажа: ${esc(p.name)}</h3>${minHint}
-    <form id="saleForm">
-      <label>Что продаём<select name="item" required>${opts}</select></label>
-      <label>Цена продажи, ₽<input name="price" type="number" inputmode="decimal" min="0" step="any" value="${p.price || ''}" required autofocus></label>
-      <div class="modal-actions"><button type="button" class="btn" onclick="closeModal()">Отмена</button><button type="submit" class="btn primary">Продать</button></div>
-    </form>`);
-
-  $('saleForm').onsubmit = async e => {
-    e.preventDefault();
-    const f = new FormData(e.target); const it = items[+f.get('item')]; if (!it) return;
-    const price = parseFloat(f.get('price')) || 0; const prod = state.products[productId];
-    if (!prod || !prod.sizes[it.size] || qty(prod.sizes[it.size][it.wh]) < 1) { showToast('Товар продан', 'error'); closeModal(); render(); return; }
-    if (prod.minPrice != null && price < prod.minPrice) { if (!confirm(`Цена ${fmt(price)} ₽ ниже минимальной. Всё равно продать?`)) return; }
-
-    prod.sizes[it.size][it.wh] = Math.max(0, qty(prod.sizes[it.size][it.wh]) - 1);
-    const saleId = uid('s');
-    const sale = { id: saleId, productId, productName: prod.name, brand: prod.brand || '', size: it.size, wh: it.wh, whName: state.warehouses[it.wh].name, price, date: new Date().toISOString(), user: currentUser };
-    state.sales[saleId] = sale; saveLocal();
-    logAction('sale', `Продано: ${prod.brand || ''} ${prod.name}, размер ${it.size}, ${state.warehouses[it.wh].name} — ${fmt(price)} ₽`);
-    haptic('success');
-    closeModal(); render(); showToast(`✓ Продано: ${prod.name}, ${it.size} р., ${fmt(price)} ₽`);
-
-    if (useFirebase && firebaseReady) {
-      try { await Promise.all([db.ref('evso/products/' + productId).set(prod), db.ref('evso/sales/' + saleId).set(sale)]); }
-      catch (err) { showToast('⚠️ Ошибка сохранения на сервер', 'error'); updateSync(false, true); }
-    }
-  };
+function flushSave() {
+  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+  doSave();
 }
 
-/* ============ RENDER ============ */
+window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
+window.addEventListener('beforeunload', flushSave);
+
+/* ============ RENDER (debounced) ============ */
+let _renderTimer = null;
+
+function scheduleRender() {
+  if (_renderTimer) return;
+  _renderTimer = setTimeout(() => { _renderTimer = null; render(); }, RENDER_DELAY);
+}
+
 function render() {
   const showStats = activeTab === 'products' || activeTab === 'sales' || activeTab === 'stats';
-  $('stats').hidden = !showStats; if (showStats) renderStats();
+  $('stats').hidden = !showStats;
+  if (showStats) renderStats();
   if (activeTab === 'menu') renderMenuTab();
-  if (activeTab === 'products') renderProductsTab();
-  if (activeTab === 'sales') renderSalesTab();
-  if (activeTab === 'stats') renderStatsTab();
-  if (activeTab === 'log') renderLogTab();
-  if (activeTab === 'settings') renderSettingsTab();
+  else if (activeTab === 'products') renderProductsTab();
+  else if (activeTab === 'sales') renderSalesTab();
+  else if (activeTab === 'stats') renderStatsTab();
+  else if (activeTab === 'log') renderLogTab();
+  else if (activeTab === 'settings') renderSettingsTab();
 }
+
 function switchTab(tab) {
   haptic();
   activeTab = tab;
@@ -1243,6 +1159,7 @@ function switchTab(tab) {
   ['menu','products','sales','stats','log','settings'].forEach(t => { const sec = $('tab-' + t); if (sec) sec.hidden = t !== tab; });
   window.scrollTo(0, 0); render();
 }
+
 function getTotalQty(p) { let total = 0; Object.values(p.sizes || {}).forEach(s => { total += qty(s.wh1) + qty(s.wh2); }); return total; }
 
 /* ============ MENU ============ */
@@ -1291,18 +1208,18 @@ function renderProductsTab() {
 
   const allBrands = getAllBrands();
   $('fBrand').innerHTML = '<option value="">Все бренды</option>' + allBrands.map(b => `<option value="${esc(b)}" ${filters.brand === b ? 'selected' : ''}>${esc(b)}</option>`).join('');
-
   const sizes = getAllAvailableSizes();
   $('fSize').innerHTML = '<option value="">Все размеры</option>' + sizes.map(s => `<option value="${esc(s)}" ${filters.size === s ? 'selected' : ''}>${esc(s)}</option>`).join('');
 
   $('fGender').value = filters.gender; $('fSeason').value = filters.season;
-  $('fSearch').oninput = e => { filters.search = e.target.value; renderProductGrid(); };
+  $('fSearch').oninput = debounce(e => { filters.search = e.target.value; renderProductGrid(); }, SEARCH_DELAY);
   $('fBrand').onchange = e => { filters.brand = e.target.value; renderProductGrid(); };
   $('fSize').onchange = e => { filters.size = e.target.value; renderProductGrid(); };
   $('fGender').onchange = e => { filters.gender = e.target.value; renderProductGrid(); };
   $('fSeason').onchange = e => { filters.season = e.target.value; renderProductGrid(); };
   renderProductGrid();
 }
+
 function getFilteredProducts() {
   const q = filters.search.toLowerCase();
   return Object.entries(state.products).filter(([id, p]) => {
@@ -1315,15 +1232,25 @@ function getFilteredProducts() {
       if (!sz || (qty(sz.wh1) + qty(sz.wh2)) === 0) return false;
     }
     return true;
-  }).sort((a, b) => { const pa = a[1], pb = b[1]; if ((pa.brand||'') !== (pb.brand||'')) return (pa.brand||'').localeCompare(pb.brand||''); return (pa.name||'').localeCompare(pb.name||''); });
+  }).sort((a, b) => {
+    const pa = a[1], pb = b[1];
+    if ((pa.brand||'') !== (pb.brand||'')) return (pa.brand||'').localeCompare(pb.brand||'');
+    return (pa.name||'').localeCompare(pb.name||'');
+  });
 }
+
 function renderProductGrid() {
   const grid = $('productGrid'); if (!grid) return; const list = getFilteredProducts();
-  if (!list.length) { grid.innerHTML = `<div class="empty" style="grid-column:1/-1">${Object.keys(state.products).length ? 'Ничего не найдено' : 'Пока нет товаров. Нажмите «+ Добавить».'}</div>`; return; }
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">${Object.keys(state.products).length ? 'Ничего не найдено' : 'Пока нет товаров. Нажмите «+ Добавить».'}</div>`;
+    return;
+  }
   grid.innerHTML = list.map(([id, p]) => renderProductCard(id, p)).join('');
 }
+
 function renderProductCard(id, p) {
-  const totalQty = getTotalQty(p); const anyAvailable = totalQty > 0; const attrs = [p.gender, p.season].filter(Boolean).join(' · ');
+  const totalQty = getTotalQty(p); const anyAvailable = totalQty > 0;
+  const attrs = [p.gender, p.season].filter(Boolean).join(' · ');
   return `<div class="product-card" onclick="openProductView('${id}')">
     <div class="photo">${p.photo ? `<img src="${p.photo}" alt="" loading="lazy">` : '<div class="photo-placeholder">👟</div>'}</div>
     <div class="info">
@@ -1343,7 +1270,7 @@ function renderProductCard(id, p) {
 function openProductModal(id) {
   const ex = id ? state.products[id] : null;
   editingProduct = ex ? JSON.parse(JSON.stringify(ex)) : { name:'', brand:'', gender:'', season:'', price:0, minPrice:null, photo:'', sizes:{} };
-  migrateState(); editingPhoto = editingProduct.photo || '';
+  editingPhoto = editingProduct.photo || '';
 
   const allBrands = getAllBrands();
   const brandOpts = allBrands.map(b => `<option value="${esc(b)}" ${editingProduct.brand === b ? 'selected' : ''}>${esc(b)}</option>`).join('');
@@ -1381,17 +1308,26 @@ function openProductModal(id) {
     ${id ? `<div class="delete-section"><button type="button" class="btn danger" onclick="deleteProduct('${id}')" style="width:100%">Удалить товар</button><div class="muted" style="font-size:11.5px;text-align:center;margin-top:6px">История продаж сохранится</div></div>` : ''}
   `);
   renderEditSizes(); renderPresetGrid();
-  $('photoInput').onchange = async e => { const file = e.target.files[0]; if (!file) return; try { editingPhoto = await resizeImage(file); $('photoPreview').innerHTML = `<img src="${editingPhoto}">`; } catch (err) { showToast('Ошибка фото', 'error'); } };
+  $('photoInput').onchange = async e => {
+    const file = e.target.files[0]; if (!file) return;
+    try { editingPhoto = await resizeImage(file); $('photoPreview').innerHTML = `<img src="${editingPhoto}">`; }
+    catch (err) { showToast('Ошибка фото', 'error'); }
+  };
 
   $('productForm').onsubmit = e => {
     e.preventDefault(); const f = new FormData(e.target); let brand = f.get('brand');
     if (brand === '__custom__') brand = (f.get('brandCustom') || '').trim();
-
     if (brand && !getAllBrands().includes(brand)) { state.customBrands.push(brand); saveBrandsRemote(); }
 
     const minPriceRaw = f.get('minPrice'); const cleanSizes = {};
     Object.keys(editingProduct.sizes).forEach(size => { cleanSizes[size] = { wh1: qty(editingProduct.sizes[size].wh1), wh2: qty(editingProduct.sizes[size].wh2) }; });
-    const data = { name: f.get('name').trim(), brand: (brand || '').trim(), gender: f.get('gender'), season: f.get('season'), price: parseFloat(f.get('price')) || 0, minPrice: minPriceRaw === '' ? null : (parseFloat(minPriceRaw) || 0), photo: editingPhoto || '', sizes: cleanSizes };
+    const data = {
+      name: f.get('name').trim(), brand: (brand || '').trim(),
+      gender: f.get('gender'), season: f.get('season'),
+      price: parseFloat(f.get('price')) || 0,
+      minPrice: minPriceRaw === '' ? null : (parseFloat(minPriceRaw) || 0),
+      photo: editingPhoto || '', sizes: cleanSizes
+    };
     if (!data.name) return;
 
     const isNew = !id || !state.products[id];
@@ -1404,10 +1340,13 @@ function openProductModal(id) {
   };
   $('modalBackdrop').classList.add('show');
 }
+
 function toggleBrandInput() { const sel = $('brandSelect'); $('customBrandWrap').style.display = sel.value === '__custom__' ? '' : 'none'; }
 function removePhoto() { editingPhoto = ''; $('photoPreview').innerHTML = '<div class="photo-placeholder">📷</div>'; }
+
 function renderEditSizes() {
-  const c = $('editSizesContainer'); if (!c) return; const sizes = Object.keys(editingProduct.sizes).sort((a, b) => parseFloat(a) - parseFloat(b));
+  const c = $('editSizesContainer'); if (!c) return;
+  const sizes = Object.keys(editingProduct.sizes).sort((a, b) => parseFloat(a) - parseFloat(b));
   if (!sizes.length) { c.innerHTML = '<div class="muted" style="font-size:13px;padding:8px 0">Пока нет размеров</div>'; return; }
   c.innerHTML = sizes.map(size => {
     const s = editingProduct.sizes[size]; const q1 = qty(s.wh1), q2 = qty(s.wh2);
@@ -1422,7 +1361,8 @@ function renderEditSizes() {
 function editQty(size, wh, delta) { if (!editingProduct.sizes[size]) return; editingProduct.sizes[size][wh] = Math.max(0, qty(editingProduct.sizes[size][wh]) + delta); renderEditSizes(); }
 function removeEditSize(size) { delete editingProduct.sizes[size]; renderEditSizes(); renderPresetGrid(); }
 function renderPresetGrid() {
-  const g = $('presetGrid'); if (!g) return; const presets = [35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50];
+  const g = $('presetGrid'); if (!g) return;
+  const presets = [35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50];
   g.innerHTML = presets.map(s => `<button type="button" class="size-preset-btn${editingProduct.sizes[String(s)] ? ' active' : ''}" onclick="togglePresetSize('${s}')">${s}</button>`).join('');
 }
 function togglePresetSize(size) { if (editingProduct.sizes[size]) delete editingProduct.sizes[size]; else editingProduct.sizes[size] = { wh1: 0, wh2: 0 }; renderEditSizes(); renderPresetGrid(); }
@@ -1430,24 +1370,118 @@ function addCustomSize() { const v = $('customSizeInput').value.trim(); if (!v) 
 
 function openModal(html, wide) { $('modalBox').innerHTML = html; $('modalBox').className = wide ? 'modal wide' : 'modal'; $('modalBackdrop').classList.add('show'); $('modalBox').scrollTop = 0; }
 function closeModal() { $('modalBackdrop').classList.remove('show'); }
+
 function resizeImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = e => {
-      const img = new Image(); img.onload = () => {
-        const maxDim = 400; let w = img.width, h = img.height;
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = PHOTO_MAX_SIZE;
+        let w = img.width, h = img.height;
         if (w > maxDim || h > maxDim) { const r = Math.min(maxDim/w, maxDim/h); w = Math.round(w*r); h = Math.round(h*r); }
-        const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(img, 0, 0, w, h); resolve(c.toDataURL('image/jpeg', 0.75));
-      }; img.onerror = reject; img.src = e.target.result;
-    }; reader.onerror = reject; reader.readAsDataURL(file);
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL('image/jpeg', PHOTO_QUALITY));
+      };
+      img.onerror = reject; img.src = e.target.result;
+    };
+    reader.onerror = reject; reader.readAsDataURL(file);
   });
+}
+
+/* ============ PRODUCT VIEW ============ */
+function openProductView(productId) {
+  const p = state.products[productId]; if (!p) return;
+  const sizes = Object.keys(p.sizes || {}).sort((a, b) => parseFloat(a) - parseFloat(b));
+  const totalQty = getTotalQty(p);
+  const attrs = [p.gender, p.season].filter(Boolean).join(' · ');
+  const sum1 = sizes.reduce((a, s) => a + qty(p.sizes[s].wh1), 0);
+  const sum2 = sizes.reduce((a, s) => a + qty(p.sizes[s].wh2), 0);
+  const sizesHtml = sizes.map(size => {
+    const q1 = qty(p.sizes[size].wh1); const q2 = qty(p.sizes[size].wh2); const total = q1 + q2;
+    return `<div class="view-size-row ${total === 0 ? 'out' : ''}"><span class="vsr-size">${esc(size)}</span><span class="vsr-wh wh1">${q1}</span><span class="vsr-wh wh2">${q2}</span></div>`;
+  }).join('');
+  openModal(`
+    <div class="view-photo">${p.photo ? `<img src="${p.photo}" alt="">` : '<div class="photo-placeholder">👟</div>'}</div>
+    ${p.brand ? `<div style="text-transform:uppercase;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.6px">${esc(p.brand)}</div>` : ''}
+    <h3 style="margin:4px 0 6px">${esc(p.name)}</h3>
+    ${attrs ? `<div class="muted" style="font-size:13px;margin-bottom:8px">${esc(attrs)}</div>` : ''}
+    ${p.price ? `<div style="font-size:20px;font-weight:800">${fmt(p.price)} ₽</div>` : ''}
+    <div style="background:var(--hover);padding:12px 14px;border-radius:10px;margin:16px 0">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:700">Всего в наличии</span><span style="font-size:20px;font-weight:800">${totalQty} ${plural(totalQty,'пара','пары','пар')}</span></div>
+      <div style="display:flex;gap:16px;font-size:12px;color:var(--muted);margin-top:6px;flex-wrap:wrap">
+        <span><span style="color:var(--wh1)">●</span> ${esc(state.warehouses.wh1.name)}: <b style="color:var(--text)">${sum1}</b></span>
+        <span><span style="color:var(--wh2)">●</span> ${esc(state.warehouses.wh2.name)}: <b style="color:var(--text)">${sum2}</b></span>
+      </div>
+    </div>
+    ${sizes.length ? `<div class="view-sizes-grid">${sizesHtml}</div>` : `<div class="muted">Нет размеров</div>`}
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn" onclick="closeModal()">Закрыть</button>
+      ${totalQty > 0 ? `<button class="btn primary" onclick="closeModal();openSaleModal('${productId}')">Продать</button>` : `<button class="btn" onclick="closeModal();openProductModal('${productId}')">✎ Изменить</button>`}
+    </div>
+  `);
+}
+
+/* ============ PRODUCT DELETE ============ */
+function deleteProduct(id) {
+  const p = state.products[id]; if (!p) return;
+  if (!confirm(`Удалить товар «${p.name}»?\n\n✓ История продаж сохранится\n✗ Отменить будет нельзя`)) return;
+  const nameCopy = `${p.brand || ''} ${p.name}`.trim();
+  delete state.products[id]; saveLocal(); deleteProductRemote(id);
+  logAction('product_delete', `Удалён товар «${nameCopy}»`);
+  haptic('delete'); closeModal(); render(); showToast('Товар удалён');
+}
+
+/* ============ SALE ============ */
+function openSaleModal(productId) {
+  const p = state.products[productId]; if (!p) return;
+  const items = [];
+  Object.keys(p.sizes || {}).forEach(size => {
+    const q1 = qty(p.sizes[size].wh1), q2 = qty(p.sizes[size].wh2);
+    if (q1 > 0) items.push({ size, wh: 'wh1', whName: state.warehouses.wh1.name, qty: q1 });
+    if (q2 > 0) items.push({ size, wh: 'wh2', whName: state.warehouses.wh2.name, qty: q2 });
+  });
+  if (!items.length) { showToast('Нет доступных размеров', 'error'); return; }
+  const opts = items.map((it, i) => `<option value="${i}">Размер ${esc(it.size)} — ${esc(it.whName)} (${it.qty} шт)</option>`).join('');
+  const minHint = p.minPrice != null ? `<div class="hint-box">Мин. цена: <b>${fmt(p.minPrice)} ₽</b>${p.price > p.minPrice ? ` · макс. скидка ${fmt(p.price - p.minPrice)} ₽` : ''}</div>` : '';
+
+  openModal(`
+    <h3>Продажа: ${esc(p.name)}</h3>${minHint}
+    <form id="saleForm">
+      <label>Что продаём<select name="item" required>${opts}</select></label>
+      <label>Цена продажи, ₽<input name="price" type="number" inputmode="decimal" min="0" step="any" value="${p.price || ''}" required autofocus></label>
+      <div class="modal-actions"><button type="button" class="btn" onclick="closeModal()">Отмена</button><button type="submit" class="btn primary">Продать</button></div>
+    </form>`);
+
+  $('saleForm').onsubmit = async e => {
+    e.preventDefault();
+    const f = new FormData(e.target); const it = items[+f.get('item')]; if (!it) return;
+    const price = parseFloat(f.get('price')) || 0; const prod = state.products[productId];
+    if (!prod || !prod.sizes[it.size] || qty(prod.sizes[it.size][it.wh]) < 1) { showToast('Товар продан', 'error'); closeModal(); render(); return; }
+    if (prod.minPrice != null && price < prod.minPrice) { if (!confirm(`Цена ${fmt(price)} ₽ ниже минимальной. Всё равно продать?`)) return; }
+
+    prod.sizes[it.size][it.wh] = Math.max(0, qty(prod.sizes[it.size][it.wh]) - 1);
+    const saleId = uid('s');
+    const sale = { id: saleId, productId, productName: prod.name, brand: prod.brand || '', size: it.size, wh: it.wh, whName: state.warehouses[it.wh].name, price, date: new Date().toISOString(), user: currentUser };
+    state.sales[saleId] = sale; saveLocal();
+    logAction('sale', `Продано: ${prod.brand || ''} ${prod.name}, размер ${it.size}, ${state.warehouses[it.wh].name} — ${fmt(price)} ₽`);
+    haptic('success'); closeModal(); render(); showToast(`✓ Продано: ${prod.name}, ${it.size} р., ${fmt(price)} ₽`);
+
+    if (useFirebase && firebaseReady) {
+      try { await Promise.all([db.ref('evso/products/' + productId).set(prod), db.ref('evso/sales/' + saleId).set(sale)]); }
+      catch (err) { showToast('⚠️ Ошибка сохранения на сервер', 'error'); updateSync(false, true); }
+    }
+  };
 }
 
 /* ============ SALES TAB ============ */
 function renderSalesTab() {
   const all = Object.values(state.sales || {}).filter(s => s && s.date).sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-  const users = [...new Set(all.map(s => s.user).filter(Boolean))].sort(); const filterUser = window._salesFilterUser || '';
-  const filtered = filterUser ? all.filter(s => s.user === filterUser) : all; const total = filtered.reduce((a, s) => a + (+s.price || 0), 0);
+  const users = [...new Set(all.map(s => s.user).filter(Boolean))].sort();
+  const filterUser = window._salesFilterUser || '';
+  const filtered = filterUser ? all.filter(s => s.user === filterUser) : all;
+  const total = filtered.reduce((a, s) => a + (+s.price || 0), 0);
   const rows = filtered.map(s => `
     <tr>
       <td>${new Date(s.date).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })}</td>
@@ -1457,7 +1491,7 @@ function renderSalesTab() {
   const filterBadge = filterUser ? `<div class="filter-badge">${esc(filterUser)} <button onclick="setSalesUser('')">×</button></div>` : '';
   $('tab-sales').innerHTML = `
     <div class="toolbar">
-      <input class="search" id="fSalesSearch" placeholder="Поиск..." oninput="filterSalesTable()">
+      <input class="search" id="fSalesSearch" placeholder="Поиск..." oninput="debouncedFilterSales()">
       <select class="search" id="fSalesUser" onchange="setSalesUser(this.value)"><option value="">Все</option>${users.map(u => `<option value="${esc(u)}" ${filterUser === u ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select>
       <button class="btn" onclick="location.reload()" title="Обновить">↻</button><button class="btn" onclick="exportSales()">Excel</button>
     </div>
@@ -1468,17 +1502,23 @@ function renderSalesTab() {
     </div>`;
 }
 function setSalesUser(u) { window._salesFilterUser = u; renderSalesTab(); }
-function filterSalesTable() { const q = ($('fSalesSearch')?.value || '').toLowerCase(); document.querySelectorAll('#salesTable tbody tr').forEach(tr => tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none'); }
+const debouncedFilterSales = debounce(() => {
+  const q = ($('fSalesSearch')?.value || '').toLowerCase();
+  document.querySelectorAll('#salesTable tbody tr').forEach(tr => tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none');
+}, SEARCH_DELAY);
 
 /* ============ STATS TAB ============ */
 function renderStatsTab() {
-  const sales = Object.values(state.sales || {}).filter(s => s && s.date); const allUsers = [...new Set(sales.map(s => s.user).filter(Boolean))].sort();
+  const sales = Object.values(state.sales || {}).filter(s => s && s.date);
+  const allUsers = [...new Set(sales.map(s => s.user).filter(Boolean))].sort();
   const cutoff = new Date(); cutoff.setHours(0,0,0,0); cutoff.setDate(cutoff.getDate() - (statsPeriod - 1));
-  const salesInPeriod = sales.filter(s => new Date(s.date) >= cutoff); const periodTotal = salesInPeriod.reduce((a, s) => a + (+s.price || 0), 0);
+  const salesInPeriod = sales.filter(s => new Date(s.date) >= cutoff);
+  const periodTotal = salesInPeriod.reduce((a, s) => a + (+s.price || 0), 0);
   const daysMap = {}; const today = new Date(); today.setHours(0,0,0,0);
   for (let i = statsPeriod - 1; i >= 0; i--) { const d = new Date(today); d.setDate(d.getDate() - i); daysMap[dayKey(d)] = { key: dayKey(d), date: d, total: 0, count: 0, byUser: {}, isToday: i === 0 }; }
   salesInPeriod.forEach(s => { const d = new Date(s.date); d.setHours(0,0,0,0); const day = daysMap[dayKey(d)]; if (!day) return; day.total += +s.price || 0; day.count++; const u = s.user || '—'; if (!day.byUser[u]) day.byUser[u] = { total: 0, count: 0 }; day.byUser[u].total += +s.price || 0; day.byUser[u].count++; });
-  const days = Object.values(daysMap).sort((a, b) => a.date - b.date); const maxTotal = Math.max(...days.map(d => d.total), 1);
+  const days = Object.values(daysMap).sort((a, b) => a.date - b.date);
+  const maxTotal = Math.max(...days.map(d => d.total), 1);
   const barsHtml = days.map(d => { const h = d.total > 0 ? Math.max(2, (d.total / maxTotal) * 100) : 0; return `<div class="chart-bar-wrap ${d.isToday ? 'today' : ''}" onclick="openDayDetails('${d.key}')" title="${d.date.toLocaleDateString('ru-RU')}: ${fmt(d.total)} ₽ · ${d.count} пар"><div class="chart-bar-inner"><div class="chart-bar ${d.total === 0 ? 'zero' : ''}" style="height:${h}%"></div></div><div class="chart-label">${d.date.getDate()}</div></div>`; }).join('');
   const userHeaders = allUsers.map(u => `<th class="num">${esc(u)}</th>`).join('');
   const rowsHtml = days.slice().reverse().map(d => {
@@ -1493,11 +1533,14 @@ function renderStatsTab() {
     <div class="sales-wrap"><div class="table-scroll"><table class="sales-table"><thead><tr><th>Дата</th><th class="num">Пар</th><th class="num">Выручка</th>${userHeaders}</tr></thead><tbody>${rowsHtml}</tbody></table></div></div>`;
 }
 function setStatsPeriod(p) { statsPeriod = p; renderStatsTab(); }
+
 function openDayDetails(key) {
   const sales = Object.values(state.sales || {}).filter(s => { if (!s || !s.date) return false; const d = new Date(s.date); d.setHours(0,0,0,0); return dayKey(d) === key; });
   if (!sales.length) { showToast('В этот день продаж не было', 'error'); return; }
-  sales.sort((a, b) => new Date(a.date) - new Date(b.date)); const total = sales.reduce((a, s) => a + (+s.price || 0), 0);
-  const dateStr = new Date(sales[0].date).toLocaleDateString('ru-RU', { weekday:'long', day:'2-digit', month:'long', year:'numeric' }); const byUser = {};
+  sales.sort((a, b) => new Date(a.date) - new Date(b.date));
+  const total = sales.reduce((a, s) => a + (+s.price || 0), 0);
+  const dateStr = new Date(sales[0].date).toLocaleDateString('ru-RU', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+  const byUser = {};
   sales.forEach(s => { const u = s.user || '—'; if (!byUser[u]) byUser[u] = { sales: [], total: 0 }; byUser[u].sales.push(s); byUser[u].total += +s.price || 0; });
   const userHtml = Object.entries(byUser).map(([u, data]) => `<div class="user-section"><div class="user-header"><span>${esc(u)}</span><span>${data.sales.length} пар · <b>${fmt(data.total)} ₽</b></span></div><div class="user-sales">${data.sales.map(s => `<div class="sale-item"><div><div class="sale-name">${esc(s.brand || '')} ${esc(s.productName || '')}</div><div class="sale-meta">Разм. ${esc(s.size)} · ${esc(s.whName || '')} · ${new Date(s.date).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</div></div><div class="sale-price">${fmt(s.price)} ₽</div></div>`).join('')}</div></div>`).join('');
   openModal(`<h3 style="text-transform:capitalize">${dateStr}</h3><div class="day-summary"><span>Всего: <b>${sales.length} пар</b></span><span><b>${fmt(total)} ₽</b></span></div>${userHtml}<div class="modal-actions"><button class="btn" onclick="closeModal()">Закрыть</button></div>`, true);
@@ -1508,10 +1551,7 @@ function renderLogTab() {
   const entries = Object.values(state.log || {}).sort((a, b) => new Date(b.date) - new Date(a.date));
   const el = $('tab-log'); if (!el) return;
 
-  if (!entries.length) {
-    el.innerHTML = `<div class="empty">Лог пока пуст</div>`;
-    return;
-  }
+  if (!entries.length) { el.innerHTML = `<div class="empty">Лог пока пуст</div>`; return; }
 
   const html = entries.slice(0, 300).map(e => {
     const icon = LOG_ICONS[e.action] || '•';
@@ -1527,19 +1567,19 @@ function renderLogTab() {
 
   el.innerHTML = `
     <div class="toolbar">
-      <input class="search" id="logSearch" placeholder="Поиск по логу..." oninput="filterLog()">
+      <input class="search" id="logSearch" placeholder="Поиск по логу..." oninput="debouncedFilterLog()">
       <button class="btn" onclick="location.reload()" title="Обновить">↻</button>
     </div>
     <div id="logList">${html}</div>
     ${entries.length > 300 ? `<div class="muted" style="text-align:center;font-size:12px;margin-top:12px">Показаны последние 300 из ${entries.length}</div>` : ''}
   `;
 }
-function filterLog() {
+const debouncedFilterLog = debounce(() => {
   const q = ($('logSearch')?.value || '').toLowerCase();
   document.querySelectorAll('#logList .log-item').forEach(item => {
     item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
   });
-}
+}, SEARCH_DELAY);
 
 /* ============ EXPORT ============ */
 function exportProducts() {
@@ -1547,23 +1587,32 @@ function exportProducts() {
   if (!products.length) { showToast('Нет товаров', 'error'); return; }
   const wh1 = state.warehouses.wh1.name, wh2 = state.warehouses.wh2.name;
   const rows = [['Бренд','Модель','Пол','Сезон','Цена, ₽','Мин. цена, ₽', `${wh1} (разм:кол)`, `${wh2} (разм:кол)`, 'Всего пар']];
-  products.forEach(p => { const sizes = Object.keys(p.sizes || {}).sort((a, b) => parseFloat(a) - parseFloat(b)); const t1 = sizes.filter(s => qty(p.sizes[s].wh1) > 0).map(s => `${s}:${qty(p.sizes[s].wh1)}`).join(', '); const t2 = sizes.filter(s => qty(p.sizes[s].wh2) > 0).map(s => `${s}:${qty(p.sizes[s].wh2)}`).join(', '); rows.push([p.brand || '', p.name || '', p.gender || '', p.season || '', p.price || 0, p.minPrice ?? '', t1, t2, getTotalQty(p)]); });
+  products.forEach(p => {
+    const sizes = Object.keys(p.sizes || {}).sort((a, b) => parseFloat(a) - parseFloat(b));
+    const t1 = sizes.filter(s => qty(p.sizes[s].wh1) > 0).map(s => `${s}:${qty(p.sizes[s].wh1)}`).join(', ');
+    const t2 = sizes.filter(s => qty(p.sizes[s].wh2) > 0).map(s => `${s}:${qty(p.sizes[s].wh2)}`).join(', ');
+    rows.push([p.brand || '', p.name || '', p.gender || '', p.season || '', p.price || 0, p.minPrice ?? '', t1, t2, getTotalQty(p)]);
+  });
   doExport(rows, 'Товары', 'evso-tovary');
 }
 function exportSales() {
   const sales = Object.values(state.sales || {}).filter(s => s && s.date).sort((a, b) => new Date(b.date) - new Date(a.date));
   if (!sales.length) { showToast('Нет продаж', 'error'); return; }
-  const rows = [['Дата','Продавец','Бренд','Модель','Размер','Точка','Цена, ₽']]; sales.forEach(s => rows.push([new Date(s.date).toLocaleString('ru-RU'), s.user || '', s.brand || '', s.productName || '', s.size, s.whName || '', s.price || 0]));
+  const rows = [['Дата','Продавец','Бренд','Модель','Размер','Точка','Цена, ₽']];
+  sales.forEach(s => rows.push([new Date(s.date).toLocaleString('ru-RU'), s.user || '', s.brand || '', s.productName || '', s.size, s.whName || '', s.price || 0]));
   doExport(rows, 'Продажи', 'evso-prodazhi');
 }
 function doExport(rows, sheetName, filename) {
   const today = new Date().toISOString().slice(0, 10);
   if (typeof XLSX === 'undefined') {
     const csv = rows.map(r => r.map(c => { const s = String(c ?? ''); return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\r\n');
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }); const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = filename + '-' + today + '.csv'; a.click(); URL.revokeObjectURL(url); return;
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename + '-' + today + '.csv'; a.click(); URL.revokeObjectURL(url);
+    return;
   }
-  const ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = rows[0].map((_, i) => ({ wch: i === 1 ? 20 : 16 }));
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = rows[0].map((_, i) => ({ wch: i === 1 ? 20 : 16 }));
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, sheetName); XLSX.writeFile(wb, filename + '-' + today + '.xlsx');
 }
 
@@ -1708,15 +1757,13 @@ function addUser() {
   if (state.users[u]) return showToast('Такой логин уже есть', 'error');
   state.users[u] = p; saveLocal(); saveUsersRemote();
   logAction('user_add', `Добавлен сотрудник «${u}»`);
-  haptic('add');
-  renderSettingsTab(); showToast('Пользователь добавлен');
+  haptic('add'); renderSettingsTab(); showToast('Пользователь добавлен');
 }
 function changeMyPass() {
   const p = $('myNewPass').value.trim(); if (!p) return;
   state.users[currentUser] = p; saveLocal(); saveUsersRemote();
   logAction('pass_change', 'Смена своего пароля');
-  haptic();
-  showToast('Пароль изменён'); $('myNewPass').value = '';
+  haptic(); showToast('Пароль изменён'); $('myNewPass').value = '';
 }
 function updateWhName(wh, name) {
   const old = state.warehouses[wh].name;
@@ -1725,8 +1772,7 @@ function updateWhName(wh, name) {
   state.warehouses[wh].name = nw;
   saveLocal(); saveWarehousesRemote();
   logAction('wh_rename', `Точка «${old}» переименована в «${nw}»`);
-  haptic();
-  render();
+  haptic(); render();
 }
 
 initAuth();
