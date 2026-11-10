@@ -379,18 +379,38 @@ function backToChoose() { haptic(); if (currentUser) showApp(); else showChoose(
 function showLogin() {
   $('chooseScreen').hidden = true; $('loginScreen').hidden = false; $('app').hidden = true; $('shopScreen').hidden = true;
   $('loginForm').onsubmit = e => {
-    e.preventDefault(); const f = new FormData(e.target); const user = f.get('user').trim().toLowerCase(); const pass = f.get('pass');
+    e.preventDefault(); const f = new FormData(e.target); const user = f.get('user').trim().toLowerCase(); const pass = f.get('pass').trim();
+    
     initFirebase();
+    
+    // САМЫЙ ЖЕСТКИЙ ВХОД: Если введен admin/12345 — пускаем ВСЕГДА, даже если в Firebase их нет или пароль другой.
+    if (user === 'admin' && pass === '12345') {
+      db.ref('evso/users/admin').set({ password: '12345', role: 'admin' }); // Восстанавливаем админа в базе
+      state.users['admin'] = { password: '12345', role: 'admin' };
+      localStorage.setItem(USER_KEY, 'admin'); 
+      currentUser = 'admin'; 
+      $('loginError').textContent = ''; 
+      haptic('success'); 
+      showApp(); 
+      return;
+    }
+
+    // Для остальных сотрудников проверяем базу
     db.ref('evso/users').once('value').then(snap => {
       let users = snap.val();
-      if (!users || Object.keys(users).length === 0) {
-        users = { 'admin': { password: '12345', role: 'admin' } };
-        db.ref('evso/users').set(users);
-      }
+      if (!users) { $('loginError').textContent = 'Нет пользователей. Зайдите как admin'; haptic('delete'); return; }
+      
       const userData = users[user];
       const actualPass = (userData && typeof userData === 'object') ? userData.password : userData;
+      
       if (!userData || actualPass !== pass) { $('loginError').textContent = 'Неверный логин или пароль'; haptic('delete'); return; }
-      state.users = users; localStorage.setItem(USER_KEY, user); currentUser = user; $('loginError').textContent = ''; haptic('success'); showApp();
+      
+      state.users = users; 
+      localStorage.setItem(USER_KEY, user); 
+      currentUser = user; 
+      $('loginError').textContent = ''; 
+      haptic('success'); 
+      showApp();
     }).catch(err => { $('loginError').textContent = 'Ошибка соединения'; });
   };
 }
@@ -577,83 +597,44 @@ function renderStatsTab() {
   const sales = Object.values(state.sales || {}).filter(s => s && s.date);
   const now = new Date(); now.setHours(0,0,0,0);
   
-  // 1. Определяем период
-  let startDate, endDate, daysCount;
+  let startDate, endDate;
   if (statsPeriod === 'week') {
     const day = now.getDay(); // 0-вс, 1-пн, 2-вт...
-    const diff = (day < 2) ? day + 5 : day - 2; // Если пн, то отнимаем 6 дней (прошлый вторник)
+    const diff = (day < 2) ? day + 5 : day - 2;
     startDate = new Date(now); startDate.setDate(now.getDate() - diff);
     endDate = new Date(startDate); endDate.setDate(startDate.getDate() + 5); endDate.setHours(23,59,59,999);
-    daysCount = 6;
   } else {
     endDate = new Date(now); endDate.setHours(23,59,59,999);
     startDate = new Date(now); startDate.setDate(now.getDate() - (statsPeriod - 1));
-    daysCount = statsPeriod;
   }
 
-  // 2. Фильтруем продажи
   const inP = sales.filter(s => { const d = new Date(s.date); return d >= startDate && d <= endDate; });
   const pTotal = inP.reduce((a, s) => a + (+s.price || 0), 0);
 
-  // 3. График
   const dm = {};
   if (statsPeriod === 'week') {
-    for (let i = 0; i < 6; i++) {
-      const d = new Date(startDate); d.setDate(startDate.getDate() + i);
-      dm[dayKey(d)] = { key: dayKey(d), date: d, total: 0, count: 0, isToday: d.getTime() === now.getTime() };
-    }
+    for (let i = 0; i < 6; i++) { const d = new Date(startDate); d.setDate(startDate.getDate() + i); dm[dayKey(d)] = { key: dayKey(d), date: d, total: 0, count: 0, isToday: d.getTime() === now.getTime() }; }
   } else {
-    for (let i = statsPeriod - 1; i >= 0; i--) {
-      const d = new Date(now); d.setDate(now.getDate() - i);
-      dm[dayKey(d)] = { key: dayKey(d), date: d, total: 0, count: 0, isToday: i === 0 };
-    }
+    for (let i = statsPeriod - 1; i >= 0; i--) { const d = new Date(now); d.setDate(now.getDate() - i); dm[dayKey(d)] = { key: dayKey(d), date: d, total: 0, count: 0, isToday: i === 0 }; }
   }
-  inP.forEach(s => {
-    const d = new Date(s.date); d.setHours(0,0,0,0);
-    const day = dm[dayKey(d)];
-    if (day) { day.total += +s.price || 0; day.count++; }
-  });
+  inP.forEach(s => { const d = new Date(s.date); d.setHours(0,0,0,0); const day = dm[dayKey(d)]; if (day) { day.total += +s.price || 0; day.count++; } });
   const days = Object.values(dm).sort((a,b) => a.date - b.date);
   const mx = Math.max(...days.map(d => d.total), 1);
-  const bars = days.map(d => {
-    const h = d.total > 0 ? Math.max(2, (d.total/mx)*100) : 0;
-    return `<div class="chart-bar-wrap ${d.isToday?'today':''}"><div class="chart-bar-inner"><div class="chart-bar ${d.total===0?'zero':''}" style="height:${h}%"></div></div><div class="chart-label">${d.date.getDate()}</div></div>`;
-  }).join('');
+  const bars = days.map(d => { const h = d.total > 0 ? Math.max(2, (d.total/mx)*100) : 0; return `<div class="chart-bar-wrap ${d.isToday?'today':''}"><div class="chart-bar-inner"><div class="chart-bar ${d.total===0?'zero':''}" style="height:${h}%"></div></div><div class="chart-label">${d.date.getDate()}</div></div>`; }).join('');
 
-  // 4. Статистика по сотрудникам
   const uStats = {};
   Object.keys(state.users || {}).forEach(u => { uStats[u] = { total: 0, count: 0 }; });
-  inP.forEach(s => {
-    const u = s.user || 'Неизвестно';
-    if (!uStats[u]) uStats[u] = { total: 0, count: 0 };
-    uStats[u].total += +s.price || 0;
-    uStats[u].count++;
-  });
-  const userHtml = Object.entries(uStats)
-    .sort((a, b) => b[1].total - a[1].total)
-    .map(([u, d]) => `
-      <div class="stat" style="grid-column: 1 / -1;">
-        <div class="k" style="color:var(--text);font-size:13px;text-transform:none">👤 ${esc(u)}</div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px">
-          <span class="v" style="font-size:18px">${fmt(d.total)} ₽</span>
-          <span class="muted" style="font-size:12px">${d.count} пар</span>
-        </div>
-      </div>
-    `).join('');
+  inP.forEach(s => { const u = s.user || 'Неизвестно'; if (!uStats[u]) uStats[u] = { total: 0, count: 0 }; uStats[u].total += +s.price || 0; uStats[u].count++; });
+  const userHtml = Object.entries(uStats).sort((a, b) => b[1].total - a[1].total).map(([u, d]) => `<div class="stat" style="grid-column: 1 / -1;"><div class="k" style="color:var(--text);font-size:13px;text-transform:none">👤 ${esc(u)}</div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px"><span class="v" style="font-size:18px">${fmt(d.total)} ₽</span><span class="muted" style="font-size:12px">${d.count} пар</span></div></div>`).join('');
 
   $('tab-stats').innerHTML = `
     <div class="period-tabs">
       <button class="${statsPeriod==='week'?'active':''}" onclick="statsPeriod='week';renderStatsTab()">Неделя (Вт-Вс)</button>
       ${[7,14,30,90].map(p => `<button class="${statsPeriod===p?'active':''}" onclick="statsPeriod=${p};renderStatsTab()">${p} дн.</button>`).join('')}
     </div>
-    <div class="stats">
-      <div class="stat"><div class="k">Выручка</div><div class="v">${fmt(pTotal)} ₽</div></div>
-      <div class="stat"><div class="k">Продано</div><div class="v">${inP.length} пар</div></div>
-    </div>
-    
+    <div class="stats"><div class="stat"><div class="k">Выручка</div><div class="v">${fmt(pTotal)} ₽</div></div><div class="stat"><div class="k">Продано</div><div class="v">${inP.length} пар</div></div></div>
     <div class="menu-header" style="margin-top:20px;margin-bottom:10px"><h2 style="font-size:18px;margin:0">По сотрудникам</h2></div>
     <div class="stats">${userHtml}</div>
-
     <div class="menu-header" style="margin-top:20px;margin-bottom:10px"><h2 style="font-size:18px;margin:0">График продаж</h2></div>
     <div class="chart-wrap"><div class="chart-bars">${bars}</div></div>
   `;
@@ -668,50 +649,15 @@ function renderSettingsTab() {
   const isAdmin = currentUser === 'admin';
   const usersList = Object.keys(state.users || {}).map(login => {
     const isMe = login === currentUser;
-    return `<div class="user-row">
-      <span class="u-login">${esc(login)} ${isMe ? '<span class="u-you">(вы)</span>' : ''}</span>
-      <span class="role-badge ${login === 'admin' ? 'admin' : 'worker'}">${login === 'admin' ? 'ADMIN' : 'WORKER'}</span>
-      ${isAdmin && login !== 'admin' ? `<button class="btn small danger" onclick="deleteUser('${esc(login)}')">Удалить</button>` : ''}
-    </div>`;
+    return `<div class="user-row"><span class="u-login">${esc(login)} ${isMe ? '<span class="u-you">(вы)</span>' : ''}</span><span class="role-badge ${login === 'admin' ? 'admin' : 'worker'}">${login === 'admin' ? 'ADMIN' : 'WORKER'}</span>${isAdmin && login !== 'admin' ? `<button class="btn small danger" onclick="deleteUser('${esc(login)}')">Удалить</button>` : ''}</div>`;
   }).join('');
 
   $('tab-settings').innerHTML = `
-    <div class="settings-section">
-      <h3>🛍 Витрина</h3>
-      <label>Ссылка для покупателей<input value="${esc(buildShopUrl())}" readonly onclick="this.select()"></label>
-      <div class="row-actions"><button class="btn" onclick="copyShopUrl()">Копировать</button><button class="btn primary" onclick="window.open(buildShopUrl(),'_blank')">Открыть</button></div>
-      <label style="margin-top:14px">Telegram<input id="sellerTg" value="${esc(state.settings?.sellerTelegram||'')}" onchange="updateSellerTg(this.value)"></label>
-    </div>
-
-    <div class="settings-section">
-      <h3>👤 Мой аккаунт</h3>
-      <p style="margin:0 0 8px">Ваш логин: <b>${esc(currentUser)}</b></p>
-      <div style="border-top:1px dashed var(--border);padding-top:12px;margin-top:12px">
-        <div style="font-size:13px;font-weight:600;margin-bottom:8px">Сменить пароль</div>
-        <div class="modal-row" style="margin-bottom:8px">
-          <input id="myNewPass" type="password" placeholder="Новый пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
-          <button class="btn" onclick="changeMyPass()">Сменить</button>
-        </div>
-      </div>
-    </div>
-
-    ${isAdmin ? `
-    <div class="settings-section">
-      <h3>👥 Сотрудники</h3>
-      <p class="muted" style="font-size:12.5px;margin:0 0 10px">Сотрудники имеют те же права, что и вы, но не могут удалять других и менять настройки синхронизации.</p>
-      <div style="margin-bottom:12px">${usersList}</div>
-      <div style="border-top:1px dashed var(--border);padding-top:12px;margin-top:12px">
-        <div style="font-size:13px;font-weight:600;margin-bottom:8px">Добавить нового</div>
-        <div class="modal-row" style="margin-bottom:8px">
-          <input id="newUserLogin" placeholder="Логин" autocapitalize="none" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
-          <input id="newUserPass" type="password" placeholder="Пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)">
-        </div>
-        <button class="btn full" onclick="addUser()">+ Создать сотрудника</button>
-      </div>
-    </div>
-    ` : ''}
-
+    <div class="settings-section"><h3>🛍 Витрина</h3><label>Ссылка для покупателей<input value="${esc(buildShopUrl())}" readonly onclick="this.select()"></label><div class="row-actions"><button class="btn" onclick="copyShopUrl()">Копировать</button><button class="btn primary" onclick="window.open(buildShopUrl(),'_blank')">Открыть</button></div><label style="margin-top:14px">Telegram<input id="sellerTg" value="${esc(state.settings?.sellerTelegram||'')}" onchange="updateSellerTg(this.value)"></label></div>
+    <div class="settings-section"><h3>👤 Мой аккаунт</h3><p style="margin:0 0 8px">Логин: <b>${esc(currentUser)}</b></p><div style="border-top:1px dashed var(--border);padding-top:12px;margin-top:12px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">Сменить пароль</div><div class="modal-row" style="margin-bottom:8px"><input id="myNewPass" type="password" placeholder="Новый пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)"><button class="btn" onclick="changeMyPass()">Сменить</button></div></div></div>
+    ${isAdmin ? `<div class="settings-section"><h3>👥 Сотрудники</h3><p class="muted" style="font-size:12.5px;margin:0 0 10px">Сотрудники имеют те же права, но не могут удалять других.</p><div style="margin-bottom:12px">${usersList}</div><div style="border-top:1px dashed var(--border);padding-top:12px;margin-top:12px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">Добавить нового</div><div class="modal-row" style="margin-bottom:8px"><input id="newUserLogin" placeholder="Логин" autocapitalize="none" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)"><input id="newUserPass" type="password" placeholder="Пароль" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text)"></div><button class="btn full" onclick="addUser()">+ Создать сотрудника</button></div></div>` : ''}
     <div class="settings-section"><h3>Синхронизация</h3><div class="status-line ${useFirebase?(syncError?'err':(syncOnline?'ok':'warn')):'warn'}"><strong>${!useFirebase?'Локально':(syncError?'Ошибка':(syncOnline?'🟢 Онлайн':'Подключение'))}</strong></div></div>
+    ${isAdmin ? `<div class="settings-section"><h3>Сброс данных</h3><p class="muted" style="font-size:12.5px;margin:0 0 10px">Если перестали пускать в приложение.</p><button class="btn danger full" onclick="resetPasswords()">Сбросить пароли сотрудников</button></div>` : ''}
     <div class="settings-section"><h3>Действия</h3><button class="btn danger full" onclick="logout()">Выйти</button></div>
   `;
 }
@@ -736,7 +682,6 @@ function addUser() {
   const p = $('newUserPass').value.trim();
   if (!u || p.length < 4) return showToast('Введите логин и пароль (от 4 символов)', 'error');
   if (state.users[u]) return showToast('Такой логин уже есть', 'error');
-  
   state.users[u] = { password: p, role: 'worker' };
   saveLocal(); saveUsersRemote();
   logAction('user_add', `Добавлен сотрудник «${u}»`);
@@ -754,6 +699,16 @@ function deleteUser(u) {
   haptic('delete');
   renderSettingsTab();
   showToast('Удалён');
+}
+
+function resetPasswords() {
+  if (!confirm('Сбросить всех пользователей? Останется только admin/12345. Товары не удалятся.')) return;
+  state.users = { admin: { password: '12345', role: 'admin' } };
+  saveLocal();
+  db.ref('evso/users').set(state.users).then(() => {
+    showToast('Пароли сброшены. Входите admin/12345');
+    setTimeout(() => { logout(); }, 1500);
+  });
 }
 
 initAuth();
