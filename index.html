@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>evso</title>
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="evso">
+<meta name="format-detection" content="telephone=no">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+[hidden] { display: none !important; }
+:root{
+  --bg:#f5f5f5;--card:#fff;--border:#e0e0e0;--text:#111;--muted:#737373;
+  --black:#000;--white:#fff;--hover:#f0f0f0;--radius:10px;--danger:#dc2626;--success:#16a34a;
+  --wh1:#ef4444;--wh2:#3b82f6;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{overflow-x:hidden;height:100%}
+body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  background:var(--bg);color:var(--text);font-size:14px;line-height:1.4;
+  overflow-x:hidden;width:100%;min-height:100%;
+  -webkit-text-size-adjust:100%;overscroll-behavior-x:none}
+
+input,select,textarea,button{font-family:inherit;font-size:16px}
+
+#app { animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== Login ===== */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:32px 24px;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,.05)}
+.login-logo{font-size:36px;font-weight:900;letter-spacing:-1.5px;text-align:center;margin-bottom:2px}
+.login-logo span{color:var(--muted)}
+.login-sub{text-align:center;color:var(--muted);margin-bottom:24px;font-size:13px}
+.login-card label{display:block;margin-bottom:12px;font-size:13px;color:var(--muted);font-weight:500}
+.login-card input{display:block;width:100%;margin-top:5px;background:var(--card);
+  border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-size:16px}
+.login-card input:focus{outline:none;border-color:var(--black)}
+.btn.full{width:100%;margin-top:8px}
+.login-error{color:var(--danger);text-align:center;margin-top:12px;font-size:13px;min-height:18px}
+
+/* ===== App header ===== */
+.app-header{position:sticky;top:0;z-index:20;background:var(--white);border-bottom:1px solid var(--border);
+  padding-top:var(--safe-top)}
+.header-top{display:flex;align-items:center;gap:10px;padding:10px 16px 8px}
+.logo{font-size:22px;font-weight:900;letter-spacing:-1.2px;cursor:pointer;user-select:none}
+.logo span{color:var(--muted)}
+.spacer{flex:1}
+.user-chip{display:flex;align-items:center;gap:6px;background:var(--hover);
+  padding:5px 11px;border-radius:20px;font-size:13px;font-weight:500;flex-shrink:0}
+.dot-online{width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0}
+.dot-online.off{background:#9ca3af}.dot-online.err{background:var(--danger)}
+.user-chip button{background:none;border:none;color:var(--muted);cursor:pointer;padding:0 0 0 4px;font-size:12.5px}
+.user-chip button:hover{color:var(--text)}
+
+.main-nav{display:flex;gap:2px;padding:0 16px 10px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.main-nav::-webkit-scrollbar{display:none}
+.main-nav button{background:none;border:none;color:var(--muted);font-weight:500;
+  padding:8px 13px;border-radius:8px;cursor:pointer;font-size:14px;white-space:nowrap;flex-shrink:0}
+.main-nav button:hover{color:var(--text);background:var(--hover)}
+.main-nav button.active{background:var(--black);color:var(--white)}
+
+main{max-width:1280px;margin:0 auto;padding:16px;padding-bottom:calc(16px + var(--safe-bottom));
+  overflow-x:hidden;width:100%}
+@media(max-width:600px){main{padding:12px}}
+
+/* ===== Buttons ===== */
+.btn{background:var(--card);border:1px solid var(--border);color:var(--text);
+  font-weight:500;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;font-size:14px;
+  min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.btn:active{background:var(--hover)}
+.btn.primary{background:var(--black);border-color:var(--black);color:var(--white)}
+.btn.primary:active{background:#222}
+.btn.danger{color:var(--danger);border-color:var(--danger)}
+.btn.danger:active{background:rgba(220,38,38,.05)}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:active{background:var(--hover)}
+.btn.small{padding:6px 10px;font-size:13px;min-height:34px}
+
+/* ===== Stats ===== */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+.stat .v{font-size:20px;font-weight:800;margin-top:3px}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr;gap:8px}}
+
+/* ===== Toolbar ===== */
+.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.search{flex:1;min-width:130px;background:var(--card);border:1px solid var(--border);
+  border-radius:8px;padding:10px 12px;color:var(--text);font-size:16px}
+.search:focus{outline:none;border-color:var(--black)}
+select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
+
+/* ===== Products grid ===== */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+@media(max-width:600px){.product-grid{grid-template-columns:repeat(2,1fr);gap:8px}}
+.product-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;display:flex;flex-direction:column;position:relative;
+  transition:border-color .15s,transform .12s;cursor:pointer}
+.product-card:active{transform:scale(.99)}
+.product-card .photo{aspect-ratio:1;background:var(--hover);display:flex;
+  align-items:center;justify-content:center;overflow:hidden}
+.product-card .photo img{width:100%;height:100%;object-fit:cover}
+.photo-placeholder{font-size:42px;opacity:.25}
+.product-card .info{padding:8px 10px 10px;flex:1;display:flex;flex-direction:column;gap:2px}
+.product-card .brand{color:var(--muted);font-size:10px;text-transform:uppercase;
+  letter-spacing:.6px;font-weight:700}
+.product-card .name{font-size:13px;font-weight:600;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.product-card .meta{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:11.5px;color:var(--muted);margin-top:2px;gap:4px;flex-wrap:wrap}
+.product-card .price{color:var(--text);font-size:13px;font-weight:700}
+.min-price-tag{font-size:10px;color:var(--muted);font-weight:500}
+
+.total-qty{margin-top:8px;padding-top:6px;border-top:1px dashed var(--border);
+  font-size:12px;color:var(--muted)}
+.total-qty b{color:var(--text);font-size:15px;font-weight:800;margin:0 2px}
+.total-qty.empty-qty b{color:var(--danger)}
+
+.card-buttons{margin-top:8px}
+.sell-btn{width:100%;padding:8px;background:var(--black);color:var(--white);
+  border:none;border-radius:8px;font-weight:600;font-size:12.5px;cursor:pointer;transition:background .12s;
+  min-height:38px}
+.sell-btn:active{background:#222}
+.sell-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed}
+.card-bottom-actions{display:flex;gap:6px;margin-top:6px}
+.card-bottom-actions .btn{flex:1;padding:7px 6px;font-size:12px;text-align:center;min-height:34px}
+
+.empty{padding:50px 20px;text-align:center;color:var(--muted);
+  background:var(--card);border:1px dashed var(--border);border-radius:var(--radius)}
+
+/* ===== Modals ===== */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;
+  align-items:flex-end;justify-content:center;z-index:100;overflow-y:auto;
+  padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
+.modal-backdrop.show{display:flex}
+@media(min-width:700px){.modal-backdrop{align-items:flex-start;padding:20px}}
+.modal{background:var(--card);border-radius:16px 16px 0 0;width:100%;max-width:520px;
+  padding:20px;margin:0;max-height:calc(100vh - var(--safe-top) - var(--safe-bottom));
+  overflow-y:auto;animation:slideUp .25s ease-out}
+@keyframes slideUp{from{transform:translateY(30px);opacity:.6}to{transform:translateY(0);opacity:1}}
+@media(min-width:700px){
+  .modal{border-radius:14px;border:1px solid var(--border);
+    max-height:calc(100vh - 40px);animation:fadeIn .2s ease-out}
+  .modal.wide{max-width:580px}
+}
+.modal h3{margin:0 0 16px;font-size:17px}
+.modal label{display:block;margin-bottom:12px;font-size:13px;color:var(--muted);font-weight:500}
+.modal input,.modal select{display:block;width:100%;margin-top:5px;background:var(--card);
+  border:1px solid var(--border);border-radius:8px;padding:11px 12px;color:var(--text);font-size:16px}
+.modal input:focus,.modal select:focus{outline:none;border-color:var(--black)}
+.modal-actions{display:flex;justify-content:space-between;gap:8px;margin-top:16px}
+.modal-actions > button{flex:1;justify-content:center}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* View modal */
+.view-photo{aspect-ratio:1;max-height:200px;background:var(--hover);display:flex;
+  align-items:center;justify-content:center;border-radius:10px;margin-bottom:14px;overflow:hidden}
+.view-photo img{width:100%;height:100%;object-fit:cover}
+.view-photo .photo-placeholder{font-size:52px}
+.view-sizes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.view-size-row{display:flex;align-items:center;gap:4px;padding:7px 8px;
+  background:var(--hover);border-radius:8px;font-weight:600;font-size:13px}
+.view-size-row.out{opacity:.45}
+.vsr-size{flex:1;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.vsr-wh{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;
+  padding:0 5px;border-radius:6px;font-size:11.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.vsr-wh.wh1{background:rgba(239,68,68,.15);color:var(--wh1)}
+.vsr-wh.wh2{background:rgba(59,130,246,.15);color:var(--wh2)}
+
+/* Photo in edit modal */
+.photo-section{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.photo-preview{width:90px;height:90px;border-radius:10px;overflow:hidden;
+  background:var(--hover);display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border);flex-shrink:0}
+.photo-preview img{width:100%;height:100%;object-fit:cover}
+.photo-preview .photo-placeholder{font-size:28px}
+
+.sizes-section{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.edit-size-row{display:flex;align-items:center;gap:5px;padding:8px 10px;
+  background:var(--hover);border-radius:8px;margin-bottom:6px;flex-wrap:wrap}
+.esr-size{font-size:15px;font-weight:800;min-width:28px;font-variant-numeric:tabular-nums}
+.esr-qty{display:flex;align-items:center;gap:2px;background:var(--card);
+  border:1px solid var(--border);border-radius:6px;padding:2px 4px}
+.esr-qty.wh1{border-color:rgba(239,68,68,.5)}
+.esr-qty.wh2{border-color:rgba(59,130,246,.5)}
+.esr-label{font-size:11px;font-weight:800;margin-right:2px}
+.esr-qty.wh1 .esr-label{color:var(--wh1)}
+.esr-qty.wh2 .esr-label{color:var(--wh2)}
+.esr-qty button{width:26px;height:26px;border:none;background:var(--card);
+  border-radius:4px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);
+  display:flex;align-items:center;justify-content:center;padding:0;line-height:1}
+.esr-qty button:active{background:var(--hover)}
+.esr-val{min-width:22px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.esr-remove{margin-left:auto;background:none;border:none;color:var(--muted);
+  font-size:20px;cursor:pointer;padding:0 6px;min-height:32px}
+.size-preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:5px}
+.size-preset-btn{padding:9px 4px;background:var(--hover);border:1px solid var(--border);
+  border-radius:6px;color:var(--text);font-weight:600;font-size:13px;cursor:pointer;transition:all .12s}
+.size-preset-btn:active{border-color:var(--black)}
+.size-preset-btn.active{background:var(--black);border-color:var(--black);color:var(--white)}
+
+.delete-section{margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* Tables */
+.sales-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--card)}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sales-table{width:100%;border-collapse:collapse}
+.sales-table th,.sales-table td{padding:10px 12px;text-align:left;
+  border-bottom:1px solid var(--border);font-size:13px;white-space:nowrap}
+.sales-table th{font-size:11px;color:var(--muted);font-weight:700;
+  text-transform:uppercase;letter-spacing:.4px;background:var(--hover)}
+.sales-table tr:active td{background:var(--hover)}
+.sales-table tr:last-child td{border-bottom:none}
+.sales-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.sales-table td.wrap{white-space:normal;min-width:110px}
+.sales-table tr.empty-day td{opacity:.45}
+
+/* Stats */
+.period-tabs{display:inline-flex;gap:2px;background:var(--hover);border-radius:8px;padding:3px;margin-bottom:14px}
+.period-tabs button{background:none;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;
+  font-weight:500;color:var(--muted);font-size:13px}
+.period-tabs button.active{background:var(--black);color:var(--white)}
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 12px 12px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.chart-bars{display:flex;gap:3px;align-items:flex-end;height:180px;min-width:100%}
+.chart-bar-wrap{flex:1;min-width:14px;display:flex;flex-direction:column;height:100%;cursor:pointer}
+.chart-bar-inner{flex:1;display:flex;align-items:flex-end}
+.chart-bar{width:100%;background:var(--black);border-radius:2px 2px 0 0;min-height:2px;transition:background .12s}
+.chart-bar.zero{background:var(--border)}
+.chart-bar-wrap:active .chart-bar:not(.zero){background:#333}
+.chart-bar-wrap.today .chart-bar:not(.zero){background:var(--success)}
+.chart-label{font-size:9px;color:var(--muted);margin-top:5px;text-align:center;font-weight:600}
+.chart-bar-wrap.today .chart-label{color:var(--text);font-weight:800}
+.day-summary{padding:10px 14px;background:var(--hover);border-radius:8px;margin-bottom:16px;
+  font-size:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.user-section{margin-bottom:16px}
+.user-header{display:flex;justify-content:space-between;padding:8px 0;
+  border-bottom:2px solid var(--black);font-weight:700;font-size:13.5px;margin-bottom:8px;gap:8px;flex-wrap:wrap}
+.user-sales{display:flex;flex-direction:column;gap:5px}
+.sale-item{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;
+  background:var(--hover);border-radius:6px;font-size:13px;align-items:center}
+.sale-name{font-weight:600}
+.sale-meta{color:var(--muted);font-size:11.5px;margin-top:2px}
+.sale-price{font-weight:700;white-space:nowrap}
+.hint-box{padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;
+  border-radius:8px;margin-bottom:12px;font-size:12.5px;color:#78350f}
+
+/* Settings */
+.settings-section{background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.settings-section h3{margin:0 0 12px;font-size:15px}
+.settings-section label{display:block;margin-bottom:10px;font-size:13px;color:var(--muted);font-weight:500}
+.settings-section input{display:block;width:100%;margin-top:4px;background:var(--card);
+  border:1px solid var(--border);border-radius:8px;padding:11px 12px;color:var(--text);font-size:16px}
+.settings-section input:focus{outline:none;border-color:var(--black)}
+.row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.status-line{padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:13px}
+.status-line.ok{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+.status-line.warn{background:#fffbeb;color:#78350f;border:1px solid #fde68a}
+.muted{color:var(--muted)}
+code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;font-family:ui-monospace,monospace}
+
+/* Menu */
+.menu-header{margin-bottom:20px}
+.menu-header h1{font-size:26px;font-weight:900;margin:0 0 4px;letter-spacing:-.6px}
+.menu-header p{margin:0;color:var(--muted);font-size:13.5px}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+@media(max-width:600px){.menu-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .menu-header h1{font-size:22px}}
+.menu-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:16px 14px;cursor:pointer;text-align:left;color:var(--text);
+  display:flex;flex-direction:column;gap:3px;transition:all .15s;min-height:130px}
+.menu-card:active{transform:scale(.98);border-color:var(--black)}
+.menu-icon{font-size:32px;margin-bottom:6px;line-height:1}
+.menu-title{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.menu-sub{font-size:12px;color:var(--muted);line-height:1.35}
+
+/* Install banner */
+.install-banner{position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--card);border-top:1px solid var(--border);padding:14px 16px;
+  padding-bottom:calc(14px + var(--safe-bottom));
+  box-shadow:0 -4px 20px rgba(0,0,0,.08);animation:slideUp .3s ease-out}
+.install-banner-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.install-banner-icon{font-size:32px;flex-shrink:0}
+.install-banner-text{flex:1;font-size:13px;line-height:1.35}
+.install-banner-text b{display:block;font-size:14px;margin-bottom:2px}
+.install-banner-actions{display:flex;gap:6px;flex-shrink:0}
+.install-banner-actions .btn{padding:7px 12px;font-size:13px;min-height:36px}
+.install-steps{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.5}
+.install-steps kbd{background:var(--hover);padding:1px 6px;border-radius:4px;font-family:inherit;
+  font-weight:600;color:var(--text);border:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">evso<span>.</span></div>
+    <div class="login-sub">Вход в систему</div>
+    <form id="loginForm">
+      <label>Логин<input name="user" required autocomplete="username" autocapitalize="none"></label>
+      <label>Пароль<input name="pass" type="password" required autocomplete="current-password"></label>
+      <button type="submit" class="btn primary full">Войти</button>
+    </form>
+    <div id="loginError" class="login-error"></div>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <div class="app-header">
+    <div class="header-top">
+      <div class="logo" onclick="switchTab('menu')">evso<span>.</span></div>
+      <div class="spacer"></div>
+      <div class="user-chip">
+        <span id="syncDot" class="dot-online off" title="Синхронизация"></span>
+        <span id="userName">—</span>
+        <button onclick="logout()" title="Выйти">Выйти</button>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <button data-tab="menu" class="active" onclick="switchTab('menu')">Главное</button>
+      <button data-tab="products" onclick="switchTab('products')">Товары</button>
+      <button data-tab="sales" onclick="switchTab('sales')">Продажи</button>
+      <button data-tab="stats" onclick="switchTab('stats')">Итоги</button>
+      <button data-tab="settings" onclick="switchTab('settings')">Настройки</button>
+    </nav>
+  </div>
+  <main>
+    <div id="stats" class="stats" hidden></div>
+    <section id="tab-menu"></section>
+    <section id="tab-products" hidden></section>
+    <section id="tab-sales" hidden></section>
+    <section id="tab-stats" hidden></section>
+    <section id="tab-settings" hidden></section>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<div id="installBanner" class="install-banner" hidden></div>
+
+<script>
+/* ============ INSTALL / PWA ============ */
+(function setupPWA(){
+  // Manifest (встроен как data URI — работает без отдельного файла)
+  const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#000"/><text x="256" y="345" font-family="-apple-system,Arial,Helvetica,sans-serif" font-weight="900" font-size="360" fill="#fff" text-anchor="middle">e.</text></svg>`;
+  const iconData = 'data:image/svg+xml;base64,' + btoa(iconSvg);
+  const manifest = {
+    name: 'evso',
+    short_name: 'evso',
+    description: 'Учёт склада обуви',
+    start_url: window.location.pathname || '/',
+    scope: window.location.pathname.replace(/[^/]*$/, '') || '/',
+    display: 'standalone',
+    orientation: 'portrait',
+    background_color: '#f5f5f5',
+    theme_color: '#000000',
+    icons: [
+      { src: iconData, sizes: '192x192', type: 'image/svg+xml', purpose: 'any' },
+      { src: iconData, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+    ]
+  };
+  const manifestHref = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifest));
+  let link = document.querySelector('link[rel="manifest"]');
+  if (!link) { link = document.createElement('link'); link.rel = 'manifest'; document.head.appendChild(link); }
+  link.href = manifestHref;
+
+  // Apple touch icon (рисуем через canvas — iOS не любит SVG)
+  try {
+    const c = document.createElement('canvas'); c.width = 512; c.height = 512;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 380px -apple-system,Arial,sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('e.', 256, 280);
+    const png = c.toDataURL('image/png');
+    document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(l => l.remove());
+    const ati = document.createElement('link');
+    ati.rel = 'apple-touch-icon'; ati.sizes = '512x512'; ati.href = png;
+    document.head.appendChild(ati);
+  } catch (e) {}
+
+  // Favicon
+  const fav = document.createElement('link');
+  fav.rel = 'icon'; fav.type = 'image/svg+xml'; fav.href = iconData;
+  document.head.appendChild(fav);
+})();
+
+let deferredInstallPrompt = null;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  if (!localStorage.getItem('evso_banner_dismissed')) showInstallBanner('android');
+});
+
+window.addEventListener('appinstalled', () => {
+  localStorage.setItem('evso_installed', '1');
+  hideInstallBanner();
+});
+
+function showInstallBanner(platform) {
+  if (isStandalone) return;
+  const banner = document.getElementById('installBanner');
+  if (!banner) return;
+
+  if (platform === 'ios') {
+    banner.innerHTML = `
+      <div class="install-banner-inner">
+        <div class="install-banner-icon">📱</div>
+        <div class="install-banner-text">
+          <b>Установить evso</b>
+          Открыть в Safari → <kbd>Поделиться</kbd> → <kbd>На экран «Домой»</kbd>
+        </div>
+        <div class="install-banner-actions">
+          <button class="btn ghost" onclick="dismissInstallBanner()">✕</button>
+        </div>
+      </div>`;
+  } else {
+    banner.innerHTML = `
+      <div class="install-banner-inner">
+        <div class="install-banner-icon">📱</div>
+        <div class="install-banner-text">
+          <b>Установить evso</b>
+          Открывать как обычное приложение с главного экрана
+        </div>
+        <div class="install-banner-actions">
+          <button class="btn ghost" onclick="dismissInstallBanner()">Позже</button>
+          <button class="btn primary" onclick="triggerInstall()">Установить</button>
+        </div>
+      </div>`;
+  }
+  banner.hidden = false;
+}
+function hideInstallBanner() {
+  const b = document.getElementById('installBanner');
+  if (b) b.hidden = true;
+}
+function dismissInstallBanner() {
+  hideInstallBanner();
+  localStorage.setItem('evso_banner_dismissed', '1');
+}
+async function triggerInstall() {
+  if (!deferredInstallPrompt) { alert('Установка недоступна. Откройте приложение по ссылке https:// в Chrome.'); return; }
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  if (outcome === 'accepted') hideInstallBanner();
+}
+
+/* ============ APP CODE ============ */
+const USERS = { 'командир': '12345', 'Димон': '123455' };
+const BRANDS = ['Adidas','Nike','Reebok','Asics','Columbia','Hoka','Bona','Salomon',
+  'The North Face','New Balance','ACG','Saucony','Armani','Vans','DC'];
+const GENDERS = ['Мужские','Женские','Унисекс'];
+const SEASONS = ['Зима','Лето','Всесезон'];
+
+const STATE_KEY = 'evso_state';
+const FB_KEY = 'evso_fb_url';
+const USER_KEY = 'evso_user';
+
+let state = { warehouses: { wh1:{name:'Точка 1'}, wh2:{name:'Точка 2'} }, products: {}, sales: {} };
+let db = null, useFirebase = false, currentUser = '', activeTab = 'menu';
+let filters = { search:'', brand:'', gender:'', season:'' };
+let editingProduct = null, editingPhoto = '';
+let statsPeriod = 30;
+
+const $ = id => document.getElementById(id);
+let uidCounter = 0;
+const uid = p => (p||'x') + Date.now().toString(36) + '_' + (++uidCounter).toString(36) + Math.random().toString(36).slice(2,5);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => Number(n || 0).toLocaleString('ru-RU', { maximumFractionDigits: 2 });
+const dayKey = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const qty = v => { const n = parseInt(v); return isNaN(n) ? 0 : n; };
+const plural = (n, one, few, many) => {
+  const m = n % 100;
+  if (m >= 11 && m <= 19) return many;
+  const m10 = n % 10;
+  if (m10 === 1) return one;
+  if (m10 >= 2 && m10 <= 4) return few;
+  return many;
+};
+
+function migrateState() {
+  Object.values(state.products || {}).forEach(p => {
+    if (!p.sizes) { p.sizes = {}; return; }
+    Object.keys(p.sizes).forEach(size => {
+      const s = p.sizes[size];
+      if (!s) return;
+      if (typeof s.wh1 === 'boolean') s.wh1 = s.wh1 ? 1 : 0;
+      if (typeof s.wh2 === 'boolean') s.wh2 = s.wh2 ? 1 : 0;
+      s.wh1 = qty(s.wh1);
+      s.wh2 = qty(s.wh2);
+    });
+  });
+}
+
+function initAuth() {
+  currentUser = localStorage.getItem(USER_KEY) || '';
+  if (currentUser && USERS[currentUser]) showApp(); else showLogin();
+}
+function showLogin() {
+  $('loginScreen').hidden = false;
+  $('app').hidden = true;
+  $('loginForm').onsubmit = e => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const user = f.get('user').trim(), pass = f.get('pass');
+    if (USERS[user] && USERS[user] === pass) {
+      localStorage.setItem(USER_KEY, user); currentUser = user;
+      $('loginError').textContent = ''; showApp();
+    } else $('loginError').textContent = 'Неверный логин или пароль';
+  };
+}
+function showApp() {
+  $('loginScreen').hidden = true;
+  $('app').hidden = false;
+  $('userName').textContent = currentUser;
+  activeTab = 'menu';
+  document.querySelectorAll('.main-nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === 'menu'));
+  ['menu','products','sales','stats','settings'].forEach(t => {
+    const sec = $('tab-' + t);
+    if (sec) sec.hidden = t !== 'menu';
+  });
+  window.scrollTo(0, 0);
+  loadLocal(); render(); setupRealtime();
+
+  // Показ баннера после первого рендера
+  setTimeout(() => {
+    if (isStandalone) return;
+    if (localStorage.getItem('evso_banner_dismissed')) return;
+    if (localStorage.getItem('evso_installed')) return;
+    if (isIOS) showInstallBanner('ios');
+    else if (!deferredInstallPrompt && !window.location.protocol.startsWith('https')) return;
+    else if (!deferredInstallPrompt) showInstallBanner('android-manual');
+  }, 1500);
+}
+function logout() { if (!confirm('Выйти из аккаунта?')) return; localStorage.removeItem(USER_KEY); location.reload(); }
+
+const getFbUrl = () => localStorage.getItem(FB_KEY) || '';
+function initFirebase() {
+  const url = getFbUrl();
+  if (!url || typeof firebase === 'undefined') return false;
+  try {
+    if (!firebase.apps.length) firebase.initializeApp({ databaseURL: url });
+    db = firebase.database(); return true;
+  } catch (e) { console.error(e); return false; }
+}
+function setupRealtime() {
+  useFirebase = initFirebase();
+  if (!useFirebase) { updateSync(false); return; }
+  db.ref('.info/connected').on('value', s => updateSync(s.val() === true));
+  db.ref('evso').on('value', snapshot => {
+    const data = snapshot.val();
+    if (!data) { db.ref('evso').set({ warehouses: state.warehouses, products: {}, sales: {} }); return; }
+    state.warehouses = data.warehouses || state.warehouses;
+    state.products = data.products || {};
+    state.sales = data.sales || {};
+    migrateState();
+    saveLocal(); render();
+  }, err => { console.error(err); updateSync(false, true); });
+}
+function updateSync(online, error) {
+  const el = $('syncDot'); if (!el) return;
+  el.className = 'dot-online' + (error ? ' err' : (!online || !useFirebase ? ' off' : ''));
+  el.title = online && useFirebase ? 'Синхронизировано' : 'Нет связи с сервером';
+}
+const saveProductRemote = id => useFirebase && db.ref('evso/products/' + id).set(state.products[id]).catch(console.error);
+const deleteProductRemote = id => useFirebase && db.ref('evso/products/' + id).remove().catch(console.error);
+const saveSaleRemote = id => useFirebase && db.ref('evso/sales/' + id).set(state.sales[id]).catch(console.error);
+const saveWarehousesRemote = () => useFirebase && db.ref('evso/warehouses').set(state.warehouses).catch(console.error);
+
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(STATE_KEY); if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d && d.products && d.warehouses) { state = d; if (!state.sales) state.sales = {}; migrateState(); }
+  } catch (e) { console.error(e); }
+}
+const saveLocal = () => { try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) { console.error(e); } };
+
+function deleteProduct(id) {
+  const p = state.products[id];
+  if (!p) return;
+  if (!confirm(`Удалить товар «${p.name}»?\n\n✓ История продаж сохранится\n✗ Отменить будет нельзя`)) return;
+  delete state.products[id];
+  saveLocal();
+  deleteProductRemote(id);
+  closeModal();
+  render();
+}
+
+/* ===== VIEW modal ===== */
+function openProductView(productId) {
+  const p = state.products[productId];
+  if (!p) return;
+  const sizes = Object.keys(p.sizes || {}).sort((a, b) => parseFloat(a) - parseFloat(b));
+  const totalQty = getTotalQty(p);
+  const attrs = [p.gender, p.season].filter(Boolean).join(' · ');
+  const sum1 = sizes.reduce((a, s) => a + qty(p.sizes[s].wh1), 0);
+  const sum2 = sizes.reduce((a, s) => a + qty(p.sizes[s].wh2), 0);
+
+  const sizesHtml = sizes.map(size => {
+    const q1 = qty(p.sizes[size].wh1);
+    const q2 = qty(p.sizes[size].wh2);
+    const total = q1 + q2;
+    return `<div class="view-size-row ${total === 0 ? 'out' : ''}">
+      <span class="vsr-size">${esc(size)}</span>
+      <span class="vsr-wh wh1" title="${esc(state.warehouses.wh1.name)}">${q1}</span>
+      <span class="vsr-wh wh2" title="${esc(state.warehouses.wh2.name)}">${q2}</span>
+    </div>`;
+  }).join('');
+
+  openModal(`
+    <div class="view-photo">${p.photo ? `<img src="${p.photo}" alt="">` : '<div class="photo-placeholder">👟</div>'}</div>
+    ${p.brand ? `<div style="text-transform:uppercase;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.6px">${esc(p.brand)}</div>` : ''}
+    <h3 style="margin:4px 0 6px">${esc(p.name)}</h3>
+    ${attrs ? `<div class="muted" style="font-size:13px;margin-bottom:8px">${esc(attrs)}</div>` : ''}
+    ${p.price ? `<div style="font-size:20px;font-weight:800">${fmt(p.price)} ₽</div>` : ''}
+    ${p.minPrice != null ? `<div class="muted" style="font-size:12px">мин. ${fmt(p.minPrice)} ₽</div>` : ''}
+    <div style="background:var(--hover);padding:12px 14px;border-radius:10px;margin:16px 0">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-weight:700">Всего в наличии</span>
+        <span style="font-size:20px;font-weight:800">${totalQty} ${plural(totalQty,'пара','пары','пар')}</span>
+      </div>
+      <div style="display:flex;gap:16px;font-size:12px;color:var(--muted);margin-top:6px;flex-wrap:wrap">
+        <span><span style="color:var(--wh1)">●</span> ${esc(state.warehouses.wh1.name)}: <b style="color:var(--text)">${sum1}</b></span>
+        <span><span style="color:var(--wh2)">●</span> ${esc(state.warehouses.wh2.name)}: <b style="color:var(--text)">${sum2}</b></span>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">
+      Размеры <span style="text-transform:none;font-weight:500;letter-spacing:0">(1 и 2 — количество в точках)</span>
+    </div>
+    ${sizes.length ? `<div class="view-sizes-grid">${sizesHtml}</div>` : `<div class="muted" style="font-size:13px">Нет размеров</div>`}
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn" onclick="closeModal()">Закрыть</button>
+      ${totalQty > 0 ? `<button class="btn primary" onclick="closeModal();openSaleModal('${productId}')">Продать</button>` : `<button class="btn" onclick="closeModal();openProductModal('${productId}')">✎ Изменить</button>`}
+    </div>
+  `);
+}
+
+/* ===== SALE ===== */
+function openSaleModal(productId) {
+  const p = state.products[productId]; if (!p) return;
+  const items = [];
+  Object.keys(p.sizes || {}).forEach(size => {
+    const q1 = qty(p.sizes[size].wh1), q2 = qty(p.sizes[size].wh2);
+    if (q1 > 0) items.push({ size, wh: 'wh1', whName: state.warehouses.wh1.name, qty: q1 });
+    if (q2 > 0) items.push({ size, wh: 'wh2', whName: state.warehouses.wh2.name, qty: q2 });
+  });
+  if (!items.length) { alert('Нет доступных размеров для продажи'); return; }
+  const opts = items.map((it, i) => `<option value="${i}">Размер ${esc(it.size)} — ${esc(it.whName)} (${it.qty} шт)</option>`).join('');
+  const minHint = p.minPrice != null
+    ? `<div class="hint-box">Мин. цена: <b>${fmt(p.minPrice)} ₽</b>${p.price > p.minPrice ? ` · макс. скидка ${fmt(p.price - p.minPrice)} ₽` : ''}</div>` : '';
+
+  openModal(`
+    <h3>Продажа: ${esc(p.name)}</h3>
+    ${minHint}
+    <form id="saleForm">
+      <label>Что продаём<select name="item" required>${opts}</select></label>
+      <label>Цена продажи, ₽<input name="price" type="number" inputmode="decimal" min="0" step="any" value="${p.price || ''}" required autofocus></label>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal()">Отмена</button>
+        <button type="submit" class="btn primary">Продать</button>
+      </div>
+    </form>`);
+
+  $('saleForm').onsubmit = e => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const it = items[+f.get('item')];
+    const price = parseFloat(f.get('price')) || 0;
+    const prod = state.products[productId];
+    if (!prod || !prod.sizes[it.size] || qty(prod.sizes[it.size][it.wh]) < 1) {
+      alert('Товар уже продан или изменён'); closeModal(); render(); return;
+    }
+    if (prod.minPrice != null && price < prod.minPrice) {
+      if (!confirm(`Цена ${fmt(price)} ₽ ниже минимальной (${fmt(prod.minPrice)} ₽).\nВсё равно продать?`)) return;
+    }
+    prod.sizes[it.size][it.wh] = Math.max(0, qty(prod.sizes[it.size][it.wh]) - 1);
+    const saleId = uid('s');
+    state.sales[saleId] = {
+      id: saleId, productId, productName: prod.name, brand: prod.brand || '',
+      size: it.size, wh: it.wh, whName: state.warehouses[it.wh].name,
+      price, date: new Date().toISOString(), user: currentUser
+    };
+    saveLocal(); saveProductRemote(productId); saveSaleRemote(saleId);
+    closeModal(); render();
+  };
+}
+
+/* ===== RENDER ===== */
+function render() {
+  const showStats = activeTab === 'products' || activeTab === 'sales' || activeTab === 'stats';
+  $('stats').hidden = !showStats;
+  if (showStats) renderStats();
+  if (activeTab === 'menu') renderMenuTab();
+  if (activeTab === 'products') renderProductsTab();
+  if (activeTab === 'sales') renderSalesTab();
+  if (activeTab === 'stats') renderStatsTab();
+  if (activeTab === 'settings') renderSettingsTab();
+}
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.main-nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  ['menu','products','sales','stats','settings'].forEach(t => $('tab-' + t).hidden = t !== tab);
+  window.scrollTo(0, 0);
+  render();
+}
+function getTotalQty(p) {
+  let total = 0;
+  Object.values(p.sizes || {}).forEach(s => { total += qty(s.wh1) + qty(s.wh2); });
+  return total;
+}
+
+function renderMenuTab() {
+  const products = Object.values(state.products);
+  let available = 0;
+  products.forEach(p => { available += getTotalQty(p); });
+  const today = new Date().toDateString();
+  const todaySales = Object.values(state.sales || {}).filter(s => new Date(s.date).toDateString() === today);
+  const todaySum = todaySales.reduce((a, s) => a + (+s.price || 0), 0);
+  const totalSales = Object.keys(state.sales || {}).length;
+
+  $('tab-menu').innerHTML = `
+    <div class="menu-header">
+      <h1>Главное меню</h1>
+      <p>Привет, ${esc(currentUser)}</p>
+    </div>
+    <div class="menu-grid">
+      <button class="menu-card" onclick="switchTab('products')">
+        <div class="menu-icon">👟</div>
+        <div class="menu-title">Товары</div>
+        <div class="menu-sub">${products.length} моделей · ${available} пар</div>
+      </button>
+      <button class="menu-card" onclick="switchTab('sales')">
+        <div class="menu-icon">💰</div>
+        <div class="menu-title">Продажи</div>
+        <div class="menu-sub">${totalSales} записей · сегодня ${todaySales.length}</div>
+      </button>
+      <button class="menu-card" onclick="switchTab('stats')">
+        <div class="menu-icon">📊</div>
+        <div class="menu-title">Итоги</div>
+        <div class="menu-sub">Сегодня: <b>${fmt(todaySum)} ₽</b></div>
+      </button>
+      <button class="menu-card" onclick="switchTab('settings')">
+        <div class="menu-icon">⚙️</div>
+        <div class="menu-title">Настройки</div>
+        <div class="menu-sub">${useFirebase ? '🟢 Онлайн' : '⚪ Локально'}</div>
+      </button>
+    </div>`;
+}
+
+function renderStats() {
+  const products = Object.values(state.products);
+  let available = 0;
+  products.forEach(p => { available += getTotalQty(p); });
+  const today = new Date().toDateString();
+  const todaySales = Object.values(state.sales || {}).filter(s => new Date(s.date).toDateString() === today);
+  const todaySum = todaySales.reduce((a, s) => a + (+s.price || 0), 0);
+  $('stats').innerHTML = `
+    <div class="stat"><div class="k">Товаров</div><div class="v">${products.length}</div></div>
+    <div class="stat"><div class="k">В наличии</div><div class="v">${available}</div></div>
+    <div class="stat"><div class="k">Продаж сегодня</div><div class="v">${todaySales.length}</div></div>
+    <div class="stat"><div class="k">Выручка сегодня</div><div class="v">${fmt(todaySum)} ₽</div></div>`;
+}
+
+function renderProductsTab() {
+  $('tab-products').innerHTML = `
+    <div class="toolbar">
+      <button class="btn primary" onclick="openProductModal()">+ Добавить</button>
+      <input class="search" id="fSearch" placeholder="Поиск..." value="${esc(filters.search)}">
+      <select class="search" id="fBrand"><option value="">Бренд</option></select>
+      <select class="search" id="fGender"><option value="">Пол</option>${GENDERS.map(g => `<option value="${g}">${g}</option>`).join('')}</select>
+      <select class="search" id="fSeason"><option value="">Сезон</option>${SEASONS.map(s => `<option value="${s}">${s}</option>`).join('')}</select>
+    </div>
+    <div id="productGrid" class="product-grid"></div>`;
+
+  const brandsInUse = [...new Set(Object.values(state.products).map(p => p.brand).filter(Boolean))].sort();
+  $('fBrand').innerHTML = '<option value="">Все бренды</option>' +
+    brandsInUse.map(b => `<option value="${esc(b)}" ${filters.brand === b ? 'selected' : ''}>${esc(b)}</option>`).join('');
+  $('fGender').value = filters.gender; $('fSeason').value = filters.season;
+
+  $('fSearch').oninput = e => { filters.search = e.target.value; renderProductGrid(); };
+  $('fBrand').onchange = e => { filters.brand = e.target.value; renderProductGrid(); };
+  $('fGender').onchange = e => { filters.gender = e.target.value; renderProductGrid(); };
+  $('fSeason').onchange = e => { filters.season = e.target.value; renderProductGrid(); };
+  renderProductGrid();
+}
+function getFilteredProducts() {
+  const q = filters.search.toLowerCase();
+  return Object.entries(state.products).filter(([id, p]) => {
+    if (q && !((p.name||'').toLowerCase().includes(q) || (p.brand||'').toLowerCase().includes(q))) return false;
+    if (filters.brand && p.brand !== filters.brand) return false;
+    if (filters.gender && p.gender !== filters.gender) return false;
+    if (filters.season && p.season !== filters.season) return false;
+    return true;
+  }).sort((a, b) => {
+    const pa = a[1], pb = b[1];
+    if ((pa.brand||'') !== (pb.brand||'')) return (pa.brand||'').localeCompare(pb.brand||'');
+    return (pa.name||'').localeCompare(pb.name||'');
+  });
+}
+function renderProductGrid() {
+  const grid = $('productGrid'); if (!grid) return;
+  const list = getFilteredProducts();
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">${Object.keys(state.products).length ? 'Ничего не найдено' : 'Пока нет товаров. Нажмите «+ Добавить».'}</div>`;
+    return;
+  }
+  grid.innerHTML = list.map(([id, p]) => renderProductCard(id, p)).join('');
+}
+function renderProductCard(id, p) {
+  const totalQty = getTotalQty(p);
+  const anyAvailable = totalQty > 0;
+  const attrs = [p.gender, p.season].filter(Boolean).join(' · ');
+  return `<div class="product-card" onclick="openProductView('${id}')">
+    <div class="photo">${p.photo ? `<img src="${p.photo}" alt="" loading="lazy">` : '<div class="photo-placeholder">👟</div>'}</div>
+    <div class="info">
+      ${p.brand ? `<div class="brand">${esc(p.brand)}</div>` : ''}
+      <div class="name">${esc(p.name)}</div>
+      <div class="meta">
+        <span>${esc(attrs)}</span>
+        ${p.price ? `<span class="price">${fmt(p.price)} ₽</span>` : ''}
+      </div>
+      <div class="total-qty ${totalQty === 0 ? 'empty-qty' : ''}">
+        Всего: <b>${totalQty}</b> ${plural(totalQty,'пара','пары','пар')}
+      </div>
+      <div class="card-buttons" onclick="event.stopPropagation()">
+        <button class="sell-btn" ${anyAvailable ? '' : 'disabled'} onclick="openSaleModal('${id}')">
+          ${anyAvailable ? `Продать (${totalQty})` : 'Нет в наличии'}
+        </button>
+        <div class="card-bottom-actions">
+          <button class="btn" onclick="openProductModal('${id}')">✎ Изменить</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openProductModal(id) {
+  const ex = id ? state.products[id] : null;
+  editingProduct = ex ? JSON.parse(JSON.stringify(ex))
+    : { name:'', brand:'', gender:'', season:'', price:0, minPrice:null, photo:'', sizes:{} };
+  migrateState();
+  editingPhoto = editingProduct.photo || '';
+  const brandOpts = BRANDS.map(b => `<option value="${esc(b)}" ${editingProduct.brand === b ? 'selected' : ''}>${esc(b)}</option>`).join('');
+  const isCustomBrand = editingProduct.brand && !BRANDS.includes(editingProduct.brand);
+
+  openModal(`
+    <h3>${id ? 'Изменить товар' : 'Новый товар'}</h3>
+    <form id="productForm">
+      <div class="photo-section">
+        <div class="photo-preview" id="photoPreview">${editingPhoto ? `<img src="${editingPhoto}">` : '<div class="photo-placeholder">📷</div>'}</div>
+        <input type="file" id="photoInput" accept="image/*" hidden>
+        <button type="button" class="btn small" onclick="$('photoInput').click()">Фото</button>
+        ${editingPhoto ? `<button type="button" class="btn small ghost" onclick="removePhoto()">Удалить</button>` : ''}
+      </div>
+      <label>Модель<input name="name" value="${esc(editingProduct.name)}" required autofocus placeholder="Air Max 90" autocapitalize="words"></label>
+      <label>Бренд
+        <select name="brand" id="brandSelect" onchange="toggleBrandInput()">
+          <option value="">— Выберите —</option>
+          ${brandOpts}
+          <option value="__custom__" ${isCustomBrand ? 'selected' : ''}>Другое...</option>
+        </select>
+      </label>
+      <label id="customBrandWrap" style="${isCustomBrand ? '' : 'display:none'}">Свой бренд
+        <input name="brandCustom" id="brandCustom" value="${isCustomBrand ? esc(editingProduct.brand) : ''}" placeholder="Название">
+      </label>
+      <div class="modal-row">
+        <label>Пол<select name="gender"><option value="">—</option>${GENDERS.map(g => `<option value="${g}" ${editingProduct.gender === g ? 'selected' : ''}>${g}</option>`).join('')}</select></label>
+        <label>Сезон<select name="season"><option value="">—</option>${SEASONS.map(s => `<option value="${s}" ${editingProduct.season === s ? 'selected' : ''}>${s}</option>`).join('')}</select></label>
+      </div>
+      <div class="modal-row">
+        <label>Цена, ₽<input name="price" type="number" inputmode="decimal" min="0" step="any" value="${editingProduct.price || ''}" placeholder="0"></label>
+        <label>Мин. цена, ₽<input name="minPrice" type="number" inputmode="decimal" min="0" step="any" value="${editingProduct.minPrice ?? ''}" placeholder="Без огранич."></label>
+      </div>
+      <div class="sizes-section">
+        <label>Размеры:
+          <span style="color:var(--wh1)">● 1</span> = ${esc(state.warehouses.wh1.name)}
+          &nbsp;
+          <span style="color:var(--wh2)">● 2</span> = ${esc(state.warehouses.wh2.name)}
+        </label>
+        <div id="editSizesContainer"></div>
+        <div style="margin-top:12px">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Быстрое добавление:</div>
+          <div class="size-preset-grid" id="presetGrid"></div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <input id="customSizeInput" placeholder="Свой (40.5)" inputmode="decimal" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 10px;color:var(--text);font-size:16px">
+            <button type="button" class="btn" onclick="addCustomSize()">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal()">Отмена</button>
+        <button type="submit" class="btn primary">Сохранить</button>
+      </div>
+    </form>
+    ${id ? `
+      <div class="delete-section">
+        <button type="button" class="btn danger" onclick="deleteProduct('${id}')" style="width:100%">Удалить товар</button>
+        <div class="muted" style="font-size:11.5px;text-align:center;margin-top:6px">История продаж сохранится</div>
+      </div>` : ''}
+  `);
+
+  renderEditSizes(); renderPresetGrid();
+
+  $('photoInput').onchange = async e => {
+    const file = e.target.files[0]; if (!file) return;
+    try { editingPhoto = await resizeImage(file); $('photoPreview').innerHTML = `<img src="${editingPhoto}">`; }
+    catch (err) { alert('Не удалось загрузить фото'); console.error(err); }
+  };
+
+  $('productForm').onsubmit = e => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    let brand = f.get('brand');
+    if (brand === '__custom__') brand = (f.get('brandCustom') || '').trim();
+    const minPriceRaw = f.get('minPrice');
+    const cleanSizes = {};
+    Object.keys(editingProduct.sizes).forEach(size => {
+      const s = editingProduct.sizes[size];
+      cleanSizes[size] = { wh1: qty(s.wh1), wh2: qty(s.wh2) };
+    });
+    const data = {
+      name: f.get('name').trim(), brand: (brand || '').trim(),
+      gender: f.get('gender'), season: f.get('season'),
+      price: parseFloat(f.get('price')) || 0,
+      minPrice: minPriceRaw === '' ? null : (parseFloat(minPriceRaw) || 0),
+      photo: editingPhoto || '', sizes: cleanSizes
+    };
+    if (!data.name) return;
+    if (id && state.products[id]) { state.products[id] = data; saveProductRemote(id); }
+    else { const nid = uid('p'); state.products[nid] = data; saveProductRemote(nid); }
+    saveLocal(); closeModal(); render();
+  };
+  $('modalBackdrop').classList.add('show');
+}
+function toggleBrandInput() {
+  const sel = $('brandSelect');
+  $('customBrandWrap').style.display = sel.value === '__custom__' ? '' : 'none';
+  if (sel.value === '__custom__') setTimeout(() => $('brandCustom')?.focus(), 50);
+}
+function removePhoto() { editingPhoto = ''; $('photoPreview').innerHTML = '<div class="photo-placeholder">📷</div>'; }
+function renderEditSizes() {
+  const c = $('editSizesContainer'); if (!c) return;
+  const sizes = Object.keys(editingProduct.sizes).sort((a, b) => parseFloat(a) - parseFloat(b));
+  if (!sizes.length) { c.innerHTML = '<div class="muted" style="font-size:13px;padding:8px 0">Пока нет размеров</div>'; return; }
+  c.innerHTML = sizes.map(size => {
+    const s = editingProduct.sizes[size];
+    const q1 = qty(s.wh1), q2 = qty(s.wh2);
+    return `<div class="edit-size-row">
+      <span class="esr-size">${esc(size)}</span>
+      <div class="esr-qty wh1">
+        <span class="esr-label">1</span>
+        <button type="button" onclick="editQty('${esc(size)}','wh1',-1)">−</button>
+        <span class="esr-val">${q1}</span>
+        <button type="button" onclick="editQty('${esc(size)}','wh1',1)">+</button>
+      </div>
+      <div class="esr-qty wh2">
+        <span class="esr-label">2</span>
+        <button type="button" onclick="editQty('${esc(size)}','wh2',-1)">−</button>
+        <span class="esr-val">${q2}</span>
+        <button type="button" onclick="editQty('${esc(size)}','wh2',1)">+</button>
+      </div>
+      <button type="button" class="esr-remove" onclick="removeEditSize('${esc(size)}')">×</button>
+    </div>`;
+  }).join('');
+}
+function editQty(size, wh, delta) {
+  if (!editingProduct.sizes[size]) return;
+  const current = qty(editingProduct.sizes[size][wh]);
+  editingProduct.sizes[size][wh] = Math.max(0, current + delta);
+  renderEditSizes();
+}
+function removeEditSize(size) { delete editingProduct.sizes[size]; renderEditSizes(); renderPresetGrid(); }
+function renderPresetGrid() {
+  const g = $('presetGrid'); if (!g) return;
+  const presets = [35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50];
+  g.innerHTML = presets.map(s => {
+    const active = editingProduct.sizes[String(s)] ? ' active' : '';
+    return `<button type="button" class="size-preset-btn${active}" onclick="togglePresetSize('${s}')">${s}</button>`;
+  }).join('');
+}
+function togglePresetSize(size) {
+  if (editingProduct.sizes[size]) delete editingProduct.sizes[size];
+  else editingProduct.sizes[size] = { wh1: 0, wh2: 0 };
+  renderEditSizes(); renderPresetGrid();
+}
+function addCustomSize() {
+  const v = $('customSizeInput').value.trim(); if (!v) return;
+  if (editingProduct.sizes[v]) { alert('Такой размер уже есть'); return; }
+  editingProduct.sizes[v] = { wh1: 0, wh2: 0 };
+  $('customSizeInput').value = ''; renderEditSizes(); renderPresetGrid();
+}
+
+function openModal(html, wide) {
+  $('modalBox').innerHTML = html;
+  $('modalBox').className = wide ? 'modal wide' : 'modal';
+  $('modalBackdrop').classList.add('show');
+  $('modalBox').scrollTop = 0;
+}
+function closeModal() { $('modalBackdrop').classList.remove('show'); }
+
+function resizeImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 400;
+        let w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) { const r = Math.min(maxDim/w, maxDim/h); w = Math.round(w*r); h = Math.round(h*r); }
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL('image/jpeg', 0.75));
+      };
+      img.onerror = reject; img.src = e.target.result;
+    };
+    reader.onerror = reject; reader.readAsDataURL(file);
+  });
+}
+
+function renderSalesTab() {
+  const all = Object.values(state.sales || {}).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const users = [...new Set(all.map(s => s.user).filter(Boolean))].sort();
+  const filterUser = window._salesFilterUser || '';
+  const filtered = filterUser ? all.filter(s => s.user === filterUser) : all;
+  const total = filtered.reduce((a, s) => a + (+s.price || 0), 0);
+  const rows = filtered.map(s => `
+    <tr>
+      <td>${new Date(s.date).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })}</td>
+      <td>${esc(s.user || '—')}</td>
+      <td class="wrap"><b>${esc(s.brand || '')}</b> ${esc(s.productName || '')}</td>
+      <td>${esc(s.size)}</td>
+      <td>${esc(s.whName || '')}</td>
+      <td class="num">${fmt(s.price)} ₽</td>
+    </tr>`).join('');
+  $('tab-sales').innerHTML = `
+    <div class="toolbar">
+      <input class="search" id="fSalesSearch" placeholder="Поиск..." oninput="filterSalesTable()">
+      <select class="search" id="fSalesUser" onchange="setSalesUser(this.value)">
+        <option value="">Все</option>
+        ${users.map(u => `<option value="${esc(u)}" ${filterUser === u ? 'selected' : ''}>${esc(u)}</option>`).join('')}
+      </select>
+      <button class="btn" onclick="exportSales()">Excel</button>
+    </div>
+    <div class="sales-wrap">
+      ${filtered.length ? `
+        <div class="table-scroll">
+          <table class="sales-table" id="salesTable">
+            <thead><tr><th>Дата</th><th>Продавец</th><th>Товар</th><th>Размер</th><th>Точка</th><th class="num">Цена</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        <div style="padding:12px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-weight:700">
+          <span>${filtered.length} продаж</span><span>${fmt(total)} ₽</span>
+        </div>` : `<div class="empty">Продаж пока нет</div>`}
+    </div>`;
+}
+function setSalesUser(u) { window._salesFilterUser = u; renderSalesTab(); }
+function filterSalesTable() {
+  const q = ($('fSalesSearch')?.value || '').toLowerCase();
+  document.querySelectorAll('#salesTable tbody tr').forEach(tr => tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none');
+}
+
+function renderStatsTab() {
+  const sales = Object.values(state.sales || {});
+  const allUsers = [...new Set(sales.map(s => s.user).filter(Boolean))].sort();
+  const cutoff = new Date(); cutoff.setHours(0,0,0,0); cutoff.setDate(cutoff.getDate() - (statsPeriod - 1));
+  const salesInPeriod = sales.filter(s => new Date(s.date) >= cutoff);
+  const periodTotal = salesInPeriod.reduce((a, s) => a + (+s.price || 0), 0);
+  const periodCount = salesInPeriod.length;
+  const daysMap = {};
+  const today = new Date(); today.setHours(0,0,0,0);
+  for (let i = statsPeriod - 1; i >= 0; i--) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const key = dayKey(d);
+    daysMap[key] = { key, date: d, total: 0, count: 0, byUser: {}, isToday: i === 0 };
+  }
+  salesInPeriod.forEach(s => {
+    const d = new Date(s.date); d.setHours(0,0,0,0);
+    const day = daysMap[dayKey(d)]; if (!day) return;
+    day.total += +s.price || 0; day.count++;
+    const u = s.user || '—';
+    if (!day.byUser[u]) day.byUser[u] = { total: 0, count: 0 };
+    day.byUser[u].total += +s.price || 0; day.byUser[u].count++;
+  });
+  const days = Object.values(daysMap).sort((a, b) => a.date - b.date);
+  const maxTotal = Math.max(...days.map(d => d.total), 1);
+  const barsHtml = days.map(d => {
+    const h = d.total > 0 ? Math.max(2, (d.total / maxTotal) * 100) : 0;
+    return `<div class="chart-bar-wrap ${d.isToday ? 'today' : ''}" onclick="openDayDetails('${d.key}')" title="${d.date.toLocaleDateString('ru-RU')}: ${fmt(d.total)} ₽ · ${d.count} пар">
+      <div class="chart-bar-inner"><div class="chart-bar ${d.total === 0 ? 'zero' : ''}" style="height:${h}%"></div></div>
+      <div class="chart-label">${d.date.getDate()}</div>
+    </div>`;
+  }).join('');
+  const userHeaders = allUsers.map(u => `<th class="num">${esc(u)}</th>`).join('');
+  const rowsHtml = days.slice().reverse().map(d => {
+    const userCells = allUsers.map(u => {
+      const info = d.byUser[u] || { total: 0, count: 0 };
+      if (!info.count) return '<td class="num muted">—</td>';
+      return `<td class="num">${fmt(info.total)} ₽<br><span class="muted" style="font-size:11px;font-weight:400">${info.count} пар</span></td>`;
+    }).join('');
+    return `<tr onclick="openDayDetails('${d.key}')" style="cursor:pointer" class="${d.count === 0 ? 'empty-day' : ''}">
+      <td>${d.date.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', weekday:'short' })}</td>
+      <td class="num">${d.count || '—'}</td>
+      <td class="num"><b>${d.total ? fmt(d.total) + ' ₽' : '—'}</b></td>
+      ${userCells}
+    </tr>`;
+  }).join('');
+  const userStatsHtml = allUsers.map(u => {
+    const us = salesInPeriod.filter(s => s.user === u);
+    const ut = us.reduce((a, s) => a + (+s.price || 0), 0);
+    return `<div class="stat"><div class="k">${esc(u)}</div><div class="v">${fmt(ut)} ₽</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${us.length} пар</div></div>`;
+  }).join('');
+  $('tab-stats').innerHTML = `
+    <div class="period-tabs">
+      ${[7,14,30,90].map(p => `<button class="${statsPeriod === p ? 'active' : ''}" onclick="setStatsPeriod(${p})">${p} дн.</button>`).join('')}
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">Выручка за ${statsPeriod} дн.</div><div class="v">${fmt(periodTotal)} ₽</div></div>
+      <div class="stat"><div class="k">Продано пар</div><div class="v">${periodCount}</div></div>
+      ${userStatsHtml}
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-bars">${barsHtml}</div>
+    </div>
+    <div class="sales-wrap">
+      <div class="table-scroll">
+        <table class="sales-table">
+          <thead><tr>
+            <th>Дата</th><th class="num">Пар</th><th class="num">Выручка</th>${userHeaders}
+          </tr></thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+function setStatsPeriod(p) { statsPeriod = p; renderStatsTab(); }
+function openDayDetails(key) {
+  const sales = Object.values(state.sales || {}).filter(s => {
+    const d = new Date(s.date); d.setHours(0,0,0,0);
+    return dayKey(d) === key;
+  });
+  if (!sales.length) { alert('В этот день продаж не было'); return; }
+  sales.sort((a, b) => new Date(a.date) - new Date(b.date));
+  const total = sales.reduce((a, s) => a + (+s.price || 0), 0);
+  const dateStr = new Date(sales[0].date).toLocaleDateString('ru-RU', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+  const byUser = {};
+  sales.forEach(s => {
+    const u = s.user || '—';
+    if (!byUser[u]) byUser[u] = { sales: [], total: 0 };
+    byUser[u].sales.push(s); byUser[u].total += +s.price || 0;
+  });
+  const userHtml = Object.entries(byUser).map(([u, data]) => `
+    <div class="user-section">
+      <div class="user-header">
+        <span>${esc(u)}</span>
+        <span>${data.sales.length} пар · <b>${fmt(data.total)} ₽</b></span>
+      </div>
+      <div class="user-sales">
+        ${data.sales.map(s => `
+          <div class="sale-item">
+            <div>
+              <div class="sale-name">${esc(s.brand || '')} ${esc(s.productName || '')}</div>
+              <div class="sale-meta">Разм. ${esc(s.size)} · ${esc(s.whName || '')} · ${new Date(s.date).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</div>
+            </div>
+            <div class="sale-price">${fmt(s.price)} ₽</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+  openModal(`
+    <h3 style="text-transform:capitalize">${dateStr}</h3>
+    <div class="day-summary">
+      <span>Всего: <b>${sales.length} пар</b></span>
+      <span><b>${fmt(total)} ₽</b></span>
+    </div>
+    ${userHtml}
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Закрыть</button>
+    </div>`, true);
+}
+
+function exportProducts() {
+  const products = Object.values(state.products).sort((a, b) => {
+    if ((a.brand||'') !== (b.brand||'')) return (a.brand||'').localeCompare(b.brand||'');
+    return (a.name||'').localeCompare(b.name||'');
+  });
+  if (!products.length) { alert('Нет товаров'); return; }
+  const wh1 = state.warehouses.wh1.name, wh2 = state.warehouses.wh2.name;
+  const rows = [['Бренд','Модель','Пол','Сезон','Цена, ₽','Мин. цена, ₽', `${wh1} (разм:кол)`, `${wh2} (разм:кол)`, 'Всего пар']];
+  products.forEach(p => {
+    const sizes = Object.keys(p.sizes || {}).sort((a, b) => parseFloat(a) - parseFloat(b));
+    const t1 = sizes.filter(s => qty(p.sizes[s].wh1) > 0).map(s => `${s}:${qty(p.sizes[s].wh1)}`).join(', ');
+    const t2 = sizes.filter(s => qty(p.sizes[s].wh2) > 0).map(s => `${s}:${qty(p.sizes[s].wh2)}`).join(', ');
+    rows.push([p.brand || '', p.name || '', p.gender || '', p.season || '',
+      p.price || 0, p.minPrice ?? '', t1, t2, getTotalQty(p)]);
+  });
+  doExport(rows, 'Товары', 'evso-tovary');
+}
+function exportSales() {
+  const sales = Object.values(state.sales || {}).sort((a, b) => new Date(b.date) - new Date(a.date));
+  if (!sales.length) { alert('Нет продаж'); return; }
+  const rows = [['Дата','Продавец','Бренд','Модель','Размер','Точка','Цена, ₽']];
+  sales.forEach(s => rows.push([
+    new Date(s.date).toLocaleString('ru-RU'), s.user || '', s.brand || '',
+    s.productName || '', s.size, s.whName || '', s.price || 0
+  ]));
+  doExport(rows, 'Продажи', 'evso-prodazhi');
+}
+function doExport(rows, sheetName, filename) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (typeof XLSX === 'undefined') {
+    const csv = rows.map(r => r.map(c => {
+      const s = String(c ?? '');
+      return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }).join(',')).join('\r\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = filename + '-' + today + '.csv'; a.click();
+    URL.revokeObjectURL(url); return;
+  }
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = rows[0].map((_, i) => ({ wch: i === 1 ? 20 : 16 }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  XLSX.writeFile(wb, filename + '-' + today + '.xlsx');
+}
+
+function renderSettingsTab() {
+  const url = getFbUrl();
+  const installHidden = isStandalone;
+  $('tab-settings').innerHTML = `
+    ${!installHidden ? `
+    <div class="settings-section">
+      <h3>📱 Установить приложение</h3>
+      ${isIOS ? `
+        <p style="margin:0 0 8px;font-size:13px;line-height:1.5">
+          В Safari нажмите <b>«Поделиться»</b> (квадрат со стрелкой вверх снизу) → прокрутите → <b>«На экран "Домой"»</b> → «Добавить».
+        </p>
+        <p class="muted" style="margin:0;font-size:12px">Иконка появится на главном экране, приложение откроется как обычное.</p>
+      ` : `
+        <p style="margin:0 0 10px;font-size:13px">В Chrome меню (три точки) → <b>«Установить приложение»</b> или <b>«Добавить на главный экран»</b>.</p>
+        <div class="row-actions">
+          <button class="btn primary" onclick="triggerInstall()">Установить сейчас</button>
+        </div>
+      `}
+    </div>` : `
+    <div class="settings-section">
+      <h3>📱 Приложение установлено</h3>
+      <p class="muted" style="margin:0">evso запущено как приложение. 🎉</p>
+    </div>`}
+
+    <div class="settings-section">
+      <h3>Синхронизация</h3>
+      <div class="status-line ${useFirebase ? 'ok' : 'warn'}"><strong>${useFirebase ? '🟢 Подключено' : '⚪ Не настроено'}</strong></div>
+      <label>URL Firebase Realtime Database
+        <input id="fbUrlInput" placeholder="https://...firebasedatabase.app" value="${esc(url)}">
+      </label>
+      <div class="row-actions">
+        <button class="btn primary" onclick="saveFbUrl()">Сохранить</button>
+        ${useFirebase ? '<button class="btn ghost" onclick="disconnectFb()">Отключить</button>' : ''}
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>Названия точек</h3>
+      <label>Точка 1 (красные бейджи)
+        <input value="${esc(state.warehouses.wh1.name)}" onchange="updateWhName('wh1', this.value)">
+      </label>
+      <label>Точка 2 (синие бейджи)
+        <input value="${esc(state.warehouses.wh2.name)}" onchange="updateWhName('wh2', this.value)">
+      </label>
+    </div>
+    <div class="settings-section">
+      <h3>Экспорт</h3>
+      <div class="row-actions">
+        <button class="btn" onclick="exportProducts()">Товары в Excel</button>
+        <button class="btn" onclick="exportSales()">Продажи в Excel</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>Аккаунт</h3>
+      <p>Вы вошли как: <b>${esc(currentUser)}</b></p>
+      <div class="row-actions"><button class="btn danger" onclick="logout()">Выйти</button></div>
+    </div>
+    <div class="settings-section">
+      <h3>Опасная зона</h3>
+      <p class="muted" style="font-size:12.5px;margin:0 0 8px">История продаж не удаляется при удалении товаров</p>
+      <div class="row-actions">
+        <button class="btn danger" onclick="clearProducts()">Удалить все товары</button>
+        <button class="btn danger" onclick="clearSales()">Удалить историю продаж</button>
+      </div>
+    </div>`;
+}
+function updateWhName(wh, name) {
+  state.warehouses[wh].name = name.trim() || (wh === 'wh1' ? 'Точка 1' : 'Точка 2');
+  saveLocal(); saveWarehousesRemote(); render();
+}
+function saveFbUrl() {
+  const url = $('fbUrlInput').value.trim();
+  if (!url) { localStorage.removeItem(FB_KEY); location.reload(); return; }
+  localStorage.setItem(FB_KEY, url); location.reload();
+}
+function disconnectFb() { if (!confirm('Отключить синхронизацию?')) return; localStorage.removeItem(FB_KEY); location.reload(); }
+function clearProducts() {
+  if (!confirm('Удалить ВСЕ товары?\n\n✓ История продаж сохранится\n✗ Отменить будет нельзя')) return;
+  state.products = {}; saveLocal();
+  if (useFirebase) db.ref('evso/products').set({});
+  render();
+}
+function clearSales() {
+  if (!confirm('Удалить ВСЮ историю продаж?\n\n✗ Отменить будет нельзя')) return;
+  state.sales = {}; saveLocal();
+  if (useFirebase) db.ref('evso/sales').set({});
+  render();
+}
+
+initAuth();
+</script>
+</body>
+</html>
