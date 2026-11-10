@@ -11,7 +11,6 @@
 <meta name="apple-mobile-web-app-title" content="evso">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 [hidden] { display: none !important; }
 :root{
@@ -332,7 +331,7 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
     <div class="login-logo">evso<span>.</span></div>
     <div class="login-sub">Вход для продавца</div>
     <form id="loginForm">
-      <label>Логин<input name="user" required autocomplete="username" autocapitalize="none"></label>
+      <label>Логин<input name="user" required autocomplete="username" autocapitalize="none" value="женя"></label>
       <label>Пароль<input name="pass" type="password" required autocomplete="current-password"></label>
       <button type="submit" class="btn primary full">Войти</button>
     </form>
@@ -383,7 +382,6 @@ code{background:var(--hover);padding:1px 5px;border-radius:4px;font-size:12px;fo
       <div class="spacer"></div>
       <button class="theme-toggle" id="shopThemeToggle" onclick="toggleTheme()" title="Тема">🌓</button>
       <button class="btn small icon-btn" onclick="shareShop()" title="Поделиться">🔗</button>
-      <button class="btn small icon-btn" id="shopAdminBtn" onclick="switchToAdmin()" title="В админку" hidden>→</button>
     </div>
   </div>
   <main>
@@ -499,7 +497,7 @@ let state = {
   products: {},
   sales: {},
   log: {},
-  users: { 'женя': '12345', 'дима': '12345', 'никита': '12345' },
+  users: { 'женя': '12345' }, // ТОЛЬКО ОДИН ПОЛЬЗОВАТЕЛЬ
   customBrands: [],
   settings: { sellerTelegram: '', showOutOfStock: true }
 };
@@ -530,15 +528,13 @@ function migrateState() {
   if (!state.products || typeof state.products !== 'object') state.products = {};
   if (!state.sales || typeof state.sales !== 'object' || Array.isArray(state.sales)) state.sales = {};
   if (!state.log || typeof state.log !== 'object' || Array.isArray(state.log)) state.log = {};
-  if (!state.users || typeof state.users !== 'object') state.users = { 'женя': '12345', 'дима': '12345', 'никита': '12345' };
+  if (!state.users || typeof state.users !== 'object' || Object.keys(state.users).length === 0) state.users = { 'женя': '12345' };
   if (!state.customBrands || !Array.isArray(state.customBrands)) state.customBrands = [];
   if (!state.settings || typeof state.settings !== 'object') state.settings = { sellerTelegram: '', showOutOfStock: true };
   if (state.settings.showOutOfStock === undefined) state.settings.showOutOfStock = true;
   Object.values(state.products).forEach(p => {
-    // Миграция поля gender -> category
     if (p.gender && !p.category) {
-      if (p.gender === 'Женские') p.category = '36-41';
-      else p.category = '40-50';
+      if (p.gender === 'Женские') p.category = '36-41'; else p.category = '40-50';
       delete p.gender;
     }
     if (!p.sizes) { p.sizes = {}; return; }
@@ -644,18 +640,22 @@ async function clearActionLog() {
 }
 
 /* ============ AUTH ============ */
-function isShopMode() { return new URLSearchParams(window.location.search).get('shop') === '1'; }
 function initAuth() {
-  currentUser = localStorage.getItem(USER_KEY) || ''; loadLocal();
-  if (isShopMode()) { showShop(); return; }
-  if (currentUser && state.users && state.users[currentUser]) { showApp(); return; }
+  currentUser = localStorage.getItem(USER_KEY) || ''; loadLocal(); initFirebase();
+  if (currentUser && state.users && state.users[currentUser.toLowerCase()]) {
+    currentUser = currentUser.toLowerCase();
+    showApp(); return;
+  }
   showChoose();
 }
 function showChoose() { $('chooseScreen').hidden = false; $('loginScreen').hidden = true; $('app').hidden = true; $('shopScreen').hidden = true; }
 function chooseRole(role) {
   haptic();
-  if (role === 'buyer') { const u = new URL(window.location.href); u.searchParams.set('shop', '1'); window.history.replaceState({}, '', u.toString()); showShop(); }
-  else { $('chooseScreen').hidden = true; showLogin(); }
+  if (role === 'buyer') {
+    showShop();
+  } else {
+    $('chooseScreen').hidden = true; showLogin();
+  }
 }
 function backToChoose() {
   haptic(); const u = new URL(window.location.href); u.searchParams.delete('shop'); u.searchParams.delete('product'); window.history.replaceState({}, '', u.toString());
@@ -664,12 +664,26 @@ function backToChoose() {
 function showLogin() {
   $('chooseScreen').hidden = true; $('loginScreen').hidden = false; $('app').hidden = true; $('shopScreen').hidden = true;
   $('loginForm').onsubmit = e => {
-    e.preventDefault(); const f = new FormData(e.target); const user = f.get('user').trim(), pass = f.get('pass');
-    if (state.users && state.users[user] && state.users[user] === pass) {
-      localStorage.setItem(USER_KEY, user); currentUser = user; $('loginError').textContent = '';
-      const u = new URL(window.location.href); u.searchParams.delete('shop'); u.searchParams.delete('product'); window.history.replaceState({}, '', u.toString());
-      haptic('success'); showApp();
-    } else { $('loginError').textContent = 'Неверный логин или пароль'; haptic('delete'); }
+    e.preventDefault(); const f = new FormData(e.target); 
+    const user = f.get('user').trim().toLowerCase(); 
+    const pass = f.get('pass');
+    
+    initFirebase();
+    db.ref('evso/users').once('value').then(snap => {
+      let users = snap.val();
+      if (!users || Object.keys(users).length === 0) users = { 'женя': '12345' }; // Страховка
+      
+      if (!users[user] || (typeof users[user] === 'object' ? users[user].password : users[user]) !== pass) {
+        $('loginError').textContent = 'Неверный логин или пароль'; haptic('delete'); return;
+      }
+      localStorage.setItem(USER_KEY, user); 
+      currentUser = user; 
+      $('loginError').textContent = '';
+      haptic('success'); 
+      showApp();
+    }).catch(err => {
+      console.error(err); $('loginError').textContent = 'Ошибка соединения с базой';
+    });
   };
 }
 function showApp() {
@@ -685,18 +699,20 @@ function showApp() {
 }
 function logout() {
   if (!confirm('Выйти из аккаунта?')) return;
-  flushSave(); localStorage.removeItem(USER_KEY); currentUser = ''; syncOnline = false; syncError = false; useFirebase = false; updateSyncBar(); showChoose();
+  flushSave(); 
+  localStorage.removeItem(USER_KEY); 
+  localStorage.removeItem(STATE_KEY);
+  localStorage.removeItem(PHOTOS_KEY);
+  currentUser = ''; 
+  window.location.reload(); // Жесткая перезагрузка для сброса кэша
 }
 
 /* ============ SHOP MODE ============ */
 let _shopBound = false, _shopRealtime = false;
 function showShop() {
   $('chooseScreen').hidden = true; $('loginScreen').hidden = true; $('app').hidden = true; $('shopScreen').hidden = false;
-  const adminBtn = $('shopAdminBtn'); if (adminBtn) adminBtn.hidden = !(currentUser && state.users && state.users[currentUser]);
   if (!_shopBound) { bindShopFilters(); _shopBound = true; }
   if (!_shopRealtime) { setupShopRealtime(); _shopRealtime = true; }
-  const productId = new URLSearchParams(window.location.search).get('product');
-  if (productId) setTimeout(() => { if (state.products[productId]) openShopProductView(productId); }, 600);
 }
 function bindShopFilters() {
   const onSearch = debounce(e => { shopFilters.search = e.target.value; renderShopGrid(); }, SEARCH_DELAY);
@@ -776,10 +792,9 @@ function openShopProductView(productId) {
     <div style="margin-top:10px"><button class="btn" style="width:100%" onclick="closeModal()">Закрыть</button></div>
   `);
 }
-function switchToAdmin() { const u = new URL(window.location.href); u.searchParams.delete('shop'); u.searchParams.delete('product'); window.location.href = u.toString(); }
 
 /* ============ SHOP SHARE ============ */
-function buildShopUrl(productId) { const params = new URLSearchParams(); params.set('shop', '1'); if (productId) params.set('product', productId); return window.location.origin + window.location.pathname + '?' + params.toString(); }
+function buildShopUrl(productId) { const params = new URLSearchParams(); if (productId) params.set('product', productId); return window.location.origin + window.location.pathname + (productId ? '?' + params.toString() : ''); }
 async function shareShop() {
   const url = buildShopUrl(); const title = 'evso — каталог обуви'; haptic();
   if (navigator.share) { try { await navigator.share({ title, text: title, url }); return; } catch (e) { if (e.name === 'AbortError') return; } }
@@ -888,7 +903,6 @@ function renderMenuTab() {
       <button class="menu-card" onclick="window.open(buildShopUrl(),'_blank')"><div class="menu-icon">🛍</div><div class="menu-title">Витрина</div><div class="menu-sub">Открыть каталог для покупателей</div></button>
     </div>`;
 }
-
 function renderStats() {
   const products = Object.values(state.products); let available = 0; products.forEach(p => { available += getTotalQty(p); });
   const today = new Date().toDateString(); const todaySales = Object.values(state.sales || {}).filter(s => s.date && new Date(s.date).toDateString() === today); const todaySum = todaySales.reduce((a, s) => a + (+s.price || 0), 0);
@@ -922,7 +936,6 @@ function renderProductsTab() {
   $('fSeason').onchange = e => { filters.season = e.target.value; renderProductGrid(); };
   renderProductGrid();
 }
-
 function getFilteredProducts() {
   const q = filters.search.toLowerCase();
   return Object.entries(state.products).filter(([id, p]) => {
@@ -934,13 +947,11 @@ function getFilteredProducts() {
     return true;
   }).sort((a, b) => { const pa = a[1], pb = b[1]; if ((pa.brand||'') !== (pb.brand||'')) return (pa.brand||'').localeCompare(pb.brand||''); return (pa.name||'').localeCompare(pb.name||''); });
 }
-
 function renderProductGrid() {
   const grid = $('productGrid'); if (!grid) return; const list = getFilteredProducts();
   if (!list.length) { grid.innerHTML = `<div class="empty" style="grid-column:1/-1">${Object.keys(state.products).length ? 'Ничего не найдено' : 'Пока нет товаров. Нажмите «+ Добавить».'}</div>`; return; }
   grid.innerHTML = list.map(([id, p]) => renderProductCard(id, p)).join('');
 }
-
 function renderProductCard(id, p) {
   const totalQty = getTotalQty(p); const anyAvailable = totalQty > 0; const attrs = [p.category, p.season].filter(Boolean).join(' · ');
   return `<div class="product-card" onclick="openProductView('${id}')">
@@ -1076,7 +1087,6 @@ function openProductView(productId) {
     </div>
   `);
 }
-
 function deleteProduct(id) {
   const p = state.products[id]; if (!p) return;
   if (!confirm(`Удалить товар «${p.name}»?\n\n✓ История продаж сохранится\n✗ Отменить будет нельзя`)) return;
@@ -1243,7 +1253,7 @@ function renderSettingsTab() {
 function copyShopUrl() { const url = buildShopUrl(); haptic(); if (navigator.clipboard) { navigator.clipboard.writeText(url).then(() => showToast('Ссылка скопирована')).catch(() => prompt('Скопируйте:', url)); } else prompt('Скопируйте:', url); }
 function updateSellerTg(val) { state.settings = state.settings || {}; state.settings.sellerTelegram = (val || '').trim(); saveLocal(); saveSettingsRemote(); showToast('Сохранено'); logAction('settings_change', `Telegram продавца: ${state.settings.sellerTelegram || '—'}`); }
 function setShowOutOfStock(val) { state.settings = state.settings || {}; state.settings.showOutOfStock = !!val; saveLocal(); saveSettingsRemote(); haptic(); showToast(val ? 'Показываются' : 'Скрыты'); logAction('settings_change', val ? 'Витрина: показывать товары без остатка' : 'Витрина: скрывать товары без остатка'); }
-function addUser() { const u = $('newUserLogin').value.trim(); const p = $('newUserPass').value.trim(); if (!u || !p) return showToast('Введите логин и пароль', 'error'); if (state.users[u]) return showToast('Такой логин уже есть', 'error'); state.users[u] = p; saveLocal(); saveUsersRemote(); logAction('user_add', `Добавлен сотрудник «${u}»`); haptic('add'); renderSettingsTab(); showToast('Пользователь добавлен'); }
+function addUser() { const u = $('newUserLogin').value.trim().toLowerCase(); const p = $('newUserPass').value.trim(); if (!u || !p) return showToast('Введите логин и пароль', 'error'); if (state.users[u]) return showToast('Такой логин уже есть', 'error'); state.users[u] = p; saveLocal(); saveUsersRemote(); logAction('user_add', `Добавлен сотрудник «${u}»`); haptic('add'); renderSettingsTab(); showToast('Пользователь добавлен'); }
 function changeMyPass() { const p = $('myNewPass').value.trim(); if (!p) return; state.users[currentUser] = p; saveLocal(); saveUsersRemote(); logAction('pass_change', 'Смена своего пароля'); haptic(); showToast('Пароль изменён'); $('myNewPass').value = ''; }
 function updateWhName(wh, name) { const old = state.warehouses[wh].name; const nw = name.trim() || (wh === 'wh1' ? 'Точка 1' : 'Точка 2'); if (old === nw) return; state.warehouses[wh].name = nw; saveLocal(); saveWarehousesRemote(); logAction('wh_rename', `Точка «${old}» переименована в «${nw}»`); haptic(); render(); }
 
