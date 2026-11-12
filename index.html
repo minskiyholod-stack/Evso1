@@ -157,6 +157,7 @@ select.search{flex:0 0 auto;min-width:auto;padding-right:24px;font-size:15px}
 .sales-table th{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;background:var(--hover)}
 .sales-table .num{text-align:right}
 .sales-table td.wrap{white-space:normal;min-width:110px}
+.sales-table tr:active td{background:var(--hover)}
 .filter-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--black);color:var(--white);border-radius:20px;font-size:12px;font-weight:600}
 .filter-badge button{background:none;border:none;color:inherit;cursor:pointer;font-size:16px;padding:0 0 0 2px}
 .chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 12px 12px;margin-bottom:14px;overflow-x:auto}
@@ -584,7 +585,82 @@ function deleteProduct(id) { const p = state.products[id]; if (!p) return; if (!
 
 function openSaleModal(pid) { const p = state.products[pid]; if (!p) return; const items = []; Object.keys(p.sizes || {}).forEach(sz => { const q1 = qty(p.sizes[sz].wh1), q2 = qty(p.sizes[sz].wh2); if (q1 > 0) items.push({ size: sz, wh: 'wh1', whName: state.warehouses.wh1.name, qty: q1 }); if (q2 > 0) items.push({ size: sz, wh: 'wh2', whName: state.warehouses.wh2.name, qty: q2 }); }); if (!items.length) return showToast('Нет доступных размеров', 'error'); const opts = items.map((it, i) => `<option value="${i}">Размер ${esc(it.size)} — ${esc(it.whName)} (${it.qty} шт)</option>`).join(''); openModal(`<h3>Продажа: ${esc(p.name)}</h3><form id="saleForm"><label>Что продаём<select name="item" required>${opts}</select></label><label>Цена, ₽<input name="price" type="number" value="${p.price||''}" required></label><div class="modal-actions"><button type="button" class="btn" onclick="closeModal()">Отмена</button><button type="submit" class="btn primary">Продать</button></div></form>`); $('saleForm').onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target); const it = items[+f.get('item')]; if (!it) return; const price = parseFloat(f.get('price')) || 0; const prod = state.products[pid]; if (!prod || !prod.sizes[it.size] || qty(prod.sizes[it.size][it.wh]) < 1) return showToast('Товар продан', 'error'); prod.sizes[it.size][it.wh] = Math.max(0, qty(prod.sizes[it.size][it.wh]) - 1); const sid = uid('s'); const sale = { id: sid, productId: pid, productName: prod.name, brand: prod.brand || '', size: it.size, wh: it.wh, whName: state.warehouses[it.wh].name, price, date: new Date().toISOString(), user: currentUser }; state.sales[sid] = sale; saveLocal(); logAction('sale', `Продано: ${prod.name}, ${it.size}, ${fmt(price)} ₽`); haptic('success'); closeModal(); render(); showToast(`✓ Продано: ${prod.name}`); if (useFirebase && firebaseReady) { try { await Promise.all([db.ref('evso/products/' + pid).set(prod), db.ref('evso/sales/' + sid).set(sale)]); } catch (err) {} } }; }
 
-function renderSalesTab() { const all = Object.values(state.sales || {}).filter(s => s && s.date).sort((a, b) => new Date(b.date) - new Date(a.date)); const total = all.reduce((a, s) => a + (+s.price || 0), 0); const rows = all.map(s => `<tr><td>${new Date(s.date).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })}</td><td>${esc(s.user || '—')}</td><td class="wrap"><b>${esc(s.brand || '')}</b> ${esc(s.productName || '')}</td><td>${esc(s.size)}</td><td>${esc(s.whName || '')}</td><td class="num">${fmt(s.price)} ₽</td></tr>`).join(''); $('tab-sales').innerHTML = `<div class="toolbar"><button class="btn" onclick="location.reload()">↻</button><button class="btn" onclick="exportSales()">Excel</button></div><div class="sales-wrap">${all.length ? `<div class="table-scroll"><table class="sales-table"><thead><tr><th>Дата</th><th>Продавец</th><th>Товар</th><th>Размер</th><th>Точка</th><th class="num">Цена</th></tr></thead><tbody>${rows}</tbody></table></div><div style="padding:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-weight:700"><span>${all.length} продаж</span><span>${fmt(total)} ₽</span></div>` : '<div class="empty">Нет продаж</div>'}</div>`; }
+function openSaleDetails(saleId) {
+  const sale = state.sales[saleId]; if (!sale) return;
+  const product = state.products[sale.productId];
+  const photoHtml = (product && product.photo) ? `<img src="${product.photo}" alt="">` : `<div class="photo-placeholder">👟</div>`;
+  
+  openModal(`
+    <div class="view-photo" style="aspect-ratio:1; max-height:220px; background:var(--hover); border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:16px;">
+      ${photoHtml}
+    </div>
+    <h3 style="margin:0 0 12px; font-size:18px; text-align:center;">Детали продажи</h3>
+    
+    <div style="background:var(--hover); padding:16px; border-radius:10px; display:flex; flex-direction:column; gap:12px; font-size:14px;">
+      <div style="display:flex; justify-content:space-between; gap:10px;">
+        <span class="muted">Товар</span>
+        <b style="text-align:right;">${esc(sale.brand||'')} ${esc(sale.productName||'')}</b>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span class="muted">Размер</span>
+        <b>${esc(sale.size)}</b>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span class="muted">Цена</span>
+        <b style="color:var(--success); font-size:16px;">${fmt(sale.price)} ₽</b>
+      </div>
+      <div style="height:1px; background:var(--border); margin:4px 0;"></div>
+      <div style="display:flex; justify-content:space-between;">
+        <span class="muted">Кто продал</span>
+        <b>👤 ${esc(sale.user || '—')}</b>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span class="muted">Точка</span>
+        <b>🏪 ${esc(sale.whName || '—')}</b>
+      </div>
+      <div style="display:flex; justify-content:space-between; gap:10px;">
+        <span class="muted">Дата</span>
+        <b style="font-weight:normal; font-size:13px;">${new Date(sale.date).toLocaleString('ru-RU')}</b>
+      </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn primary" onclick="closeModal()" style="width:100%">Закрыть</button>
+    </div>
+  `);
+}
+
+function renderSalesTab() { 
+  const all = Object.values(state.sales || {}).filter(s => s && s.date).sort((a, b) => new Date(b.date) - new Date(a.date)); 
+  const total = all.reduce((a, s) => a + (+s.price || 0), 0); 
+  const rows = all.map(s => `
+    <tr onclick="openSaleDetails('${s.id}')" style="cursor:pointer">
+      <td>${new Date(s.date).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })}</td>
+      <td>${esc(s.user || '—')}</td>
+      <td class="wrap"><b>${esc(s.brand || '')}</b> ${esc(s.productName || '')}</td>
+      <td>${esc(s.size)}</td>
+      <td>${esc(s.whName || '')}</td>
+      <td class="num">${fmt(s.price)} ₽</td>
+    </tr>`).join(''); 
+  $('tab-sales').innerHTML = `
+    <div class="toolbar">
+      <button class="btn" onclick="location.reload()">↻</button>
+      <button class="btn" onclick="exportSales()">Excel</button>
+    </div>
+    <div class="sales-wrap">
+      ${all.length ? `
+        <div class="table-scroll">
+          <table class="sales-table">
+            <thead><tr><th>Дата</th><th>Продавец</th><th>Товар</th><th>Размер</th><th>Точка</th><th class="num">Цена</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        <div style="padding:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-weight:700">
+          <span>${all.length} продаж</span>
+          <span>${fmt(total)} ₽</span>
+        </div>` : '<div class="empty">Нет продаж</div>'}
+    </div>`;
+}
 
 function getWeekRange(offset) {
   const now = new Date(); now.setHours(0,0,0,0);
@@ -598,7 +674,6 @@ function getWeekRange(offset) {
 function renderStatsTab() {
   const sales = Object.values(state.sales || {}).filter(s => s && s.date);
   
-  // Генерируем список недель (текущая и 12 назад = 3 месяца)
   const weekRanges = [];
   for (let i = 0; i <= 12; i++) {
     weekRanges.push({ offset: -i, ...getWeekRange(-i) });
@@ -611,7 +686,6 @@ function renderStatsTab() {
   const inP = sales.filter(s => { const d = new Date(s.date); return d >= start && d <= end; });
   const pTotal = inP.reduce((a, s) => a + (+s.price || 0), 0);
 
-  // График (по дням выбранной недели)
   const dm = {};
   for (let i = 0; i < 6; i++) {
     const d = new Date(start); d.setDate(start.getDate() + i);
@@ -622,13 +696,11 @@ function renderStatsTab() {
   const mx = Math.max(...days.map(d => d.total), 1);
   const bars = days.map(d => { const h = d.total > 0 ? Math.max(2, (d.total/mx)*100) : 0; return `<div class="chart-bar-wrap ${d.isToday?'today':''}"><div class="chart-bar-inner"><div class="chart-bar ${d.total===0?'zero':''}" style="height:${h}%"></div></div><div class="chart-label">${d.date.getDate()}</div></div>`; }).join('');
 
-  // Статистика по сотрудникам
   const uStats = {};
   Object.keys(state.users || {}).forEach(u => { uStats[u] = { total: 0, count: 0 }; });
   inP.forEach(s => { const u = s.user || 'Неизвестно'; if (!uStats[u]) uStats[u] = { total: 0, count: 0 }; uStats[u].total += +s.price || 0; uStats[u].count++; });
   const userHtml = Object.entries(uStats).sort((a, b) => b[1].total - a[1].total).map(([u, d]) => `<div class="stat" style="grid-column: 1 / -1;"><div class="k" style="color:var(--text);font-size:13px;text-transform:none">👤 ${esc(u)}</div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px"><span class="v" style="font-size:18px">${fmt(d.total)} ₽</span><span class="muted" style="font-size:12px">${d.count} пар</span></div></div>`).join('');
 
-  // Список опций для выпадающего меню
   const options = weekRanges.map(w => {
     const startStr = w.start.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
     const endStr = w.end.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
