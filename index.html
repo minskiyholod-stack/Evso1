@@ -311,7 +311,7 @@ const CATEGORIES = ['36-41', '40-50'];
 
 let state = { warehouses: { wh1:{name:'Точка 1'}, wh2:{name:'Точка 2'} }, products: {}, sales: {}, log: {}, customBrands: [], users: {}, settings: { sellerTelegram: '', showOutOfStock: true } };
 let db = null, useFirebase = false, currentUser = '', activeTab = 'menu';
-let filters = { search:'', brand:'', category:'', size:'' };
+let filters = { search:'', brand:'', category:'', size:'', sort:'default', showLastPair: false };
 let shopFilters = { search:'', brand:'', size:'', category:'', sort:'default' };
 let editingProduct = null, editingPhoto = '';
 let currentWeekOffset = 0, firebaseReady = false, syncOnline = false, syncError = false;
@@ -545,18 +545,62 @@ function renderStats() {
   const products = Object.values(state.products); let av = 0; products.forEach(p => { av += getTotalQty(p); }); const today = new Date().toDateString(); const todaySales = Object.values(state.sales || {}).filter(s => s.date && new Date(s.date).toDateString() === today); const todaySum = todaySales.reduce((a, s) => a + (+s.price || 0), 0);
   $('stats').innerHTML = `<div class="stat"><div class="k">Товаров</div><div class="v">${products.length}</div></div><div class="stat"><div class="k">В наличии</div><div class="v">${av}</div></div><div class="stat"><div class="k">Продаж сегодня</div><div class="v">${todaySales.length}</div></div><div class="stat"><div class="k">Выручка</div><div class="v">${fmt(todaySum)} ₽</div></div>`;
 }
+
 function renderProductsTab() {
-  $('tab-products').innerHTML = `<div class="toolbar"><button class="btn primary" onclick="openProductModal()">+ Добавить</button><input class="search" id="fSearch" placeholder="Поиск..." value="${esc(filters.search)}"><select class="search" id="fBrand"><option value="">Бренд</option></select><select class="search" id="fSize"><option value="">Размер</option></select><select class="search" id="fCategory"><option value="">Категория</option><option ${filters.category === '36-41' ? 'selected' : ''}>36-41</option><option ${filters.category === '40-50' ? 'selected' : ''}>40-50</option></select></div><div id="productGrid" class="product-grid"></div>`;
+  $('tab-products').innerHTML = `
+    <div class="toolbar">
+      <button class="btn primary" onclick="openProductModal()">+ Добавить</button>
+      <input class="search" id="fSearch" placeholder="Поиск..." value="${esc(filters.search)}">
+      <select class="search" id="fBrand"><option value="">Бренд</option></select>
+      <select class="search" id="fSize"><option value="">Размер</option></select>
+      <select class="search" id="fCategory"><option value="">Категория</option><option ${filters.category === '36-41' ? 'selected' : ''}>36-41</option><option ${filters.category === '40-50' ? 'selected' : ''}>40-50</option></select>
+      <select class="search" id="fSort">
+        <option value="default" ${filters.sort === 'default' ? 'selected' : ''}>Сортировка</option>
+        <option value="price_asc" ${filters.sort === 'price_asc' ? 'selected' : ''}>Сначала дешевле</option>
+        <option value="price_desc" ${filters.sort === 'price_desc' ? 'selected' : ''}>Сначала дороже</option>
+        <option value="last_pair" ${filters.sort === 'last_pair' ? 'selected' : ''}>Последняя пара (остаток 1)</option>
+      </select>
+    </div>
+    <div id="productGrid" class="product-grid"></div>`;
   const allBrands = getAllBrands(); $('fBrand').innerHTML = '<option value="">Все бренды</option>' + allBrands.map(b => `<option value="${esc(b)}" ${filters.brand === b ? 'selected' : ''}>${esc(b)}</option>`).join('');
   const sizes = getAllAvailableSizes(); $('fSize').innerHTML = '<option value="">Все размеры</option>' + sizes.map(s => `<option value="${esc(s)}" ${filters.size === s ? 'selected' : ''}>${esc(s)}</option>`).join('');
   $('fSearch').oninput = debounce(e => { filters.search = e.target.value; renderProductGrid(); }, SEARCH_DELAY);
   $('fBrand').onchange = e => { filters.brand = e.target.value; renderProductGrid(); };
   $('fSize').onchange = e => { filters.size = e.target.value; renderProductGrid(); };
   $('fCategory').onchange = e => { filters.category = e.target.value; renderProductGrid(); };
+  $('fSort').onchange = e => { filters.sort = e.target.value; renderProductGrid(); };
   renderProductGrid();
 }
-function getFilteredProducts() { const q = filters.search.toLowerCase(); return Object.entries(state.products).filter(([id, p]) => { if (q && !((p.name||'').toLowerCase().includes(q) || (p.brand||'').toLowerCase().includes(q))) return false; if (filters.brand && p.brand !== filters.brand) return false; if (filters.category && p.category !== filters.category) return false; if (filters.size) { const sz = p.sizes?.[filters.size]; if (!sz || (qty(sz.wh1) + qty(sz.wh2)) === 0) return false; } return true; }).sort((a, b) => { const pa = a[1], pb = b[1]; if ((pa.brand||'') !== (pb.brand||'')) return (pa.brand||'').localeCompare(pb.brand||''); return (pa.name||'').localeCompare(pb.name||''); }); }
-function renderProductGrid() { const grid = $('productGrid'); if (!grid) return; const list = getFilteredProducts(); if (!list.length) { grid.innerHTML = `<div class="empty" style="grid-column:1/-1">${Object.keys(state.products).length ? 'Ничего не найдено' : 'Нет товаров'}</div>`; return; } grid.innerHTML = list.map(([id, p]) => renderProductCard(id, p)).join(''); }
+
+function getFilteredProducts() { 
+  const q = filters.search.toLowerCase(); 
+  let list = Object.entries(state.products).filter(([id, p]) => { 
+    if (q && !((p.name||'').toLowerCase().includes(q) || (p.brand||'').toLowerCase().includes(q))) return false; 
+    if (filters.brand && p.brand !== filters.brand) return false; 
+    if (filters.category && p.category !== filters.category) return false; 
+    if (filters.size) { const sz = p.sizes?.[filters.size]; if (!sz || (qty(sz.wh1) + qty(sz.wh2)) === 0) return false; } 
+    return true; 
+  });
+
+  // Фильтр «Последняя пара»
+  if (filters.sort === 'last_pair') {
+    list = list.filter(([, p]) => getTotalQty(p) === 1);
+  }
+
+  // Сортировка
+  list.sort((a, b) => { 
+    const pa = a[1], pb = b[1]; 
+    if (filters.sort === 'price_asc') return (pa.price||0) - (pb.price||0);
+    if (filters.sort === 'price_desc') return (pb.price||0) - (pa.price||0);
+    // По умолчанию (по бренду)
+    if ((pa.brand||'') !== (pb.brand||'')) return (pa.brand||'').localeCompare(pb.brand||''); 
+    return (pa.name||'').localeCompare(pb.name||''); 
+  });
+
+  return list;
+}
+
+function renderProductGrid() { const grid = $('productGrid'); if (!grid) return; const list = getFilteredProducts(); if (!list.length) { grid.innerHTML = `<div class="empty" style="grid-column:1/-1">${filters.sort === 'last_pair' ? 'Нет товаров с остатком 1 пара' : (Object.keys(state.products).length ? 'Ничего не найдено' : 'Нет товаров')}</div>`; return; } grid.innerHTML = list.map(([id, p]) => renderProductCard(id, p)).join(''); }
 function renderProductCard(id, p) { const tq = getTotalQty(p); const av = tq > 0; const attrs = [p.category, p.season].filter(Boolean).join(' · '); return `<div class="product-card" onclick="openProductView('${id}')"><div class="photo">${p.photo ? `<img src="${p.photo}">` : '<div class="photo-placeholder">👟</div>'}</div><div class="info">${p.brand ? `<div class="brand">${esc(p.brand)}</div>` : ''}<div class="name">${esc(p.name)}</div><div class="meta"><span>${esc(attrs)}</span>${p.price ? `<span class="price">${fmt(p.price)} ₽</span>` : ''}</div><div class="total-qty ${tq === 0 ? 'empty-qty' : ''}">Всего: <b>${tq}</b> пар</div><div class="card-buttons" onclick="event.stopPropagation()"><button class="sell-btn" ${av ? '' : 'disabled'} onclick="openSaleModal('${id}')">${av ? 'Продать' : 'Нет'}</button><div class="card-bottom-actions"><button class="btn" onclick="openProductModal('${id}')">✎ Изменить</button></div></div></div></div>`; }
 
 function openProductModal(id) {
