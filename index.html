@@ -550,6 +550,7 @@ function renderProductsTab() {
   $('tab-products').innerHTML = `
     <div class="toolbar">
       <button class="btn primary" onclick="openProductModal()">+ Добавить</button>
+      <button class="btn" onclick="exportProducts()">Excel</button>
       <input class="search" id="fSearch" placeholder="Поиск..." value="${esc(filters.search)}">
       <select class="search" id="fBrand"><option value="">Бренд</option></select>
       <select class="search" id="fSize"><option value="">Размер</option></select>
@@ -582,17 +583,14 @@ function getFilteredProducts() {
     return true; 
   });
 
-  // Фильтр «Последняя пара»
   if (filters.sort === 'last_pair') {
     list = list.filter(([, p]) => getTotalQty(p) === 1);
   }
 
-  // Сортировка
   list.sort((a, b) => { 
     const pa = a[1], pb = b[1]; 
     if (filters.sort === 'price_asc') return (pa.price||0) - (pb.price||0);
     if (filters.sort === 'price_desc') return (pb.price||0) - (pa.price||0);
-    // По умолчанию (по бренду)
     if ((pa.brand||'') !== (pb.brand||'')) return (pa.brand||'').localeCompare(pb.brand||''); 
     return (pa.name||'').localeCompare(pb.name||''); 
   });
@@ -689,7 +687,6 @@ function renderSalesTab() {
   $('tab-sales').innerHTML = `
     <div class="toolbar">
       <button class="btn" onclick="location.reload()">↻</button>
-      <button class="btn" onclick="exportSales()">Excel</button>
     </div>
     <div class="sales-wrap">
       ${all.length ? `
@@ -775,7 +772,25 @@ function renderStatsTab() {
 
 function renderLogTab() { const e = Object.values(state.log || {}).sort((a, b) => new Date(b.date) - new Date(a.date)); const el = $('tab-log'); if (!el) return; if (!e.length) return el.innerHTML = '<div class="empty">Лог пуст</div>'; el.innerHTML = e.slice(0, 300).map(x => `<div class="log-item"><div class="log-icon">${LOG_ICONS[x.action]||'•'}</div><div class="log-body"><div class="log-title">${esc(x.details||x.action)}</div><div class="log-meta"><b>${esc(x.user||'—')}</b> · ${new Date(x.date).toLocaleString('ru-RU')}</div></div></div>`).join(''); }
 
-function exportSales() { const sales = Object.values(state.sales || {}).sort((a, b) => new Date(b.date) - new Date(a.date)); if (!sales.length) return showToast('Нет продаж', 'error'); const rows = [['Дата','Продавец','Бренд','Модель','Размер','Точка','Цена']]; sales.forEach(s => rows.push([new Date(s.date).toLocaleString('ru-RU'), s.user||'', s.brand||'', s.productName||'', s.size, s.whName||'', s.price||0])); doExport(rows, 'Продажи', 'evso-prodazhi'); }
+function exportProducts() {
+  const products = Object.values(state.products).sort((a, b) => {
+    if ((a.brand||'') !== (b.brand||'')) return (a.brand||'').localeCompare(b.brand||'');
+    return (a.name||'').localeCompare(b.name||'');
+  });
+  if (!products.length) { showToast('Нет товаров', 'error'); return; }
+  
+  const rows = [['Бренд', 'Название', 'Размеры', 'Цена']];
+  products.forEach(p => {
+    const sizes = Object.keys(p.sizes || {})
+      .filter(s => (qty(p.sizes[s].wh1) + qty(p.sizes[s].wh2)) > 0)
+      .sort((a, b) => parseFloat(a) - parseFloat(b))
+      .join(', ');
+      
+    rows.push([p.brand || '', p.name || '', sizes, p.price || 0]);
+  });
+  doExport(rows, 'Товары', 'evso-tovary');
+}
+
 function doExport(rows, sn, fn) { const today = new Date().toISOString().slice(0,10); if (typeof XLSX === 'undefined') { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'; s.onload = () => doExport(rows, sn, fn); document.head.appendChild(s); return; } const ws = XLSX.utils.aoa_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, sn); XLSX.writeFile(wb, fn+'-'+today+'.xlsx'); }
 
 function renderSettingsTab() {
